@@ -1,0 +1,13 @@
+{
+  "name": "daymate",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:shared": "pnpm --filter @daymate/shared build",
+    "dev:rn": "pnpm --filter rn-calendar start",
+    "android:rn": "pnpm --filter rn-calendar android"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
