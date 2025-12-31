@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CalendarEvent, CreateCalendarEventInput } from '../models/CalendarEvent';
+import { CalendarEvent, CreateCalendarEventInput } from '@daymate/shared';
 
 const STORAGE_KEY = 'daymate.events.v1';
 

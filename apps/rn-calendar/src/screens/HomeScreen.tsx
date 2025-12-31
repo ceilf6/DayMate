@@ -16,10 +16,10 @@ import { Calendar, CalendarProvider, WeekCalendar } from 'react-native-calendars
 import type { Theme } from 'react-native-calendars/src/types';
 import { addDays, format, parseISO } from 'date-fns';
 
-import type { CalendarEvent } from '../models/CalendarEvent';
+import type { CalendarEvent } from '@daymate/shared';
+import { solarToLunar, getLunarShortString, getLunarHoliday, getSolarHoliday, getAllHolidays } from '@daymate/shared';
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
-import LunarUtils, { solarToLunar, getLunarShortString, getLunarHoliday, getSolarHoliday, getAllHolidays } from '../utils/LunarUtils';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';

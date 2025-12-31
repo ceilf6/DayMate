@@ -13,6 +13,7 @@
         "postinstall": "patch-package"
     },
     "dependencies": {
+        "@daymate/shared": "workspace:*",
         "@notifee/react-native": "^9.1.8",
         "@react-native-async-storage/async-storage": "^1.19.5",
         "@react-navigation/native": "^6.1.9",
