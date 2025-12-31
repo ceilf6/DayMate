@@ -4,22 +4,67 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
+ * 事件状态
+ * 与 TypeScript EventStatus 保持一致
+ */
+enum class EventStatus {
+    CONFIRMED,    // 已确认
+    TENTATIVE,    // 暂定
+    CANCELLED     // 已取消
+}
+
+/**
+ * 事件透明度
+ * 与 TypeScript EventTransparency 保持一致
+ */
+enum class Transparency {
+    OPAQUE,       // 不透明（占用时间）
+    TRANSPARENT   // 透明（不占用时间）
+}
+
+/**
  * 简化版日历事件数据模型
  * 与 TypeScript (@daymate/shared) 的 CalendarEvent 保持一致
- * 用于跨平台数据交换
+ * 用于跨平台数据交换和 iCalendar 导入导出
  */
 data class SimpleCalendarEvent(
     val id: String,
-    val date: String,                  // yyyy-MM-dd
     val title: String,
-    val startTime: String? = null,     // HH:mm
-    val endTime: String? = null,       // HH:mm
-    val notes: String? = null,
+    val description: String? = null,
+    val location: String? = null,
+    val startTime: LocalDateTime,
+    val endTime: LocalDateTime,
+    val allDay: Boolean = false,
+    val recurrenceRule: String? = null,
     val reminderMinutes: Int? = null,
-    val notificationId: String? = null,
-    val createdAt: String,             // ISO string
-    val updatedAt: String              // ISO string
-)
+    val category: String? = null,
+    val priority: Int = 0,              // 0-9, 0为未设置，1最高，9最低
+    val status: EventStatus = EventStatus.CONFIRMED,
+    val transparency: Transparency = Transparency.OPAQUE,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now()
+) {
+    /**
+     * 获取日期字符串 (yyyy-MM-dd)
+     */
+    fun getDateString(): String = startTime.toLocalDate().toString()
+
+    /**
+     * 获取开始时间字符串 (HH:mm)
+     */
+    fun getStartTimeString(): String? {
+        if (allDay) return null
+        return String.format("%02d:%02d", startTime.hour, startTime.minute)
+    }
+
+    /**
+     * 获取结束时间字符串 (HH:mm)
+     */
+    fun getEndTimeString(): String? {
+        if (allDay) return null
+        return String.format("%02d:%02d", endTime.hour, endTime.minute)
+    }
+}
 
 /**
  * 创建事件的输入数据
@@ -50,6 +95,10 @@ data class CalendarEvent(
     val reminders: List<ReminderConfig> = emptyList(),
     val color: String? = null,
     val calendarId: String? = null,
+    val priority: Int = 0,
+    val status: EventStatus = EventStatus.CONFIRMED,
+    val transparency: Transparency = Transparency.OPAQUE,
+    val category: String? = null,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
 ) {
@@ -59,15 +108,20 @@ data class CalendarEvent(
     fun toSimple(): SimpleCalendarEvent {
         return SimpleCalendarEvent(
             id = id,
-            date = startDateTime.toLocalDate().toString(),
             title = title,
-            startTime = if (!isAllDay) String.format("%02d:%02d", startDateTime.hour, startDateTime.minute) else null,
-            endTime = if (!isAllDay) String.format("%02d:%02d", endDateTime.hour, endDateTime.minute) else null,
-            notes = description,
+            description = description,
+            location = location,
+            startTime = startDateTime,
+            endTime = endDateTime,
+            allDay = isAllDay,
+            recurrenceRule = recurrenceRule,
             reminderMinutes = reminders.firstOrNull()?.minutesBefore,
-            notificationId = null,
-            createdAt = createdAt.toString(),
-            updatedAt = updatedAt.toString()
+            category = category,
+            priority = priority,
+            status = status,
+            transparency = transparency,
+            createdAt = createdAt,
+            updatedAt = updatedAt
         )
     }
 }

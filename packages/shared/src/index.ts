@@ -40,3 +40,21 @@ export {
     parseTime,
     generateId
 } from './utils/DateUtils';
+
+// Utils - Priority
+export {
+    PRIORITY_RANGES,
+    PRIORITY_COLORS,
+    getPriorityLevel,
+    getPriorityColors,
+    getPriorityIndicator,
+    getPriorityText,
+    isHighPriority,
+    comparePriority
+} from './utils/PriorityUtils';
+
+// Utils - ICalendar
+export {
+    exportToICalendar,
+    importFromICalendar
+} from './utils/ICalendarUtils';
