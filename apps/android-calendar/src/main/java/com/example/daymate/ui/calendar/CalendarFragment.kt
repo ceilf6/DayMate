@@ -15,7 +15,7 @@ import com.example.daymate.ui.dialog.DailyEventsDialogFragment
 import com.example.daymate.ui.event.AddEditEventDialogFragment
 import com.example.daymate.ui.event.EventDetailsDialogFragment
 import com.example.daymate.ui.importexport.ImportExportDialogFragment
-import com.example.daymate.utils.LunarUtils
+import com.example.daymate.shared.core.utils.LunarUtils
 import com.example.daymate.viewmodel.CalendarViewModel
 import com.example.daymate.viewmodel.CalendarViewModelFactory
 import com.example.daymate.viewmodel.CalendarViewMode

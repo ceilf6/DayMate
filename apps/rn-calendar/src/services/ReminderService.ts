@@ -6,7 +6,7 @@ import notifee, {
     TriggerType,
 } from '@notifee/react-native';
 
-import type { CalendarEvent } from '../models/CalendarEvent';
+import type { CalendarEvent } from '@daymate/shared';
 
 const ANDROID_CHANNEL_ID = 'daymate-reminders';
 

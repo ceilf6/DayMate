@@ -11,7 +11,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.daymate.R
 import com.example.daymate.data.Event
-import com.example.daymate.utils.LunarUtils
+import com.example.daymate.shared.core.utils.LunarUtils
 import com.example.daymate.utils.PriorityColorUtils
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -199,10 +199,10 @@ class MonthView @JvmOverloads constructor(
         paint.textSize = lunarTextSize
         
         // 确定农历显示文字和颜色
-        val lunarText = when {
+        val lunarText: String = when {
             solarHoliday != null -> solarHoliday
             lunarHoliday != null -> lunarHoliday
-            lunarDate.solarTerm != null -> lunarDate.solarTerm
+            lunarDate.solarTerm != null -> lunarDate.solarTerm!!
             lunarDate.day == 1 -> {
                 val leap = if (lunarDate.isLeapMonth) "闰" else ""
                 "${leap}${lunarDate.monthStr}月"
