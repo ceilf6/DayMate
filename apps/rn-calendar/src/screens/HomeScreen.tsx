@@ -26,8 +26,6 @@ import {
     // Date Utils
     getToday,
     addDays,
-    formatDate,
-    parseDate,
     // Priority Utils
     getPriorityColors,
     getPriorityIndicator,
@@ -37,6 +35,7 @@ import {
 } from '@daymate/shared';
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
+import { ImportExportService } from '../services/ImportExportService';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -61,6 +60,11 @@ const HomeScreen = () => {
     const [detailEvent, setDetailEvent] = useState<CalendarEvent | null>(null);
     const [detailError, setDetailError] = useState('');
 
+    const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
+    const [importContent, setImportContent] = useState('');
+    const [importExportError, setImportExportError] = useState('');
+    const [importExportSuccess, setImportExportSuccess] = useState('');
+
     useEffect(() => {
         let isMounted = true;
         (async () => {
@@ -78,9 +82,9 @@ const HomeScreen = () => {
 
     const shiftSelectedDate = (deltaDays: number) => {
         try {
-            const base = selectedDate ? parseDate(selectedDate) : parseDate(today);
+            const base = selectedDate || today;
             const next = addDays(base, deltaDays);
-            setSelectedDate(formatDate(next));
+            setSelectedDate(next);
         } catch {
             setSelectedDate(today);
         }
@@ -147,6 +151,110 @@ const HomeScreen = () => {
         setIsDetailModalVisible(false);
         setDetailEvent(null);
         setDetailError('');
+    };
+
+    const openImportExportModal = () => {
+        setImportContent('');
+        setImportExportError('');
+        setImportExportSuccess('');
+        setIsImportExportModalVisible(true);
+    };
+
+    const closeImportExportModal = () => {
+        setIsImportExportModalVisible(false);
+        setImportContent('');
+        setImportExportError('');
+        setImportExportSuccess('');
+    };
+
+    const getAllEvents = (): CalendarEvent[] => {
+        const allEvents: CalendarEvent[] = [];
+        for (const dateEvents of Object.values(eventsByDate)) {
+            allEvents.push(...dateEvents);
+        }
+        return allEvents;
+    };
+
+    const onExportShare = async () => {
+        const events = getAllEvents();
+        if (events.length === 0) {
+            setImportExportError('没有可导出的日程');
+            return;
+        }
+        const success = await ImportExportService.shareEvents(events);
+        if (success) {
+            setImportExportSuccess('导出成功！');
+        }
+    };
+
+    const onExportCopy = async () => {
+        const events = getAllEvents();
+        if (events.length === 0) {
+            setImportExportError('没有可导出的日程');
+            return;
+        }
+        await ImportExportService.copyToClipboard(events);
+        setImportExportSuccess('已复制到剪贴板！');
+    };
+
+    const onImportFromClipboard = async () => {
+        try {
+            const events = await ImportExportService.importFromClipboard();
+            if (events.length === 0) {
+                setImportExportError('剪贴板中没有有效的日历数据');
+                return;
+            }
+            await saveImportedEvents(events);
+        } catch {
+            setImportExportError('导入失败，请检查数据格式');
+        }
+    };
+
+    const onImportFromText = async () => {
+        if (!importContent.trim()) {
+            setImportExportError('请输入 iCalendar 数据');
+            return;
+        }
+        try {
+            const events = ImportExportService.importFromContent(importContent);
+            if (events.length === 0) {
+                setImportExportError('没有找到有效的日程数据');
+                return;
+            }
+            await saveImportedEvents(events);
+        } catch {
+            setImportExportError('导入失败，请检查数据格式');
+        }
+    };
+
+    const saveImportedEvents = async (events: CalendarEvent[]) => {
+        let savedCount = 0;
+        for (const event of events) {
+            try {
+                await EventStorage.addEvent({
+                    date: event.date,
+                    title: event.title,
+                    description: event.description,
+                    location: event.location,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    allDay: event.allDay,
+                    reminderMinutes: event.reminderMinutes,
+                    category: event.category,
+                    priority: event.priority,
+                });
+                savedCount++;
+            } catch {
+                // ignore individual failures
+            }
+        }
+
+        // 刷新事件列表
+        const all = await EventStorage.getAllEventsByDate();
+        setEventsByDate(all);
+
+        setImportExportSuccess(`成功导入 ${savedCount} 条日程！`);
+        setImportContent('');
     };
 
     const onDeleteEvent = async () => {
@@ -233,7 +341,7 @@ const HomeScreen = () => {
             title,
             startTime: start,
             endTime: end,
-            notes: newNotes.trim(),
+            description: newNotes.trim(),
             reminderMinutes,
             priority: newPriority > 0 ? newPriority : undefined,
         });
@@ -315,7 +423,7 @@ const HomeScreen = () => {
             const lunar = solarToLunar(dateString);
             const lunarHoliday = getLunarHoliday(dateString);
             const solarHoliday = getSolarHoliday(dateString);
-            const isHoliday = lunarHoliday || solarHoliday;
+            const isHoliday = !!(lunarHoliday || solarHoliday);
             
             // 确定农历显示文字
             let lunarText = getLunarShortString(lunar);
@@ -356,7 +464,7 @@ const HomeScreen = () => {
                             isDisabled && styles.lunarTextDisabled,
                             isDisabled && isDarkMode && styles.lunarTextDisabledDark,
                             isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
-                            lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
+                            !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
                         ]}
                         numberOfLines={1}
                     >
@@ -381,6 +489,21 @@ const HomeScreen = () => {
                         跨平台日程管理
                     </Text>
                 </View> */}
+
+                {/* 顶部操作栏 */}
+                <View style={styles.topActionRow}>
+                    <Text style={[styles.appTitle, isDarkMode && styles.textPrimaryDark]}>
+                        DayMate
+                    </Text>
+                    <TouchableOpacity
+                        onPress={openImportExportModal}
+                        style={[styles.importExportButton, isDarkMode && styles.importExportButtonDark]}
+                        accessibilityRole="button">
+                        <Text style={[styles.importExportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                            导入/导出
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
                 <View style={[styles.viewModeRow, isDarkMode && styles.viewModeRowDark]}>
                     <TouchableOpacity
@@ -579,14 +702,14 @@ const HomeScreen = () => {
                                                         提醒：提前 {event.reminderMinutes} 分钟
                                                     </Text>
                                                 ) : null}
-                                                {event.notes ? (
+                                                {event.description ? (
                                                     <Text
                                                         style={[
                                                             styles.eventItemNotes,
                                                             isDarkMode && styles.textSecondaryDark,
                                                         ]}
                                                         numberOfLines={2}>
-                                                        {event.notes}
+                                                        {event.description}
                                                     </Text>
                                                 ) : null}
                                             </View>
@@ -785,7 +908,7 @@ const HomeScreen = () => {
                                             备注
                                         </Text>
                                         <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                                            {detailEvent.notes?.trim() ? detailEvent.notes : '无'}
+                                            {detailEvent.description?.trim() ? detailEvent.description : '无'}
                                         </Text>
                                     </View>
                                 </>
@@ -805,6 +928,89 @@ const HomeScreen = () => {
                                     onPress={onDeleteEvent}
                                     accessibilityRole="button">
                                     <Text style={styles.deleteButtonText}>删除</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* 导入导出弹窗 */}
+                <Modal
+                    visible={isImportExportModalVisible}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={closeImportExportModal}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBackdrop} />
+                        <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
+                            <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
+                                导入/导出
+                            </Text>
+
+                            {/* 导出区域 */}
+                            <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
+                                导出日程
+                            </Text>
+                            <View style={styles.exportButtons}>
+                                <TouchableOpacity
+                                    style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
+                                    onPress={onExportShare}
+                                    accessibilityRole="button">
+                                    <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                        分享
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
+                                    onPress={onExportCopy}
+                                    accessibilityRole="button">
+                                    <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                        复制
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* 导入区域 */}
+                            <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
+                                导入日程
+                            </Text>
+                            <TouchableOpacity
+                                style={[styles.importButton, isDarkMode && styles.importButtonDark]}
+                                onPress={onImportFromClipboard}
+                                accessibilityRole="button">
+                                <Text style={[styles.importButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                    从剪贴板导入
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TextInput
+                                value={importContent}
+                                onChangeText={setImportContent}
+                                placeholder="粘贴 iCalendar 数据..."
+                                placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
+                                style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
+                                multiline
+                            />
+                            <TouchableOpacity
+                                style={[styles.actionButton, styles.saveButton]}
+                                onPress={onImportFromText}
+                                accessibilityRole="button">
+                                <Text style={styles.saveButtonText}>导入</Text>
+                            </TouchableOpacity>
+
+                            {importExportError ? (
+                                <Text style={styles.formErrorText}>{importExportError}</Text>
+                            ) : null}
+                            {importExportSuccess ? (
+                                <Text style={styles.successText}>{importExportSuccess}</Text>
+                            ) : null}
+
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.cancelButton]}
+                                    onPress={closeImportExportModal}
+                                    accessibilityRole="button">
+                                    <Text style={styles.cancelButtonText}>关闭</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -1325,6 +1531,88 @@ const styles = StyleSheet.create({
         height: 4,
         borderRadius: 2,
         backgroundColor: '#2196F3',
+    },
+
+    // 顶部操作栏样式
+    topActionRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+    },
+    appTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#111827',
+    },
+    importExportButton: {
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        backgroundColor: '#F3F4F6',
+    },
+    importExportButtonDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    importExportButtonText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#374151',
+    },
+
+    // 导入导出弹窗样式
+    sectionLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginTop: 12,
+        marginBottom: 8,
+    },
+    exportButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        marginBottom: 8,
+    },
+    exportButton: {
+        flex: 1,
+        paddingVertical: 12,
+        borderRadius: 8,
+        backgroundColor: '#F3F4F6',
+        alignItems: 'center',
+    },
+    exportButtonDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    exportButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+    },
+    importButton: {
+        paddingVertical: 12,
+        borderRadius: 8,
+        backgroundColor: '#F3F4F6',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    importButtonDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    importButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+    },
+    importTextInput: {
+        minHeight: 100,
+        textAlignVertical: 'top',
+    },
+    successText: {
+        color: '#10B981',
+        marginBottom: 10,
+        fontSize: 13,
+        fontWeight: '600',
     },
 });
 

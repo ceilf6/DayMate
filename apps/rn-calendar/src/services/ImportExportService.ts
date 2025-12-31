@@ -1,76 +1,45 @@
-import { Platform, Share } from 'react-native';
-import RNFS from 'react-native-fs';
-import { pick, types } from '@react-native-documents/picker';
+import { Share, Clipboard, Platform } from 'react-native';
 import {
     CalendarEvent,
     exportToICalendar,
     importFromICalendar,
 } from '@daymate/shared';
 
-const getExportPath = (fileName: string): string => {
-    const baseDir = Platform.OS === 'ios'
-        ? RNFS.DocumentDirectoryPath
-        : RNFS.DownloadDirectoryPath;
-    return `${baseDir}/${fileName}`;
-};
-
 export class ImportExportService {
     /**
-     * 导出事件到 iCalendar 文件
-     * @param events 要导出的事件列表
-     * @param fileName 文件名（可选，默认为 daymate-export.ics）
-     * @returns 导出文件的路径
-     */
-    static async exportEvents(
-        events: CalendarEvent[],
-        fileName: string = 'daymate-export.ics'
-    ): Promise<string> {
-        const iCalContent = exportToICalendar(events);
-        const filePath = getExportPath(fileName);
-
-        await RNFS.writeFile(filePath, iCalContent, 'utf8');
-
-        return filePath;
-    }
-
-    /**
-     * 分享导出的 iCalendar 文件
+     * 导出事件为 iCalendar 格式并分享
      * @param events 要导出的事件列表
      */
-    static async shareEvents(events: CalendarEvent[]): Promise<void> {
+    static async shareEvents(events: CalendarEvent[]): Promise<boolean> {
+        if (events.length === 0) {
+            return false;
+        }
+
         const iCalContent = exportToICalendar(events);
-        const fileName = `daymate-${Date.now()}.ics`;
-        const filePath = getExportPath(fileName);
 
-        await RNFS.writeFile(filePath, iCalContent, 'utf8');
-
-        if (Platform.OS === 'ios') {
-            await Share.share({
-                url: `file://${filePath}`,
-            });
-        } else {
-            await Share.share({
+        try {
+            const result = await Share.share({
                 message: iCalContent,
-                title: fileName,
+                title: 'DayMate 日历导出',
             });
+
+            return result.action === Share.sharedAction;
+        } catch {
+            return false;
         }
     }
 
     /**
-     * 从文件选择器导入 iCalendar 文件
-     * @returns 导入的事件列表
+     * 复制 iCalendar 内容到剪贴板
+     * @param events 要导出的事件列表
      */
-    static async importFromPicker(): Promise<CalendarEvent[]> {
-        const [result] = await pick({
-            type: [types.plainText, types.allFiles],
-        });
-
-        if (!result || !result.uri) {
-            return [];
+    static async copyToClipboard(events: CalendarEvent[]): Promise<void> {
+        if (events.length === 0) {
+            return;
         }
 
-        const content = await RNFS.readFile(result.uri, 'utf8');
-        return importFromICalendar(content);
+        const iCalContent = exportToICalendar(events);
+        Clipboard.setString(iCalContent);
     }
 
     /**
@@ -79,6 +48,30 @@ export class ImportExportService {
      * @returns 导入的事件列表
      */
     static importFromContent(content: string): CalendarEvent[] {
+        if (!content || !content.trim()) {
+            return [];
+        }
         return importFromICalendar(content);
+    }
+
+    /**
+     * 从剪贴板导入事件
+     * @returns 导入的事件列表
+     */
+    static async importFromClipboard(): Promise<CalendarEvent[]> {
+        const content = await Clipboard.getString();
+        if (!content || !content.includes('BEGIN:VCALENDAR')) {
+            return [];
+        }
+        return importFromICalendar(content);
+    }
+
+    /**
+     * 获取导出的 iCalendar 内容
+     * @param events 要导出的事件列表
+     * @returns iCalendar 格式的字符串
+     */
+    static getICalendarContent(events: CalendarEvent[]): string {
+        return exportToICalendar(events);
     }
 }
