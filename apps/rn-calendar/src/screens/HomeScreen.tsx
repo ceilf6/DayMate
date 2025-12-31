@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     Alert,
     Platform,
@@ -19,23 +19,20 @@ import type { CalendarEvent } from '@daymate/shared';
 import {
     // Lunar Utils
     solarToLunar,
-    getLunarShortString,
-    getLunarHoliday,
-    getSolarHoliday,
     getAllHolidays,
     // Date Utils
     getToday,
     addDays,
     // Priority Utils
     getPriorityColors,
-    getPriorityIndicator,
     getPriorityText,
-    isHighPriority,
     comparePriority,
 } from '@daymate/shared';
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
 import { ImportExportService } from '../services/ImportExportService';
+import DayCell from '../components/DayCell';
+import EventItem from '../components/EventItem';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -76,9 +73,9 @@ const HomeScreen = () => {
         };
     }, []);
 
-    const onDayPress = (day: any) => {
+    const onDayPress = useCallback((day: any) => {
         setSelectedDate(day.dateString);
-    };
+    }, []);
 
     const shiftSelectedDate = (deltaDays: number) => {
         try {
@@ -141,11 +138,11 @@ const HomeScreen = () => {
         setFormError('');
     };
 
-    const openDetailModal = (event: CalendarEvent) => {
+    const openDetailModal = useCallback((event: CalendarEvent) => {
         setDetailError('');
         setDetailEvent(event);
         setIsDetailModalVisible(true);
-    };
+    }, []);
 
     const closeDetailModal = () => {
         setIsDetailModalVisible(false);
@@ -410,73 +407,26 @@ const HomeScreen = () => {
         };
     }, [selectedDate]);
 
-    // 自定义日期组件，显示农历
-    const renderDay = useMemo(() => {
-        return ({ date, state }: any) => {
-            if (!date) return null;
-            
-            const dateString = date.dateString;
-            const isSelected = dateString === selectedDate;
-            const isToday = dateString === today;
-            const isDisabled = state === 'disabled';
-            
-            const lunar = solarToLunar(dateString);
-            const lunarHoliday = getLunarHoliday(dateString);
-            const solarHoliday = getSolarHoliday(dateString);
-            const isHoliday = !!(lunarHoliday || solarHoliday);
-            
-            // 确定农历显示文字
-            let lunarText = getLunarShortString(lunar);
-            if (solarHoliday) lunarText = solarHoliday;
-            else if (lunarHoliday) lunarText = lunarHoliday;
-            
-            // 检查是否有事件
-            const hasEvent = (eventsByDate[dateString] ?? []).length > 0;
-            
-            return (
-                <TouchableOpacity
-                    onPress={() => onDayPress({ dateString })}
-                    style={[
-                        styles.dayContainer,
-                        isSelected && styles.dayContainerSelected,
-                        isToday && !isSelected && styles.dayContainerToday,
-                    ]}
-                    activeOpacity={0.7}
-                >
-                    <Text
-                        style={[
-                            styles.dayText,
-                            isDarkMode && styles.dayTextDark,
-                            isSelected && styles.dayTextSelected,
-                            isToday && !isSelected && styles.dayTextToday,
-                            isDisabled && styles.dayTextDisabled,
-                            isDisabled && isDarkMode && styles.dayTextDisabledDark,
-                        ]}
-                    >
-                        {date.day}
-                    </Text>
-                    <Text
-                        style={[
-                            styles.lunarText,
-                            isDarkMode && styles.lunarTextDark,
-                            isSelected && styles.lunarTextSelected,
-                            isToday && !isSelected && styles.lunarTextToday,
-                            isDisabled && styles.lunarTextDisabled,
-                            isDisabled && isDarkMode && styles.lunarTextDisabledDark,
-                            isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
-                            !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
-                        ]}
-                        numberOfLines={1}
-                    >
-                        {lunarText}
-                    </Text>
-                    {hasEvent && !isSelected && (
-                        <View style={styles.eventDot} />
-                    )}
-                </TouchableOpacity>
-            );
-        };
-    }, [selectedDate, today, isDarkMode, eventsByDate, onDayPress]);
+    // 处理日期点击 - 使用 useCallback 避免重新创建
+    const handleDayPress = useCallback((dateString: string) => {
+        setSelectedDate(dateString);
+    }, []);
+
+    // 自定义日期组件，使用 memoized DayCell
+    const renderDay = useCallback(({ date, state }: any) => {
+        if (!date) return null;
+        const hasEvent = (eventsByDate[date.dateString] ?? []).length > 0;
+        return (
+            <DayCell
+                date={date}
+                state={state}
+                selectedDate={selectedDate}
+                today={today}
+                hasEvent={hasEvent}
+                onPress={handleDayPress}
+            />
+        );
+    }, [selectedDate, today, eventsByDate, handleDayPress]);
 
     return (
         <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
@@ -647,75 +597,13 @@ const HomeScreen = () => {
                             </View>
                         ) : (
                             <View style={styles.eventList}>
-                                {selectedEvents.map(event => {
-                                    const priorityColors = getPriorityColors(event.priority);
-                                    const priorityIndicator = getPriorityIndicator(event.priority);
-                                    const highPriority = isHighPriority(event.priority);
-
-                                    return (
-                                        <TouchableOpacity
-                                            key={event.id}
-                                            style={[styles.eventItem, isDarkMode && styles.eventItemDark]}
-                                            onPress={() => openDetailModal(event)}
-                                            accessibilityRole="button">
-                                            {/* 优先级指示条 */}
-                                            <View
-                                                style={[
-                                                    styles.priorityIndicator,
-                                                    { backgroundColor: priorityColors.background }
-                                                ]}
-                                            />
-                                            <View style={styles.eventItemContent}>
-                                                <View style={styles.eventTitleRow}>
-                                                    <Text
-                                                        style={[
-                                                            styles.eventItemTitle,
-                                                            isDarkMode && styles.textPrimaryDark,
-                                                            highPriority && { color: priorityColors.background },
-                                                        ]}
-                                                        numberOfLines={1}>
-                                                        {event.title}
-                                                    </Text>
-                                                    {priorityIndicator ? (
-                                                        <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
-                                                            {priorityIndicator}
-                                                        </Text>
-                                                    ) : null}
-                                                </View>
-                                                <Text
-                                                    style={[
-                                                        styles.eventItemMeta,
-                                                        isDarkMode && styles.textSecondaryDark,
-                                                    ]}
-                                                    numberOfLines={1}>
-                                                    {(event.startTime || event.endTime)
-                                                        ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                                        : '全天'}
-                                                </Text>
-                                                {event.reminderMinutes && event.reminderMinutes > 0 ? (
-                                                    <Text
-                                                        style={[
-                                                            styles.eventItemMeta,
-                                                            isDarkMode && styles.textSecondaryDark,
-                                                        ]}
-                                                        numberOfLines={1}>
-                                                        提醒：提前 {event.reminderMinutes} 分钟
-                                                    </Text>
-                                                ) : null}
-                                                {event.description ? (
-                                                    <Text
-                                                        style={[
-                                                            styles.eventItemNotes,
-                                                            isDarkMode && styles.textSecondaryDark,
-                                                        ]}
-                                                        numberOfLines={2}>
-                                                        {event.description}
-                                                    </Text>
-                                                ) : null}
-                                            </View>
-                                        </TouchableOpacity>
-                                    );
-                                })}
+                                {selectedEvents.map(event => (
+                                    <EventItem
+                                        key={event.id}
+                                        event={event}
+                                        onPress={openDetailModal}
+                                    />
+                                ))}
                             </View>
                         )}
                     </View>
@@ -1211,57 +1099,6 @@ const styles = StyleSheet.create({
     eventList: {
         gap: 10,
     },
-    eventItem: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 14,
-        shadowColor: '#000000',
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 6 },
-        elevation: 1,
-        overflow: 'hidden',
-    },
-    eventItemDark: {
-        backgroundColor: '#141418',
-    },
-    priorityIndicator: {
-        width: 4,
-        borderTopLeftRadius: 14,
-        borderBottomLeftRadius: 14,
-    },
-    eventItemContent: {
-        flex: 1,
-        padding: 14,
-    },
-    eventTitleRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    prioritySymbol: {
-        fontSize: 12,
-        fontWeight: '700',
-        marginLeft: 6,
-    },
-    eventItemTitle: {
-        flex: 1,
-        fontSize: 16,
-        lineHeight: 22,
-        fontWeight: '600',
-        color: '#111827',
-    },
-    eventItemMeta: {
-        fontSize: 13,
-        lineHeight: 18,
-        color: '#6B7280',
-    },
-    eventItemNotes: {
-        marginTop: 8,
-        fontSize: 13,
-        lineHeight: 18,
-        color: '#6B7280',
-    },
 
     detailRow: {
         marginBottom: 10,
@@ -1460,77 +1297,6 @@ const styles = StyleSheet.create({
     dayNavTitleContainer: {
         flex: 1,
         alignItems: 'center',
-    },
-
-    // 自定义日期单元格样式
-    dayContainer: {
-        width: 44,
-        height: 52,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 8,
-    },
-    dayContainerSelected: {
-        backgroundColor: '#2196F3',
-    },
-    dayContainerToday: {
-        backgroundColor: 'rgba(33, 150, 243, 0.15)',
-    },
-    dayText: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#111827',
-        marginBottom: 2,
-    },
-    dayTextDark: {
-        color: '#E5E7EB',
-    },
-    dayTextSelected: {
-        color: '#FFFFFF',
-        fontWeight: '600',
-    },
-    dayTextToday: {
-        color: '#2196F3',
-        fontWeight: '600',
-    },
-    dayTextDisabled: {
-        color: '#D1D5DB',
-    },
-    dayTextDisabledDark: {
-        color: '#52525B',
-    },
-    lunarText: {
-        fontSize: 10,
-        color: '#9CA3AF',
-    },
-    lunarTextDark: {
-        color: '#71717A',
-    },
-    lunarTextSelected: {
-        color: 'rgba(255, 255, 255, 0.85)',
-    },
-    lunarTextToday: {
-        color: '#2196F3',
-    },
-    lunarTextDisabled: {
-        color: '#D1D5DB',
-    },
-    lunarTextDisabledDark: {
-        color: '#3F3F46',
-    },
-    lunarTextHoliday: {
-        color: '#EF4444',
-    },
-    lunarTextSolarTerm: {
-        color: '#10B981',
-    },
-    eventDot: {
-        position: 'absolute',
-        bottom: 4,
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: '#2196F3',
     },
 
     // 顶部操作栏样式
