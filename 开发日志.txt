@@ -1,10 +1,13 @@
 添加开发日志，方便回溯、追踪
 
-- 截止12.30 - commit 7291729
-    - 基本要求: 三视图, 日程管理, 日程提醒
-    - monorepo架构: React Native + Android Java
-    - 农历支持等等
+- 截止12.30 
+    - commit 7291729
+        - 基本要求: 三视图, 日程管理, 日程提醒
+        - monorepo架构: React Native + Android Java
+        - 农历支持等等
 
 | 老师通知延迟到 1.23
 
 - 12.31
+    - 
+        - 图标支持
