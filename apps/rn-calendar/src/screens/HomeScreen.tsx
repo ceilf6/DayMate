@@ -28,6 +28,12 @@ import {
     addDays,
     formatDate,
     parseDate,
+    // Priority Utils
+    getPriorityColors,
+    getPriorityIndicator,
+    getPriorityText,
+    isHighPriority,
+    comparePriority,
 } from '@daymate/shared';
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
@@ -48,6 +54,7 @@ const HomeScreen = () => {
     const [newEndTime, setNewEndTime] = useState('');
     const [newNotes, setNewNotes] = useState('');
     const [newReminderMinutes, setNewReminderMinutes] = useState('');
+    const [newPriority, setNewPriority] = useState<number>(0);
     const [formError, setFormError] = useState('');
 
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
@@ -81,7 +88,13 @@ const HomeScreen = () => {
 
     const selectedEvents = useMemo(() => {
         const list = eventsByDate[selectedDate] ?? [];
-        return [...list].sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''));
+        return [...list].sort((a, b) => {
+            // 先按优先级排序（高优先级在前）
+            const priorityDiff = comparePriority(a.priority, b.priority);
+            if (priorityDiff !== 0) return priorityDiff;
+            // 再按开始时间排序
+            return (a.startTime ?? '').localeCompare(b.startTime ?? '');
+        });
     }, [eventsByDate, selectedDate]);
 
     const markedDates = useMemo(() => {
@@ -115,6 +128,7 @@ const HomeScreen = () => {
         setNewEndTime('');
         setNewNotes('');
         setNewReminderMinutes('');
+        setNewPriority(0);
         setIsAddModalVisible(true);
     };
 
@@ -221,6 +235,7 @@ const HomeScreen = () => {
             endTime: end,
             notes: newNotes.trim(),
             reminderMinutes,
+            priority: newPriority > 0 ? newPriority : undefined,
         });
 
         let finalEvent = created;
@@ -509,52 +524,75 @@ const HomeScreen = () => {
                             </View>
                         ) : (
                             <View style={styles.eventList}>
-                                {selectedEvents.map(event => (
-                                    <TouchableOpacity
-                                        key={event.id}
-                                        style={[styles.eventItem, isDarkMode && styles.eventItemDark]}
-                                        onPress={() => openDetailModal(event)}
-                                        accessibilityRole="button">
-                                        <Text
-                                            style={[
-                                                styles.eventItemTitle,
-                                                isDarkMode && styles.textPrimaryDark,
-                                            ]}
-                                            numberOfLines={1}>
-                                            {event.title}
-                                        </Text>
-                                        <Text
-                                            style={[
-                                                styles.eventItemMeta,
-                                                isDarkMode && styles.textSecondaryDark,
-                                            ]}
-                                            numberOfLines={1}>
-                                            {(event.startTime || event.endTime)
-                                                ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                                : '全天'}
-                                        </Text>
-                                        {event.reminderMinutes && event.reminderMinutes > 0 ? (
-                                            <Text
+                                {selectedEvents.map(event => {
+                                    const priorityColors = getPriorityColors(event.priority);
+                                    const priorityIndicator = getPriorityIndicator(event.priority);
+                                    const highPriority = isHighPriority(event.priority);
+
+                                    return (
+                                        <TouchableOpacity
+                                            key={event.id}
+                                            style={[styles.eventItem, isDarkMode && styles.eventItemDark]}
+                                            onPress={() => openDetailModal(event)}
+                                            accessibilityRole="button">
+                                            {/* 优先级指示条 */}
+                                            <View
                                                 style={[
-                                                    styles.eventItemMeta,
-                                                    isDarkMode && styles.textSecondaryDark,
+                                                    styles.priorityIndicator,
+                                                    { backgroundColor: priorityColors.background }
                                                 ]}
-                                                numberOfLines={1}>
-                                                提醒：提前 {event.reminderMinutes} 分钟
-                                            </Text>
-                                        ) : null}
-                                        {event.notes ? (
-                                            <Text
-                                                style={[
-                                                    styles.eventItemNotes,
-                                                    isDarkMode && styles.textSecondaryDark,
-                                                ]}
-                                                numberOfLines={2}>
-                                                {event.notes}
-                                            </Text>
-                                        ) : null}
-                                    </TouchableOpacity>
-                                ))}
+                                            />
+                                            <View style={styles.eventItemContent}>
+                                                <View style={styles.eventTitleRow}>
+                                                    <Text
+                                                        style={[
+                                                            styles.eventItemTitle,
+                                                            isDarkMode && styles.textPrimaryDark,
+                                                            highPriority && { color: priorityColors.background },
+                                                        ]}
+                                                        numberOfLines={1}>
+                                                        {event.title}
+                                                    </Text>
+                                                    {priorityIndicator ? (
+                                                        <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
+                                                            {priorityIndicator}
+                                                        </Text>
+                                                    ) : null}
+                                                </View>
+                                                <Text
+                                                    style={[
+                                                        styles.eventItemMeta,
+                                                        isDarkMode && styles.textSecondaryDark,
+                                                    ]}
+                                                    numberOfLines={1}>
+                                                    {(event.startTime || event.endTime)
+                                                        ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
+                                                        : '全天'}
+                                                </Text>
+                                                {event.reminderMinutes && event.reminderMinutes > 0 ? (
+                                                    <Text
+                                                        style={[
+                                                            styles.eventItemMeta,
+                                                            isDarkMode && styles.textSecondaryDark,
+                                                        ]}
+                                                        numberOfLines={1}>
+                                                        提醒：提前 {event.reminderMinutes} 分钟
+                                                    </Text>
+                                                ) : null}
+                                                {event.notes ? (
+                                                    <Text
+                                                        style={[
+                                                            styles.eventItemNotes,
+                                                            isDarkMode && styles.textSecondaryDark,
+                                                        ]}
+                                                        numberOfLines={2}>
+                                                        {event.notes}
+                                                    </Text>
+                                                ) : null}
+                                            </View>
+                                        </TouchableOpacity>
+                                    );
+                                })}
                             </View>
                         )}
                     </View>
@@ -615,6 +653,44 @@ const HomeScreen = () => {
                                 keyboardType="number-pad"
                                 style={[styles.input, isDarkMode && styles.inputDark]}
                             />
+
+                            {/* 优先级选择器 */}
+                            <Text style={[styles.priorityLabel, isDarkMode && styles.textSecondaryDark]}>
+                                优先级
+                            </Text>
+                            <View style={styles.prioritySelector}>
+                                {[
+                                    { value: 0, label: '无' },
+                                    { value: 2, label: '高' },
+                                    { value: 5, label: '中' },
+                                    { value: 8, label: '低' },
+                                ].map(option => {
+                                    const colors = getPriorityColors(option.value);
+                                    const isSelected = newPriority === option.value;
+                                    return (
+                                        <TouchableOpacity
+                                            key={option.value}
+                                            onPress={() => setNewPriority(option.value)}
+                                            style={[
+                                                styles.priorityOption,
+                                                isSelected && {
+                                                    backgroundColor: colors.background,
+                                                    borderColor: colors.border,
+                                                },
+                                                !isSelected && isDarkMode && styles.priorityOptionDark,
+                                            ]}>
+                                            <Text
+                                                style={[
+                                                    styles.priorityOptionText,
+                                                    isSelected && { color: colors.text },
+                                                    !isSelected && isDarkMode && styles.textSecondaryDark,
+                                                ]}>
+                                                {option.label}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
 
                             {formError ? (
                                 <Text style={styles.formErrorText}>{formError}</Text>
@@ -685,6 +761,23 @@ const HomeScreen = () => {
                                                 ? `提前 ${detailEvent.reminderMinutes} 分钟`
                                                 : '无'}
                                         </Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
+                                            优先级
+                                        </Text>
+                                        <View style={styles.priorityDetailRow}>
+                                            <View
+                                                style={[
+                                                    styles.priorityDot,
+                                                    { backgroundColor: getPriorityColors(detailEvent.priority).background }
+                                                ]}
+                                            />
+                                            <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
+                                                {getPriorityText(detailEvent.priority)}
+                                            </Text>
+                                        </View>
                                     </View>
 
                                     <View style={styles.detailRow}>
@@ -913,24 +1006,44 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     eventItem: {
+        flexDirection: 'row',
         backgroundColor: '#FFFFFF',
-        padding: 14,
         borderRadius: 14,
         shadowColor: '#000000',
         shadowOpacity: 0.05,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 6 },
         elevation: 1,
+        overflow: 'hidden',
     },
     eventItemDark: {
         backgroundColor: '#141418',
     },
+    priorityIndicator: {
+        width: 4,
+        borderTopLeftRadius: 14,
+        borderBottomLeftRadius: 14,
+    },
+    eventItemContent: {
+        flex: 1,
+        padding: 14,
+    },
+    eventTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    prioritySymbol: {
+        fontSize: 12,
+        fontWeight: '700',
+        marginLeft: 6,
+    },
     eventItemTitle: {
+        flex: 1,
         fontSize: 16,
         lineHeight: 22,
         fontWeight: '600',
         color: '#111827',
-        marginBottom: 6,
     },
     eventItemMeta: {
         fontSize: 13,
@@ -958,6 +1071,16 @@ const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 20,
         color: '#111827',
+    },
+    priorityDetailRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    priorityDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        marginRight: 8,
     },
 
     modalOverlay: {
@@ -1021,6 +1144,36 @@ const styles = StyleSheet.create({
     notesInput: {
         minHeight: 80,
         textAlignVertical: 'top',
+    },
+    priorityLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#6B7280',
+        marginBottom: 8,
+    },
+    prioritySelector: {
+        flexDirection: 'row',
+        gap: 8,
+        marginBottom: 12,
+    },
+    priorityOption: {
+        flex: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        backgroundColor: '#F9FAFB',
+        alignItems: 'center',
+    },
+    priorityOptionDark: {
+        backgroundColor: '#1C1C1E',
+        borderColor: '#3F3F46',
+    },
+    priorityOptionText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#374151',
     },
     formErrorText: {
         color: '#2196F3',

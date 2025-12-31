@@ -27,6 +27,13 @@ const normalizeReminderMinutes = (value?: number): number | undefined => {
     return Math.floor(value);
 };
 
+const normalizePriority = (value?: number): number | undefined => {
+    if (value === undefined || value === null) return undefined;
+    if (!Number.isFinite(value)) return undefined;
+    if (value < 1 || value > 9) return undefined;
+    return Math.floor(value);
+};
+
 export class EventStorage {
     static async getAllEventsByDate(): Promise<EventsByDate> {
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
@@ -50,6 +57,7 @@ export class EventStorage {
             endTime: normalizeTime(input.endTime),
             notes: normalizeTime(input.notes),
             reminderMinutes: normalizeReminderMinutes(input.reminderMinutes),
+            priority: normalizePriority(input.priority),
             createdAt: now,
             updatedAt: now,
         };
