@@ -7,7 +7,7 @@
 
 # All build outputs
 /build/
-*/build/
+**/build/
 
 .externalNativeBuild
 .cxx
