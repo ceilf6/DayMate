@@ -38,7 +38,7 @@ apps/rn-calendar/.expo-shared/
 *.dSYM.zip
 *.dSYM
 DerivedData/
-*.xcworkspace/xcuserdata/
+*.xcworkspace/
 *.xcodeproj/xcuserdata/
 
 # ===== Logs =====
@@ -57,3 +57,4 @@ DerivedData/
 .cache/
 
 CONFIG*
+.claude/
