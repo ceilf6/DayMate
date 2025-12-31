@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CalendarEvent, CreateCalendarEventInput } from '@daymate/shared';
+import { CalendarEvent, CreateCalendarEventInput, generateId } from '@daymate/shared';
 
 const STORAGE_KEY = 'daymate.events.v1';
 
@@ -12,10 +12,6 @@ const safeJsonParse = <T>(raw: string | null): T | null => {
     } catch {
         return null;
     }
-};
-
-const generateId = (): string => {
-    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
 const normalizeTime = (value?: string): string | undefined => {

@@ -14,10 +14,21 @@ import {
 } from 'react-native';
 import { Calendar, CalendarProvider, WeekCalendar } from 'react-native-calendars';
 import type { Theme } from 'react-native-calendars/src/types';
-import { addDays, format, parseISO } from 'date-fns';
 
 import type { CalendarEvent } from '@daymate/shared';
-import { solarToLunar, getLunarShortString, getLunarHoliday, getSolarHoliday, getAllHolidays } from '@daymate/shared';
+import {
+    // Lunar Utils
+    solarToLunar,
+    getLunarShortString,
+    getLunarHoliday,
+    getSolarHoliday,
+    getAllHolidays,
+    // Date Utils
+    getToday,
+    addDays,
+    formatDate,
+    parseDate,
+} from '@daymate/shared';
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
 
@@ -25,7 +36,7 @@ const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
 
     type ViewMode = 'month' | 'week' | 'day';
-    const today = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+    const today = useMemo(() => getToday(), []);
 
     const [viewMode, setViewMode] = useState<ViewMode>('month');
     const [selectedDate, setSelectedDate] = useState(today);
@@ -60,9 +71,9 @@ const HomeScreen = () => {
 
     const shiftSelectedDate = (deltaDays: number) => {
         try {
-            const base = selectedDate ? parseISO(selectedDate) : parseISO(today);
+            const base = selectedDate ? parseDate(selectedDate) : parseDate(today);
             const next = addDays(base, deltaDays);
-            setSelectedDate(format(next, 'yyyy-MM-dd'));
+            setSelectedDate(formatDate(next));
         } catch {
             setSelectedDate(today);
         }
