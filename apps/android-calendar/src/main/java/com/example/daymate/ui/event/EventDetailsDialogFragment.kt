@@ -168,16 +168,16 @@ class EventDetailsDialogFragment : DialogFragment() {
         
         // 状态
         val statusText = when (event.status) {
-            com.example.daymate.data.EventStatus.CONFIRMED -> "已确认"
-            com.example.daymate.data.EventStatus.TENTATIVE -> "暂定"
-            com.example.daymate.data.EventStatus.CANCELLED -> "已取消"
+            com.example.daymate.shared.core.models.EventStatus.CONFIRMED -> "已确认"
+            com.example.daymate.shared.core.models.EventStatus.TENTATIVE -> "暂定"
+            com.example.daymate.shared.core.models.EventStatus.CANCELLED -> "已取消"
         }
         binding.tvStatus.text = statusText
-        
+
         // 透明度
         val transparencyText = when (event.transparency) {
-            com.example.daymate.data.Transparency.OPAQUE -> "不透明"
-            com.example.daymate.data.Transparency.TRANSPARENT -> "透明"
+            com.example.daymate.shared.core.models.Transparency.OPAQUE -> "不透明"
+            com.example.daymate.shared.core.models.Transparency.TRANSPARENT -> "透明"
         }
         binding.tvTransparency.text = transparencyText
         

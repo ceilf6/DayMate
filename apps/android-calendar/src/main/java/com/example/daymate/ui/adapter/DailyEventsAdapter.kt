@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daymate.R
 import com.example.daymate.data.Event
-import com.example.daymate.data.EventStatus
+import com.example.daymate.shared.core.models.EventStatus
 import com.example.daymate.databinding.ItemDailyEventBinding
 import com.example.daymate.utils.PriorityColorUtils
 import java.time.format.DateTimeFormatter

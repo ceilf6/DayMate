@@ -3,13 +3,14 @@ package com.example.daymate.utils
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.example.daymate.R
+import com.example.daymate.shared.core.utils.PriorityUtils
 
 /**
  * 事件优先级颜色工具类
- * 提供统一的优先级颜色映射
+ * Android UI 层的颜色处理，逻辑委托给 shared/core 的 PriorityUtils
  */
 object PriorityColorUtils {
-    
+
     /**
      * 根据优先级获取颜色资源
      * @param context 上下文
@@ -17,69 +18,51 @@ object PriorityColorUtils {
      * @return Triple<背景色, 边框色, 是否深色主题>
      */
     fun getPriorityColors(context: Context, priority: Int): Triple<Int, Int, Boolean> {
-        return when (priority) {
-            in 1..3 -> Triple(
+        return when (PriorityUtils.getPriorityLevel(priority)) {
+            PriorityUtils.PriorityLevel.HIGH -> Triple(
                 ContextCompat.getColor(context, R.color.priority_high),
                 ContextCompat.getColor(context, R.color.priority_high_dark),
                 true
             )
-            in 4..6 -> Triple(
+            PriorityUtils.PriorityLevel.MEDIUM -> Triple(
                 ContextCompat.getColor(context, R.color.priority_medium),
                 ContextCompat.getColor(context, R.color.priority_medium_dark),
                 true
             )
-            in 7..9 -> Triple(
+            PriorityUtils.PriorityLevel.LOW -> Triple(
                 ContextCompat.getColor(context, R.color.priority_low_light),
                 ContextCompat.getColor(context, R.color.priority_low_dark),
                 false
             )
-            else -> Triple(
+            PriorityUtils.PriorityLevel.NONE -> Triple(
                 ContextCompat.getColor(context, R.color.priority_default_light),
                 ContextCompat.getColor(context, R.color.priority_default_dark),
                 false
             )
         }
     }
-    
+
     /**
      * 根据优先级获取优先级指示符
-     * @param priority 优先级
-     * @return 优先级指示符字符串
+     * 委托给 shared/core PriorityUtils
      */
-    fun getPriorityIndicator(priority: Int): String {
-        return when (priority) {
-            in 1..3 -> "!!!"
-            in 4..6 -> "!!"
-            in 7..9 -> "!"
-            else -> ""
-        }
-    }
-    
+    fun getPriorityIndicator(priority: Int): String = PriorityUtils.getPriorityIndicator(priority)
+
     /**
      * 根据优先级获取颜色资源ID
-     * @param priority 优先级
-     * @return 颜色资源ID
      */
     fun getPriorityColorRes(priority: Int): Int {
-        return when (priority) {
-            in 1..3 -> R.color.priority_high
-            in 4..6 -> R.color.priority_medium
-            in 7..9 -> R.color.priority_low
-            else -> R.color.priority_default
+        return when (PriorityUtils.getPriorityLevel(priority)) {
+            PriorityUtils.PriorityLevel.HIGH -> R.color.priority_high
+            PriorityUtils.PriorityLevel.MEDIUM -> R.color.priority_medium
+            PriorityUtils.PriorityLevel.LOW -> R.color.priority_low
+            PriorityUtils.PriorityLevel.NONE -> R.color.priority_default
         }
     }
-    
+
     /**
      * 根据优先级获取优先级文本
-     * @param priority 优先级
-     * @return 优先级文本
+     * 委托给 shared/core PriorityUtils
      */
-    fun getPriorityText(priority: Int): String {
-        return when (priority) {
-            in 1..3 -> "高"
-            in 4..6 -> "中"
-            in 7..9 -> "低"
-            else -> "未设置"
-        }
-    }
+    fun getPriorityText(priority: Int): String = PriorityUtils.getPriorityText(priority)
 }

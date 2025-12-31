@@ -12,8 +12,8 @@ import androidx.fragment.app.viewModels
 import com.example.daymate.R
 import com.example.daymate.data.CalendarDatabase
 import com.example.daymate.data.Event
-import com.example.daymate.data.EventStatus
-import com.example.daymate.data.Transparency
+import com.example.daymate.shared.core.models.EventStatus
+import com.example.daymate.shared.core.models.Transparency
 import com.example.daymate.databinding.DialogAddEditEventBinding
 import com.example.daymate.repository.EventRepository
 import com.example.daymate.utils.PriorityColorUtils

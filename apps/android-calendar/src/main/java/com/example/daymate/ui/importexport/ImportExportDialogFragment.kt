@@ -159,7 +159,8 @@ class ImportExportDialogFragment : DialogFragment() {
                 }
                 
                 withContext(Dispatchers.IO) {
-                    val content = com.example.daymate.utils.ICalendarUtils.exportToICalendar(events)
+                    val simpleEvents = events.map { it.toSimpleCalendarEvent() }
+                    val content = com.example.daymate.shared.core.utils.ICalendarUtils.exportToICalendar(simpleEvents)
                     requireContext().contentResolver.openOutputStream(uri)?.use { outputStream ->
                         outputStream.write(content.toByteArray())
                     }
