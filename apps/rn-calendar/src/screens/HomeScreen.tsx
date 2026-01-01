@@ -63,6 +63,12 @@ const HomeScreen = () => {
         setSelectedDate(day.dateString);
     }, []);
 
+    // 月份切换时更新选中日期为该月第一天
+    const onMonthChange = useCallback((month: any) => {
+        const newDate = month.dateString;
+        setSelectedDate(newDate);
+    }, []);
+
     const shiftSelectedDate = (deltaDays: number) => {
         try {
             const base = selectedDate || today;
@@ -533,6 +539,7 @@ const HomeScreen = () => {
                         <Calendar
                             current={selectedDate}
                             onDayPress={onDayPress}
+                            onMonthChange={onMonthChange}
                             markedDates={markedDates}
                             theme={calendarTheme}
                             dayComponent={renderDay}

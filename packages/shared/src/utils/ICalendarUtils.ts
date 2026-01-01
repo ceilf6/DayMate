@@ -198,8 +198,8 @@ function parseEventFromMap(eventData: Record<string, string>): CalendarEvent | n
     const transparency: EventTransparency =
         eventData['TRANSP'] === 'TRANSPARENT' ? 'transparent' : 'opaque';
 
-    // 生成ID
-    const id = eventData['UID']?.replace('@daymate.local', '') || generateId();
+    // 始终生成新 ID，避免重复导入时 key 冲突
+    const id = generateId();
 
     const now = new Date().toISOString();
 
