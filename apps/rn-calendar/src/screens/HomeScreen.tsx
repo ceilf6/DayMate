@@ -38,12 +38,14 @@ import '../services/CalendarLocale';
 import AddEventModal from '../components/AddEventModal';
 import EventDetailModal from '../components/EventDetailModal';
 import ImportExportModal from '../components/ImportExportModal';
-import LanguageModal from '../components/LanguageModal';
+import SettingsModal from '../components/SettingsModal';
 import { useI18n } from '../contexts/I18nContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
     const { t, currentLanguage } = useI18n();
+    const { colors } = useTheme();
 
     type ViewMode = 'month' | 'week' | 'day';
     const today = useMemo(() => getToday(), []);
@@ -57,7 +59,7 @@ const HomeScreen = () => {
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
     const [detailEvent, setDetailEvent] = useState<CalendarEvent | null>(null);
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
-    const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
+    const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
@@ -356,15 +358,15 @@ const HomeScreen = () => {
             backgroundColor: 'transparent',
             calendarBackground: 'transparent',
 
-            textSectionTitleColor: isDarkMode ? '#A1A1AA' : '#6B7280',
-            monthTextColor: isDarkMode ? '#F4F4F5' : '#111827',
-            arrowColor: isDarkMode ? '#F4F4F5' : '#111827',
+            textSectionTitleColor: colors.textSecondary,
+            monthTextColor: colors.textPrimary,
+            arrowColor: colors.textPrimary,
 
-            selectedDayBackgroundColor: '#2196F3',
+            selectedDayBackgroundColor: colors.primary,
             selectedDayTextColor: '#ffffff',
-            todayTextColor: '#2196F3',
-            dayTextColor: isDarkMode ? '#E5E7EB' : '#111827',
-            textDisabledColor: isDarkMode ? '#52525B' : '#D1D5DB',
+            todayTextColor: colors.primary,
+            dayTextColor: colors.textPrimary,
+            textDisabledColor: colors.textDisabled,
 
             textDayFontSize: 15,
             textDayFontWeight: calendarDayFontWeight,
@@ -373,7 +375,7 @@ const HomeScreen = () => {
             textMonthFontSize: 17,
             textMonthFontWeight: '700',
         }),
-        [calendarDayFontWeight, isDarkMode],
+        [calendarDayFontWeight, colors],
     );
 
     // 获取当前选中日期的农历信息
@@ -417,19 +419,18 @@ const HomeScreen = () => {
                     onPress={() => onDayPress({ dateString })}
                     style={[
                         styles.dayContainer,
-                        isSelected && styles.dayContainerSelected,
-                        isToday && !isSelected && styles.dayContainerToday,
+                        isSelected && [styles.dayContainerSelected, { backgroundColor: colors.primary }],
+                        isToday && !isSelected && [styles.dayContainerToday, { backgroundColor: colors.primaryLight }],
                     ]}
                     activeOpacity={0.7}
                 >
                     <Text
                         style={[
                             styles.dayText,
-                            isDarkMode && styles.dayTextDark,
+                            { color: colors.textPrimary },
                             isSelected && styles.dayTextSelected,
-                            isToday && !isSelected && styles.dayTextToday,
-                            isDisabled && styles.dayTextDisabled,
-                            isDisabled && isDarkMode && styles.dayTextDisabledDark,
+                            isToday && !isSelected && [styles.dayTextToday, { color: colors.primary }],
+                            isDisabled && [styles.dayTextDisabled, { color: colors.textDisabled }],
                         ]}
                     >
                         {date.day}
@@ -437,11 +438,10 @@ const HomeScreen = () => {
                     <Text
                         style={[
                             styles.lunarText,
-                            isDarkMode && styles.lunarTextDark,
+                            { color: colors.textTertiary },
                             isSelected && styles.lunarTextSelected,
-                            isToday && !isSelected && styles.lunarTextToday,
-                            isDisabled && styles.lunarTextDisabled,
-                            isDisabled && isDarkMode && styles.lunarTextDisabledDark,
+                            isToday && !isSelected && [styles.lunarTextToday, { color: colors.primary }],
+                            isDisabled && [styles.lunarTextDisabled, { color: colors.textDisabled }],
                             isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
                             !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
                         ]}
@@ -450,7 +450,7 @@ const HomeScreen = () => {
                         {lunarText}
                     </Text>
                     {hasEvent && !isSelected && (
-                        <View style={styles.eventDot} />
+                        <View style={[styles.eventDot, { backgroundColor: colors.primary }]} />
                     )}
                 </TouchableOpacity>
             );
@@ -458,7 +458,7 @@ const HomeScreen = () => {
     }, [selectedDate, today, isDarkMode, eventsByDate, onDayPress]);
 
     return (
-        <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
                 {/* <View style={styles.header}>
                     <Text style={[styles.title, isDarkMode && styles.textDark]}>
@@ -472,42 +472,41 @@ const HomeScreen = () => {
                 {/* 顶部操作栏 */}
                 <View style={styles.topActionRow}>
                     <TouchableOpacity
-                        onPress={() => setIsLanguageModalVisible(true)}
-                        style={[styles.settingsButton, isDarkMode && styles.settingsButtonDark]}
+                        onPress={() => setIsSettingsModalVisible(true)}
+                        style={[styles.settingsButton, { backgroundColor: colors.backgroundTertiary }]}
                         accessibilityRole="button">
-                        <Text style={[styles.settingsIcon, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={styles.settingsIcon}>
                             ⚙️
                         </Text>
-                        <Text style={[styles.settingsButtonText, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={[styles.settingsButtonText, { color: colors.textPrimary }]}>
                             {t('settings.title')}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={openImportExportModal}
-                        style={[styles.importExportButton, isDarkMode && styles.importExportButtonDark]}
+                        style={[styles.importExportButton, { backgroundColor: colors.backgroundTertiary }]}
                         accessibilityRole="button">
-                        <Text style={[styles.importExportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={[styles.importExportButtonText, { color: colors.textPrimary }]}>
                             {t('importExport.title')}
                         </Text>
                     </TouchableOpacity>
                 </View>
 
-                <View style={[styles.viewModeRow, isDarkMode && styles.viewModeRowDark]}>
+                <View style={[styles.viewModeRow, { backgroundColor: colors.backgroundSecondary }]}>
                     <TouchableOpacity
                         onPress={() => setViewMode('month')}
                         accessibilityRole="button"
                         style={[
                             styles.viewModeButton,
-                            isDarkMode && styles.viewModeButtonDark,
                             viewMode === 'month' && styles.viewModeButtonActive,
-                            isDarkMode && viewMode === 'month' && styles.viewModeButtonActiveDark,
+                            viewMode === 'month' && { backgroundColor: colors.surface },
                         ]}>
                         <Text
                             style={[
                                 styles.viewModeButtonText,
-                                isDarkMode && styles.viewModeButtonTextDark,
+                                { color: colors.textSecondary },
                                 viewMode === 'month' && styles.viewModeButtonTextActive,
-                                isDarkMode && viewMode === 'month' && styles.viewModeButtonTextActiveDark,
+                                viewMode === 'month' && { color: colors.textPrimary },
                             ]}>
                             月
                         </Text>
@@ -517,16 +516,15 @@ const HomeScreen = () => {
                         accessibilityRole="button"
                         style={[
                             styles.viewModeButton,
-                            isDarkMode && styles.viewModeButtonDark,
                             viewMode === 'week' && styles.viewModeButtonActive,
-                            isDarkMode && viewMode === 'week' && styles.viewModeButtonActiveDark,
+                            viewMode === 'week' && { backgroundColor: colors.surface },
                         ]}>
                         <Text
                             style={[
                                 styles.viewModeButtonText,
-                                isDarkMode && styles.viewModeButtonTextDark,
+                                { color: colors.textSecondary },
                                 viewMode === 'week' && styles.viewModeButtonTextActive,
-                                isDarkMode && viewMode === 'week' && styles.viewModeButtonTextActiveDark,
+                                viewMode === 'week' && { color: colors.textPrimary },
                             ]}>
                             周
                         </Text>
@@ -536,16 +534,15 @@ const HomeScreen = () => {
                         accessibilityRole="button"
                         style={[
                             styles.viewModeButton,
-                            isDarkMode && styles.viewModeButtonDark,
                             viewMode === 'day' && styles.viewModeButtonActive,
-                            isDarkMode && viewMode === 'day' && styles.viewModeButtonActiveDark,
+                            viewMode === 'day' && { backgroundColor: colors.surface },
                         ]}>
                         <Text
                             style={[
                                 styles.viewModeButtonText,
-                                isDarkMode && styles.viewModeButtonTextDark,
+                                { color: colors.textSecondary },
                                 viewMode === 'day' && styles.viewModeButtonTextActive,
-                                isDarkMode && viewMode === 'day' && styles.viewModeButtonTextActiveDark,
+                                viewMode === 'day' && { color: colors.textPrimary },
                             ]}>
                             日
                         </Text>
@@ -554,11 +551,11 @@ const HomeScreen = () => {
 
                 {/* 农历信息显示 */}
                 {lunarInfo && (
-                    <View style={[styles.lunarInfoCard, isDarkMode && styles.lunarInfoCardDark]}>
-                        <Text style={[styles.lunarInfoYear, isDarkMode && styles.textPrimaryDark]}>
+                    <View style={[styles.lunarInfoCard, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
                             {lunarInfo.yearInfo}
                         </Text>
-                        <Text style={[styles.lunarInfoDate, isDarkMode && styles.textSecondaryDark]}>
+                        <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
                             {lunarInfo.monthInfo}
                             {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
                         </Text>
@@ -566,31 +563,31 @@ const HomeScreen = () => {
                 )}
 
                 {viewMode === 'day' ? (
-                    <View style={[styles.dayNavRow, isDarkMode && styles.dayNavRowDark]}>
+                    <View style={[styles.dayNavRow, { backgroundColor: colors.surface }]}>
                         <TouchableOpacity
                             onPress={() => shiftSelectedDate(-1)}
                             accessibilityRole="button"
-                            style={[styles.dayNavButton, isDarkMode && styles.dayNavButtonDark]}>
-                            <Text style={[styles.dayNavButtonText, isDarkMode && styles.textPrimaryDark]}>
+                            style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                            <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
                                 {t('calendar.previousDay')}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.dayNavTitleContainer}>
-                            <Text style={[styles.dayNavTitle, isDarkMode && styles.textPrimaryDark]}>
+                            <Text style={[styles.dayNavTitle, { color: colors.textPrimary }]}>
                                 {selectedDate}
                             </Text>
                         </View>
                         <TouchableOpacity
                             onPress={() => shiftSelectedDate(1)}
                             accessibilityRole="button"
-                            style={[styles.dayNavButton, isDarkMode && styles.dayNavButtonDark]}>
-                            <Text style={[styles.dayNavButtonText, isDarkMode && styles.textPrimaryDark]}>
+                            style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                            <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
                                 {t('calendar.nextDay')}
                             </Text>
                         </TouchableOpacity>
                     </View>
                 ) : viewMode === 'week' ? (
-                    <View style={[styles.calendarCard, isDarkMode && styles.calendarCardDark]}>
+                    <View style={[styles.calendarCard, { backgroundColor: colors.surface }]}>
                         <CalendarProvider date={selectedDate} onDateChanged={setSelectedDate}>
                             <WeekCalendar
                                 key={`week-${currentLanguage}`}
@@ -601,7 +598,7 @@ const HomeScreen = () => {
                         </CalendarProvider>
                     </View>
                 ) : (
-                    <View style={[styles.calendarCard, isDarkMode && styles.calendarCardDark]}>
+                    <View style={[styles.calendarCard, { backgroundColor: colors.surface }]}>
                         <Calendar
                             key={`month-${currentLanguage}`}
                             current={selectedDate}
@@ -618,11 +615,11 @@ const HomeScreen = () => {
                 {selectedDate ? (
                     <View style={styles.eventSection}>
                         <View style={styles.eventHeaderRow}>
-                            <Text style={[styles.eventTitle, isDarkMode && styles.textPrimaryDark]}>
+                            <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
                                 {t('event.eventsOnDate', { date: selectedDate })}
                             </Text>
                             <TouchableOpacity
-                                style={[styles.addButton, isDarkMode && styles.addButtonDark]}
+                                style={[styles.addButton, { backgroundColor: colors.primary }]}
                                 onPress={openAddModal}
                                 accessibilityRole="button">
                                 <Text style={styles.addButtonText}>{t('event.addEvent')}</Text>
@@ -630,8 +627,8 @@ const HomeScreen = () => {
                         </View>
 
                         {selectedEvents.length === 0 ? (
-                            <View style={[styles.eventCard, isDarkMode && styles.eventCardDark]}>
-                                <Text style={[styles.eventText, isDarkMode && styles.textSecondaryDark]}>
+                            <View style={[styles.eventCard, { backgroundColor: colors.surface }]}>
+                                <Text style={[styles.eventText, { color: colors.textSecondary }]}>
                                     {t('event.noEvents')}
                                 </Text>
                             </View>
@@ -645,7 +642,7 @@ const HomeScreen = () => {
                                     return (
                                         <TouchableOpacity
                                             key={event.id}
-                                            style={[styles.eventItem, isDarkMode && styles.eventItemDark]}
+                                            style={[styles.eventItem, { backgroundColor: colors.surface }]}
                                             onPress={() => openDetailModal(event)}
                                             accessibilityRole="button">
                                             {/* 优先级指示条 */}
@@ -660,7 +657,7 @@ const HomeScreen = () => {
                                                     <Text
                                                         style={[
                                                             styles.eventItemTitle,
-                                                            isDarkMode && styles.textPrimaryDark,
+                                                            { color: colors.textPrimary },
                                                             highPriority && { color: priorityColors.background },
                                                         ]}
                                                         numberOfLines={1}>
@@ -675,7 +672,7 @@ const HomeScreen = () => {
                                                 <Text
                                                     style={[
                                                         styles.eventItemMeta,
-                                                        isDarkMode && styles.textSecondaryDark,
+                                                        { color: colors.textSecondary },
                                                     ]}
                                                     numberOfLines={1}>
                                                     {(event.startTime || event.endTime)
@@ -686,7 +683,7 @@ const HomeScreen = () => {
                                                     <Text
                                                         style={[
                                                             styles.eventItemMeta,
-                                                            isDarkMode && styles.textSecondaryDark,
+                                                            { color: colors.textSecondary },
                                                         ]}
                                                         numberOfLines={1}>
                                                         {t('event.reminder')}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes })}
@@ -696,7 +693,7 @@ const HomeScreen = () => {
                                                     <Text
                                                         style={[
                                                             styles.eventItemNotes,
-                                                            isDarkMode && styles.textSecondaryDark,
+                                                            { color: colors.textSecondary },
                                                         ]}
                                                         numberOfLines={2}>
                                                         {event.description}
@@ -735,9 +732,9 @@ const HomeScreen = () => {
                     onImportFromText={handleImportFromText}
                 />
 
-                <LanguageModal
-                    visible={isLanguageModalVisible}
-                    onClose={() => setIsLanguageModalVisible(false)}
+                <SettingsModal
+                    visible={isSettingsModalVisible}
+                    onClose={() => setIsSettingsModalVisible(false)}
                 />
             </ScrollView>
         </SafeAreaView>
@@ -747,10 +744,6 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F2F2F7',
-    },
-    containerDark: {
-        backgroundColor: '#0B0B0F',
     },
     header: {
         padding: 20,
@@ -773,10 +766,6 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         padding: 4,
         borderRadius: 12,
-        backgroundColor: '#E5E7EB',
-    },
-    viewModeRowDark: {
-        backgroundColor: '#27272A',
     },
     viewModeButton: {
         flex: 1,
@@ -789,36 +778,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     viewModeButtonActive: {
-        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.06,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 6 },
         elevation: 2,
     },
-    viewModeButtonActiveDark: {
-        backgroundColor: '#1C1C1E',
-    },
     viewModeButtonText: {
         fontSize: 13,
         lineHeight: 18,
         fontWeight: '600',
-        color: '#374151',
-    },
-    viewModeButtonTextDark: {
-        color: '#E5E7EB',
     },
     viewModeButtonTextActive: {
-        color: '#111827',
         fontWeight: '700',
-    },
-    viewModeButtonTextActiveDark: {
-        color: '#F4F4F5',
     },
     calendarCard: {
         marginHorizontal: 12,
         borderRadius: 16,
-        backgroundColor: '#FFFFFF',
         paddingVertical: 8,
         paddingHorizontal: 8,
         shadowColor: '#000000',
@@ -826,9 +802,6 @@ const styles = StyleSheet.create({
         shadowRadius: 14,
         shadowOffset: { width: 0, height: 8 },
         elevation: 2,
-    },
-    calendarCardDark: {
-        backgroundColor: '#141418',
     },
     dayNavRow: {
         flexDirection: 'row',
@@ -839,7 +812,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         borderRadius: 16,
-        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.06,
         shadowRadius: 14,
@@ -847,23 +819,15 @@ const styles = StyleSheet.create({
         elevation: 2,
         gap: 10,
     },
-    dayNavRowDark: {
-        backgroundColor: '#141418',
-    },
     dayNavButton: {
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 8,
-        backgroundColor: '#F3F4F6',
-    },
-    dayNavButtonDark: {
-        backgroundColor: '#1C1C1E',
     },
     dayNavButtonText: {
         fontSize: 13,
         lineHeight: 18,
         fontWeight: '600',
-        color: '#111827',
     },
     dayNavTitle: {
         flex: 1,
@@ -871,15 +835,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 20,
         fontWeight: '700',
-        color: '#111827',
     },
 
-    textPrimaryDark: {
-        color: '#F4F4F5',
-    },
-    textSecondaryDark: {
-        color: '#A1A1AA',
-    },
     eventSection: {
         paddingHorizontal: 12,
         paddingTop: 16,
@@ -895,16 +852,11 @@ const styles = StyleSheet.create({
         fontSize: 17,
         lineHeight: 22,
         fontWeight: '700',
-        color: '#111827',
     },
     addButton: {
         paddingHorizontal: 12,
         paddingVertical: 8,
-        backgroundColor: '#2196F3',
         borderRadius: 8,
-    },
-    addButtonDark: {
-        backgroundColor: '#2196F3',
     },
     addButtonText: {
         color: '#ffffff',
@@ -913,7 +865,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     eventCard: {
-        backgroundColor: '#FFFFFF',
         padding: 16,
         borderRadius: 16,
         shadowColor: '#000000',
@@ -922,13 +873,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 8 },
         elevation: 2,
     },
-    eventCardDark: {
-        backgroundColor: '#141418',
-    },
     eventText: {
         fontSize: 14,
         lineHeight: 20,
-        color: '#6B7280',
     },
 
     eventList: {
@@ -936,7 +883,6 @@ const styles = StyleSheet.create({
     },
     eventItem: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
         borderRadius: 14,
         shadowColor: '#000000',
         shadowOpacity: 0.05,
@@ -944,9 +890,6 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 6 },
         elevation: 1,
         overflow: 'hidden',
-    },
-    eventItemDark: {
-        backgroundColor: '#141418',
     },
     priorityIndicator: {
         width: 4,
@@ -972,18 +915,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 22,
         fontWeight: '600',
-        color: '#111827',
     },
     eventItemMeta: {
         fontSize: 13,
         lineHeight: 18,
-        color: '#6B7280',
     },
     eventItemNotes: {
         marginTop: 8,
         fontSize: 13,
         lineHeight: 18,
-        color: '#6B7280',
     },
 
     detailRow: {
@@ -992,14 +932,12 @@ const styles = StyleSheet.create({
     detailLabel: {
         fontSize: 12,
         lineHeight: 16,
-        color: '#6B7280',
         marginBottom: 4,
         fontWeight: '600',
     },
     detailValue: {
         fontSize: 14,
         lineHeight: 20,
-        color: '#111827',
     },
     priorityDetailRow: {
         flexDirection: 'row',
@@ -1013,7 +951,6 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
-        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.04,
         shadowRadius: 8,
@@ -1023,17 +960,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    lunarInfoCardDark: {
-        backgroundColor: '#141418',
-    },
     lunarInfoYear: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#111827',
     },
     lunarInfoDate: {
         fontSize: 13,
-        color: '#6B7280',
     },
 
     // 日期导航标题容器
@@ -1051,52 +983,32 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     dayContainerSelected: {
-        backgroundColor: '#2196F3',
     },
     dayContainerToday: {
-        backgroundColor: 'rgba(33, 150, 243, 0.15)',
     },
     dayText: {
         fontSize: 16,
         fontWeight: '500',
-        color: '#111827',
         marginBottom: 2,
-    },
-    dayTextDark: {
-        color: '#E5E7EB',
     },
     dayTextSelected: {
         color: '#FFFFFF',
         fontWeight: '600',
     },
     dayTextToday: {
-        color: '#2196F3',
         fontWeight: '600',
     },
     dayTextDisabled: {
-        color: '#D1D5DB',
-    },
-    dayTextDisabledDark: {
-        color: '#52525B',
     },
     lunarText: {
         fontSize: 10,
-        color: '#9CA3AF',
-    },
-    lunarTextDark: {
-        color: '#71717A',
     },
     lunarTextSelected: {
         color: 'rgba(255, 255, 255, 0.85)',
     },
     lunarTextToday: {
-        color: '#2196F3',
     },
     lunarTextDisabled: {
-        color: '#D1D5DB',
-    },
-    lunarTextDisabledDark: {
-        color: '#3F3F46',
     },
     lunarTextHoliday: {
         color: '#EF4444',
@@ -1110,7 +1022,6 @@ const styles = StyleSheet.create({
         width: 4,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#2196F3',
     },
 
     // 顶部操作栏样式
@@ -1132,11 +1043,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 8,
-        backgroundColor: '#F3F4F6',
         gap: 6,
-    },
-    settingsButtonDark: {
-        backgroundColor: '#1C1C1E',
     },
     settingsIcon: {
         fontSize: 16,
@@ -1144,21 +1051,15 @@ const styles = StyleSheet.create({
     settingsButtonText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#374151',
     },
     importExportButton: {
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 8,
-        backgroundColor: '#F3F4F6',
-    },
-    importExportButtonDark: {
-        backgroundColor: '#1C1C1E',
     },
     importExportButtonText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#374151',
     },
 });
 

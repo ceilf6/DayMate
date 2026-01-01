@@ -4,10 +4,21 @@
     - commit 7291729
         - 基本要求: 三视图, 日程管理, 日程提醒
         - monorepo架构: React Native + Android Java
-        - 农历支持等等
+        - 农历支持
+        - iCalendar支持
+        - 事件优先级管理等等
 
 | 老师通知延迟到 1.23
 
 - 12.31
     - f806502
         - 图标支持
+    - faed3a9f729e248f518070cca2df49c73ef8af11
+        - iCalendar导入上提，RN侧复用
+        - 事件优先级管理上提，RN侧复用
+
+- 1.1
+    - 87621c3a4887abab8db2270ce9ab13dad19a4624
+        - 语言设置-国际化支持
+    - 
+        - 主题色设置支持

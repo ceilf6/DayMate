@@ -10,8 +10,9 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// 导入国际化 Provider
+// 导入 Provider
 import { I18nProvider, useI18n } from './src/contexts/I18nContext';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 
 // 导入屏幕组件
 import HomeScreen from './src/screens/HomeScreen';
@@ -21,6 +22,7 @@ const Stack = createNativeStackNavigator();
 function AppContent(): JSX.Element {
     const isDarkMode = useColorScheme() === 'dark';
     const { isReady } = useI18n();
+    const { colors } = useTheme();
 
     // Memoize screen options to prevent re-creation on every render
     const screenOptions = useMemo(() => ({
@@ -34,8 +36,8 @@ function AppContent(): JSX.Element {
     // 等待 i18n 初始化
     if (!isReady) {
         return (
-            <View style={[styles.loading, isDarkMode && styles.loadingDark]}>
-                <ActivityIndicator size="large" color="#2196F3" />
+            <View style={[styles.loading, { backgroundColor: colors.background }]}>
+                <ActivityIndicator size="large" color={colors.primary} />
             </View>
         );
     }
@@ -58,9 +60,11 @@ function AppContent(): JSX.Element {
 
 function App(): JSX.Element {
     return (
-        <I18nProvider>
-            <AppContent />
-        </I18nProvider>
+        <ThemeProvider>
+            <I18nProvider>
+                <AppContent />
+            </I18nProvider>
+        </ThemeProvider>
     );
 }
 
@@ -69,10 +73,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F2F2F7',
-    },
-    loadingDark: {
-        backgroundColor: '#0B0B0F',
     },
 });
 
