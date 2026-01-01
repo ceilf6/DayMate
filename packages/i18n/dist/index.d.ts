@@ -21,6 +21,10 @@ export declare const resources: {
                 allDay: string;
                 previousDay: string;
                 nextDay: string;
+                monthNames: string[];
+                monthNamesShort: string[];
+                dayNames: string[];
+                dayNamesShort: string[];
             };
             event: {
                 title: string;
@@ -118,6 +122,10 @@ export declare const resources: {
                 allDay: string;
                 previousDay: string;
                 nextDay: string;
+                monthNames: string[];
+                monthNamesShort: string[];
+                dayNames: string[];
+                dayNamesShort: string[];
             };
             event: {
                 title: string;
@@ -215,6 +223,10 @@ export declare const resources: {
                 allDay: string;
                 previousDay: string;
                 nextDay: string;
+                monthNames: string[];
+                monthNamesShort: string[];
+                dayNames: string[];
+                dayNamesShort: string[];
             };
             event: {
                 title: string;
