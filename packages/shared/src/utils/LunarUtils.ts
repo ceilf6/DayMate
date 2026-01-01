@@ -3,6 +3,23 @@
  * 支持1900年到2100年的公历与农历互转
  */
 
+// LRU 缓存实现，避免重复计算
+const LUNAR_CACHE_SIZE = 100;
+const lunarCache = new Map<string, LunarDate>();
+
+function getCachedLunar(dateString: string): LunarDate | undefined {
+    return lunarCache.get(dateString);
+}
+
+function setCachedLunar(dateString: string, lunar: LunarDate): void {
+    if (lunarCache.size >= LUNAR_CACHE_SIZE) {
+        // 删除最早的条目
+        const firstKey = lunarCache.keys().next().value;
+        if (firstKey) lunarCache.delete(firstKey);
+    }
+    lunarCache.set(dateString, lunar);
+}
+
 /**
  * 农历数据表（1900-2100年）
  * 每个整数包含的信息：
@@ -205,6 +222,10 @@ export function getSolarTerm(year: number, month: number, day: number): string |
  * @param dateString 日期字符串，格式：yyyy-MM-dd
  */
 export function solarToLunar(dateString: string): LunarDate {
+    // 检查缓存
+    const cached = getCachedLunar(dateString);
+    if (cached) return cached;
+
     const parts = dateString.split('-');
     const year = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10);
@@ -212,7 +233,9 @@ export function solarToLunar(dateString: string): LunarDate {
 
     // 验证范围
     if (year < 1900 || year > 2100) {
-        return createDefaultLunarDate(year, month, day);
+        const result = createDefaultLunarDate(year, month, day);
+        setCachedLunar(dateString, result);
+        return result;
     }
 
     // 计算距离1900年1月31日（农历1900年正月初一）的天数
@@ -221,7 +244,9 @@ export function solarToLunar(dateString: string): LunarDate {
     let offset = daysBetween(baseDate, solarDate);
 
     if (offset < 0) {
-        return createDefaultLunarDate(year, month, day);
+        const result = createDefaultLunarDate(year, month, day);
+        setCachedLunar(dateString, result);
+        return result;
     }
 
     // 计算农历年份
@@ -278,7 +303,7 @@ export function solarToLunar(dateString: string): LunarDate {
     // 节气
     const solarTerm = getSolarTerm(year, month, day);
 
-    return {
+    const result: LunarDate = {
         year: lunarYear,
         month: lunarMonth,
         day: lunarDay,
@@ -289,6 +314,11 @@ export function solarToLunar(dateString: string): LunarDate {
         dayStr,
         solarTerm
     };
+
+    // 存入缓存
+    setCachedLunar(dateString, result);
+
+    return result;
 }
 
 /**
@@ -420,6 +450,13 @@ export function getShengXiao(year: number): string {
  */
 export function getGanZhi(year: number): string {
     return getGanZhiYear(year);
+}
+
+/**
+ * 清除农历缓存（用于测试或内存管理）
+ */
+export function clearLunarCache(): void {
+    lunarCache.clear();
 }
 
 export default {

@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    Alert,
     Platform,
     SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     View,
-    Modal,
     TouchableOpacity,
     useColorScheme,
 } from 'react-native';
@@ -24,8 +21,6 @@ import {
     getToday,
     addDays,
     // Priority Utils
-    getPriorityColors,
-    getPriorityText,
     comparePriority,
 } from '@daymate/shared';
 import { EventStorage } from '../services/EventStorage';
@@ -33,6 +28,9 @@ import { ReminderService } from '../services/ReminderService';
 import { ImportExportService } from '../services/ImportExportService';
 import DayCell from '../components/DayCell';
 import EventItem from '../components/EventItem';
+import AddEventModal from '../components/AddEventModal';
+import EventDetailModal from '../components/EventDetailModal';
+import ImportExportModal from '../components/ImportExportModal';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -44,23 +42,11 @@ const HomeScreen = () => {
     const [selectedDate, setSelectedDate] = useState(today);
     const [eventsByDate, setEventsByDate] = useState<Record<string, CalendarEvent[]>>({});
 
+    // Modal visibility states
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-    const [newTitle, setNewTitle] = useState('');
-    const [newStartTime, setNewStartTime] = useState('');
-    const [newEndTime, setNewEndTime] = useState('');
-    const [newNotes, setNewNotes] = useState('');
-    const [newReminderMinutes, setNewReminderMinutes] = useState('');
-    const [newPriority, setNewPriority] = useState<number>(0);
-    const [formError, setFormError] = useState('');
-
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
     const [detailEvent, setDetailEvent] = useState<CalendarEvent | null>(null);
-    const [detailError, setDetailError] = useState('');
-
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
-    const [importContent, setImportContent] = useState('');
-    const [importExportError, setImportExportError] = useState('');
-    const [importExportSuccess, setImportExportSuccess] = useState('');
 
     useEffect(() => {
         let isMounted = true;
@@ -121,176 +107,42 @@ const HomeScreen = () => {
         return marks;
     }, [eventsByDate, selectedDate]);
 
-    const openAddModal = () => {
+    // Modal handlers
+    const openAddModal = useCallback(() => {
         if (!selectedDate) return;
-        setFormError('');
-        setNewTitle('');
-        setNewStartTime('');
-        setNewEndTime('');
-        setNewNotes('');
-        setNewReminderMinutes('');
-        setNewPriority(0);
         setIsAddModalVisible(true);
-    };
+    }, [selectedDate]);
 
-    const closeAddModal = () => {
+    const closeAddModal = useCallback(() => {
         setIsAddModalVisible(false);
-        setFormError('');
-    };
+    }, []);
 
     const openDetailModal = useCallback((event: CalendarEvent) => {
-        setDetailError('');
         setDetailEvent(event);
         setIsDetailModalVisible(true);
     }, []);
 
-    const closeDetailModal = () => {
+    const closeDetailModal = useCallback(() => {
         setIsDetailModalVisible(false);
         setDetailEvent(null);
-        setDetailError('');
-    };
+    }, []);
 
-    const openImportExportModal = () => {
-        setImportContent('');
-        setImportExportError('');
-        setImportExportSuccess('');
+    const openImportExportModal = useCallback(() => {
         setIsImportExportModalVisible(true);
-    };
+    }, []);
 
-    const closeImportExportModal = () => {
+    const closeImportExportModal = useCallback(() => {
         setIsImportExportModalVisible(false);
-        setImportContent('');
-        setImportExportError('');
-        setImportExportSuccess('');
-    };
+    }, []);
 
-    const getAllEvents = (): CalendarEvent[] => {
+    // Event handlers for modals
+    const getAllEvents = useCallback((): CalendarEvent[] => {
         const allEvents: CalendarEvent[] = [];
         for (const dateEvents of Object.values(eventsByDate)) {
             allEvents.push(...dateEvents);
         }
         return allEvents;
-    };
-
-    const onExportShare = async () => {
-        const events = getAllEvents();
-        if (events.length === 0) {
-            setImportExportError('没有可导出的日程');
-            return;
-        }
-        const success = await ImportExportService.shareEvents(events);
-        if (success) {
-            setImportExportSuccess('导出成功！');
-        }
-    };
-
-    const onExportCopy = async () => {
-        const events = getAllEvents();
-        if (events.length === 0) {
-            setImportExportError('没有可导出的日程');
-            return;
-        }
-        await ImportExportService.copyToClipboard(events);
-        setImportExportSuccess('已复制到剪贴板！');
-    };
-
-    const onImportFromClipboard = async () => {
-        try {
-            const events = await ImportExportService.importFromClipboard();
-            if (events.length === 0) {
-                setImportExportError('剪贴板中没有有效的日历数据');
-                return;
-            }
-            await saveImportedEvents(events);
-        } catch {
-            setImportExportError('导入失败，请检查数据格式');
-        }
-    };
-
-    const onImportFromText = async () => {
-        if (!importContent.trim()) {
-            setImportExportError('请输入 iCalendar 数据');
-            return;
-        }
-        try {
-            const events = ImportExportService.importFromContent(importContent);
-            if (events.length === 0) {
-                setImportExportError('没有找到有效的日程数据');
-                return;
-            }
-            await saveImportedEvents(events);
-        } catch {
-            setImportExportError('导入失败，请检查数据格式');
-        }
-    };
-
-    const saveImportedEvents = async (events: CalendarEvent[]) => {
-        let savedCount = 0;
-        for (const event of events) {
-            try {
-                await EventStorage.addEvent({
-                    date: event.date,
-                    title: event.title,
-                    description: event.description,
-                    location: event.location,
-                    startTime: event.startTime,
-                    endTime: event.endTime,
-                    allDay: event.allDay,
-                    reminderMinutes: event.reminderMinutes,
-                    category: event.category,
-                    priority: event.priority,
-                });
-                savedCount++;
-            } catch {
-                // ignore individual failures
-            }
-        }
-
-        // 刷新事件列表
-        const all = await EventStorage.getAllEventsByDate();
-        setEventsByDate(all);
-
-        setImportExportSuccess(`成功导入 ${savedCount} 条日程！`);
-        setImportContent('');
-    };
-
-    const onDeleteEvent = async () => {
-        if (!detailEvent) return;
-
-        Alert.alert('删除日程', '确定要删除这条日程吗？', [
-            { text: '取消', style: 'cancel' },
-            {
-                text: '删除',
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        if (detailEvent.notificationId) {
-                            await ReminderService.cancelReminder(detailEvent.notificationId);
-                        }
-
-                        const deleted = await EventStorage.deleteEvent(detailEvent.date, detailEvent.id);
-                        if (!deleted) {
-                            setDetailError('删除失败（未找到该日程）');
-                            return;
-                        }
-
-                        setEventsByDate(prev => {
-                            const next = { ...prev };
-                            const list = next[deleted.date] ?? [];
-                            const filtered = list.filter(e => e.id !== deleted.id);
-                            if (filtered.length === 0) delete next[deleted.date];
-                            else next[deleted.date] = filtered;
-                            return next;
-                        });
-
-                        closeDetailModal();
-                    } catch {
-                        setDetailError('删除失败，请重试');
-                    }
-                },
-            },
-        ]);
-    };
+    }, [eventsByDate]);
 
     const isValidTime = (value: string): boolean => {
         const trimmed = value.trim();
@@ -298,74 +150,188 @@ const HomeScreen = () => {
         return /^([01]\d|2[0-3]):[0-5]\d$/.test(trimmed);
     };
 
-    const onSaveNewEvent = async () => {
-        if (!selectedDate) return;
-        const title = newTitle.trim();
-        if (!title) {
-            setFormError('请输入标题');
-            return;
+    const handleSaveEvent = useCallback(async (data: {
+        title: string;
+        startTime: string;
+        endTime: string;
+        notes: string;
+        reminderMinutes: string;
+        priority: number;
+    }): Promise<string | null> => {
+        if (!selectedDate) return '未选择日期';
+
+        const title = data.title.trim();
+        if (!title) return '请输入标题';
+
+        if (!isValidTime(data.startTime) || !isValidTime(data.endTime)) {
+            return '时间格式应为 HH:mm';
         }
 
-        if (!isValidTime(newStartTime) || !isValidTime(newEndTime)) {
-            setFormError('时间格式应为 HH:mm');
-            return;
-        }
-
-        const start = newStartTime.trim();
-        const end = newEndTime.trim();
+        const start = data.startTime.trim();
+        const end = data.endTime.trim();
         if (start && end && end < start) {
-            setFormError('结束时间不能早于开始时间');
-            return;
+            return '结束时间不能早于开始时间';
         }
 
-        const reminderRaw = newReminderMinutes.trim();
+        const reminderRaw = data.reminderMinutes.trim();
         let reminderMinutes: number | undefined;
         if (reminderRaw) {
             const parsed = Number(reminderRaw);
             if (!Number.isFinite(parsed) || parsed < 0 || !Number.isInteger(parsed)) {
-                setFormError('提醒分钟应为非负整数');
-                return;
+                return '提醒分钟应为非负整数';
             }
             if (parsed > 0 && !start) {
-                setFormError('设置提醒需要填写开始时间');
-                return;
+                return '设置提醒需要填写开始时间';
             }
             reminderMinutes = parsed;
         }
 
-        const created = await EventStorage.addEvent({
-            date: selectedDate,
-            title,
-            startTime: start,
-            endTime: end,
-            description: newNotes.trim(),
-            reminderMinutes,
-            priority: newPriority > 0 ? newPriority : undefined,
-        });
+        try {
+            const created = await EventStorage.addEvent({
+                date: selectedDate,
+                title,
+                startTime: start,
+                endTime: end,
+                description: data.notes.trim(),
+                reminderMinutes,
+                priority: data.priority > 0 ? data.priority : undefined,
+            });
 
-        let finalEvent = created;
-        if (created.reminderMinutes && created.reminderMinutes > 0) {
-            const notificationId = await ReminderService.scheduleReminder(created);
-            if (!notificationId) {
-                setFormError('提醒创建失败（可能未授权或提醒时间已过）');
-                return;
+            let finalEvent = created;
+            if (created.reminderMinutes && created.reminderMinutes > 0) {
+                const notificationId = await ReminderService.scheduleReminder(created);
+                if (!notificationId) {
+                    return '提醒创建失败（可能未授权或提醒时间已过）';
+                }
+
+                const updated = await EventStorage.updateEvent(created.date, created.id, {
+                    notificationId,
+                    reminderMinutes: created.reminderMinutes,
+                });
+                if (updated) finalEvent = updated;
             }
 
-            const updated = await EventStorage.updateEvent(created.date, created.id, {
-                notificationId,
-                reminderMinutes: created.reminderMinutes,
+            setEventsByDate(prev => {
+                const next = { ...prev };
+                next[selectedDate] = [...(next[selectedDate] ?? []), finalEvent];
+                return next;
             });
-            if (updated) finalEvent = updated;
+
+            return null; // Success
+        } catch {
+            return '保存失败，请重试';
         }
+    }, [selectedDate]);
 
-        setEventsByDate(prev => {
-            const next = { ...prev };
-            next[selectedDate] = [...(next[selectedDate] ?? []), finalEvent];
-            return next;
-        });
+    const handleDeleteEvent = useCallback(async (event: CalendarEvent): Promise<boolean> => {
+        try {
+            if (event.notificationId) {
+                await ReminderService.cancelReminder(event.notificationId);
+            }
 
-        closeAddModal();
-    };
+            const deleted = await EventStorage.deleteEvent(event.date, event.id);
+            if (!deleted) return false;
+
+            setEventsByDate(prev => {
+                const next = { ...prev };
+                const list = next[deleted.date] ?? [];
+                const filtered = list.filter(e => e.id !== deleted.id);
+                if (filtered.length === 0) delete next[deleted.date];
+                else next[deleted.date] = filtered;
+                return next;
+            });
+
+            return true;
+        } catch {
+            return false;
+        }
+    }, []);
+
+    const handleExportShare = useCallback(async () => {
+        const events = getAllEvents();
+        if (events.length === 0) return;
+        await ImportExportService.shareEvents(events);
+    }, [getAllEvents]);
+
+    const handleExportCopy = useCallback(async () => {
+        const events = getAllEvents();
+        if (events.length === 0) return;
+        await ImportExportService.copyToClipboard(events);
+    }, [getAllEvents]);
+
+    const handleImportFromClipboard = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const events = await ImportExportService.importFromClipboard();
+            if (events.length === 0) {
+                return { success: false, error: '剪贴板中没有有效的日历数据' };
+            }
+
+            let savedCount = 0;
+            for (const event of events) {
+                try {
+                    await EventStorage.addEvent({
+                        date: event.date,
+                        title: event.title,
+                        description: event.description,
+                        location: event.location,
+                        startTime: event.startTime,
+                        endTime: event.endTime,
+                        allDay: event.allDay,
+                        reminderMinutes: event.reminderMinutes,
+                        category: event.category,
+                        priority: event.priority,
+                    });
+                    savedCount++;
+                } catch {
+                    // ignore individual failures
+                }
+            }
+
+            const all = await EventStorage.getAllEventsByDate();
+            setEventsByDate(all);
+
+            return { success: true };
+        } catch {
+            return { success: false, error: '导入失败，请检查数据格式' };
+        }
+    }, []);
+
+    const handleImportFromText = useCallback(async (content: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+        try {
+            const events = ImportExportService.importFromContent(content);
+            if (events.length === 0) {
+                return { success: false, error: '没有找到有效的日程数据' };
+            }
+
+            let savedCount = 0;
+            for (const event of events) {
+                try {
+                    await EventStorage.addEvent({
+                        date: event.date,
+                        title: event.title,
+                        description: event.description,
+                        location: event.location,
+                        startTime: event.startTime,
+                        endTime: event.endTime,
+                        allDay: event.allDay,
+                        reminderMinutes: event.reminderMinutes,
+                        category: event.category,
+                        priority: event.priority,
+                    });
+                    savedCount++;
+                } catch {
+                    // ignore individual failures
+                }
+            }
+
+            const all = await EventStorage.getAllEventsByDate();
+            setEventsByDate(all);
+
+            return { success: true, message: `成功导入 ${savedCount} 条日程！` };
+        } catch {
+            return { success: false, error: '导入失败，请检查数据格式' };
+        }
+    }, []);
 
     const calendarDayFontWeight: '500' | '600' = Platform.OS === 'ios' ? '600' : '500';
 
@@ -609,301 +575,29 @@ const HomeScreen = () => {
                     </View>
                 ) : null}
 
-                <Modal
+                {/* Modal Components - only rendered when visible */}
+                <AddEventModal
                     visible={isAddModalVisible}
-                    transparent
-                    animationType="fade"
-                    onRequestClose={closeAddModal}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalBackdrop} />
-                        <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
-                            <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                                添加日程
-                            </Text>
-                            <Text style={[styles.modalSubtitle, isDarkMode && styles.textSecondaryDark]}>
-                                日期：{selectedDate}
-                            </Text>
+                    selectedDate={selectedDate}
+                    onClose={closeAddModal}
+                    onSave={handleSaveEvent}
+                />
 
-                            <TextInput
-                                value={newTitle}
-                                onChangeText={setNewTitle}
-                                placeholder="标题（必填）"
-                                placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                                style={[styles.input, isDarkMode && styles.inputDark]}
-                            />
-                            <View style={styles.timeRow}>
-                                <TextInput
-                                    value={newStartTime}
-                                    onChangeText={setNewStartTime}
-                                    placeholder="开始 HH:mm"
-                                    placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                                    style={[styles.input, styles.timeInput, isDarkMode && styles.inputDark]}
-                                />
-                                <TextInput
-                                    value={newEndTime}
-                                    onChangeText={setNewEndTime}
-                                    placeholder="结束 HH:mm"
-                                    placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                                    style={[styles.input, styles.timeInput, isDarkMode && styles.inputDark]}
-                                />
-                            </View>
-                            <TextInput
-                                value={newNotes}
-                                onChangeText={setNewNotes}
-                                placeholder="备注（可选）"
-                                placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                                style={[styles.input, styles.notesInput, isDarkMode && styles.inputDark]}
-                                multiline
-                            />
-
-                            <TextInput
-                                value={newReminderMinutes}
-                                onChangeText={setNewReminderMinutes}
-                                placeholder="提醒（提前分钟，可选，如 10）"
-                                placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                                keyboardType="number-pad"
-                                style={[styles.input, isDarkMode && styles.inputDark]}
-                            />
-
-                            {/* 优先级选择器 */}
-                            <Text style={[styles.priorityLabel, isDarkMode && styles.textSecondaryDark]}>
-                                优先级
-                            </Text>
-                            <View style={styles.prioritySelector}>
-                                {[
-                                    { value: 0, label: '无' },
-                                    { value: 2, label: '高' },
-                                    { value: 5, label: '中' },
-                                    { value: 8, label: '低' },
-                                ].map(option => {
-                                    const colors = getPriorityColors(option.value);
-                                    const isSelected = newPriority === option.value;
-                                    return (
-                                        <TouchableOpacity
-                                            key={option.value}
-                                            onPress={() => setNewPriority(option.value)}
-                                            style={[
-                                                styles.priorityOption,
-                                                isSelected && {
-                                                    backgroundColor: colors.background,
-                                                    borderColor: colors.border,
-                                                },
-                                                !isSelected && isDarkMode && styles.priorityOptionDark,
-                                            ]}>
-                                            <Text
-                                                style={[
-                                                    styles.priorityOptionText,
-                                                    isSelected && { color: colors.text },
-                                                    !isSelected && isDarkMode && styles.textSecondaryDark,
-                                                ]}>
-                                                {option.label}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </View>
-
-                            {formError ? (
-                                <Text style={styles.formErrorText}>{formError}</Text>
-                            ) : null}
-
-                            <View style={styles.modalActions}>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.cancelButton]}
-                                    onPress={closeAddModal}
-                                    accessibilityRole="button">
-                                    <Text style={styles.cancelButtonText}>取消</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.saveButton]}
-                                    onPress={onSaveNewEvent}
-                                    accessibilityRole="button">
-                                    <Text style={styles.saveButtonText}>保存</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
-
-                <Modal
+                <EventDetailModal
                     visible={isDetailModalVisible}
-                    transparent
-                    animationType="fade"
-                    onRequestClose={closeDetailModal}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalBackdrop} />
-                        <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
-                            <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                                日程详情
-                            </Text>
+                    event={detailEvent}
+                    onClose={closeDetailModal}
+                    onDelete={handleDeleteEvent}
+                />
 
-                            {detailEvent ? (
-                                <>
-                                    <Text style={[styles.modalSubtitle, isDarkMode && styles.textSecondaryDark]}>
-                                        日期：{detailEvent.date}
-                                    </Text>
-
-                                    <View style={styles.detailRow}>
-                                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                                            标题
-                                        </Text>
-                                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                                            {detailEvent.title}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.detailRow}>
-                                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                                            时间
-                                        </Text>
-                                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                                            {(detailEvent.startTime || detailEvent.endTime)
-                                                ? `${detailEvent.startTime ?? ''}${detailEvent.endTime ? ` - ${detailEvent.endTime}` : ''}`
-                                                : '全天'}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.detailRow}>
-                                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                                            提醒
-                                        </Text>
-                                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                                            {detailEvent.reminderMinutes && detailEvent.reminderMinutes > 0
-                                                ? `提前 ${detailEvent.reminderMinutes} 分钟`
-                                                : '无'}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.detailRow}>
-                                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                                            优先级
-                                        </Text>
-                                        <View style={styles.priorityDetailRow}>
-                                            <View
-                                                style={[
-                                                    styles.priorityDot,
-                                                    { backgroundColor: getPriorityColors(detailEvent.priority).background }
-                                                ]}
-                                            />
-                                            <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                                                {getPriorityText(detailEvent.priority)}
-                                            </Text>
-                                        </View>
-                                    </View>
-
-                                    <View style={styles.detailRow}>
-                                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                                            备注
-                                        </Text>
-                                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                                            {detailEvent.description?.trim() ? detailEvent.description : '无'}
-                                        </Text>
-                                    </View>
-                                </>
-                            ) : null}
-
-                            {detailError ? <Text style={styles.formErrorText}>{detailError}</Text> : null}
-
-                            <View style={styles.modalActions}>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.cancelButton]}
-                                    onPress={closeDetailModal}
-                                    accessibilityRole="button">
-                                    <Text style={styles.cancelButtonText}>关闭</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.deleteButton]}
-                                    onPress={onDeleteEvent}
-                                    accessibilityRole="button">
-                                    <Text style={styles.deleteButtonText}>删除</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
-
-                {/* 导入导出弹窗 */}
-                <Modal
+                <ImportExportModal
                     visible={isImportExportModalVisible}
-                    transparent
-                    animationType="fade"
-                    onRequestClose={closeImportExportModal}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalBackdrop} />
-                        <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
-                            <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                                导入/导出
-                            </Text>
-
-                            {/* 导出区域 */}
-                            <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
-                                导出日程
-                            </Text>
-                            <View style={styles.exportButtons}>
-                                <TouchableOpacity
-                                    style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
-                                    onPress={onExportShare}
-                                    accessibilityRole="button">
-                                    <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                        分享
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
-                                    onPress={onExportCopy}
-                                    accessibilityRole="button">
-                                    <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                        复制
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* 导入区域 */}
-                            <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
-                                导入日程
-                            </Text>
-                            <TouchableOpacity
-                                style={[styles.importButton, isDarkMode && styles.importButtonDark]}
-                                onPress={onImportFromClipboard}
-                                accessibilityRole="button">
-                                <Text style={[styles.importButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                    从剪贴板导入
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TextInput
-                                value={importContent}
-                                onChangeText={setImportContent}
-                                placeholder="粘贴 iCalendar 数据..."
-                                placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                                style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
-                                multiline
-                            />
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.saveButton]}
-                                onPress={onImportFromText}
-                                accessibilityRole="button">
-                                <Text style={styles.saveButtonText}>导入</Text>
-                            </TouchableOpacity>
-
-                            {importExportError ? (
-                                <Text style={styles.formErrorText}>{importExportError}</Text>
-                            ) : null}
-                            {importExportSuccess ? (
-                                <Text style={styles.successText}>{importExportSuccess}</Text>
-                            ) : null}
-
-                            <View style={styles.modalActions}>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.cancelButton]}
-                                    onPress={closeImportExportModal}
-                                    accessibilityRole="button">
-                                    <Text style={styles.cancelButtonText}>关闭</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
+                    onClose={closeImportExportModal}
+                    onExportShare={handleExportShare}
+                    onExportCopy={handleExportCopy}
+                    onImportFromClipboard={handleImportFromClipboard}
+                    onImportFromText={handleImportFromText}
+                />
             </ScrollView>
         </SafeAreaView>
     );
@@ -1100,169 +794,6 @@ const styles = StyleSheet.create({
         gap: 10,
     },
 
-    detailRow: {
-        marginBottom: 10,
-    },
-    detailLabel: {
-        fontSize: 12,
-        lineHeight: 16,
-        color: '#6B7280',
-        marginBottom: 4,
-        fontWeight: '600',
-    },
-    detailValue: {
-        fontSize: 14,
-        lineHeight: 20,
-        color: '#111827',
-    },
-    priorityDetailRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    priorityDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        marginRight: 8,
-    },
-
-    modalOverlay: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-    },
-    modalBackdrop: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#000000',
-        opacity: 0.5,
-    },
-    modalCard: {
-        backgroundColor: '#ffffff',
-        borderRadius: 16,
-        padding: 16,
-        shadowColor: '#000000',
-        shadowOpacity: 0.08,
-        shadowRadius: 18,
-        shadowOffset: { width: 0, height: 10 },
-        elevation: 3,
-    },
-    modalCardDark: {
-        backgroundColor: '#141418',
-    },
-    modalTitle: {
-        fontSize: 18,
-        lineHeight: 24,
-        fontWeight: '700',
-        color: '#111827',
-        marginBottom: 6,
-    },
-    modalSubtitle: {
-        fontSize: 13,
-        lineHeight: 18,
-        color: '#6B7280',
-        marginBottom: 12,
-    },
-    input: {
-        borderWidth: 0,
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        fontSize: 14,
-        lineHeight: 20,
-        color: '#000000',
-        backgroundColor: '#F3F4F6',
-        marginBottom: 10,
-    },
-    inputDark: {
-        color: '#F4F4F5',
-        backgroundColor: '#1C1C1E',
-    },
-    timeRow: {
-        flexDirection: 'row',
-        gap: 10,
-    },
-    timeInput: {
-        flex: 1,
-    },
-    notesInput: {
-        minHeight: 80,
-        textAlignVertical: 'top',
-    },
-    priorityLabel: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#6B7280',
-        marginBottom: 8,
-    },
-    prioritySelector: {
-        flexDirection: 'row',
-        gap: 8,
-        marginBottom: 12,
-    },
-    priorityOption: {
-        flex: 1,
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        backgroundColor: '#F9FAFB',
-        alignItems: 'center',
-    },
-    priorityOptionDark: {
-        backgroundColor: '#1C1C1E',
-        borderColor: '#3F3F46',
-    },
-    priorityOptionText: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#374151',
-    },
-    formErrorText: {
-        color: '#2196F3',
-        marginBottom: 10,
-        fontSize: 13,
-    },
-    modalActions: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 10,
-        marginTop: 4,
-    },
-    actionButton: {
-        paddingHorizontal: 14,
-        paddingVertical: 10,
-        borderRadius: 8,
-    },
-    cancelButton: {
-        backgroundColor: '#F3F4F6',
-    },
-    cancelButtonText: {
-        color: '#111827',
-        fontWeight: '600',
-        fontSize: 14,
-        lineHeight: 18,
-    },
-    saveButton: {
-        backgroundColor: '#2196F3',
-    },
-    saveButtonText: {
-        color: '#ffffff',
-        fontWeight: '700',
-        fontSize: 14,
-        lineHeight: 18,
-    },
-
-    deleteButton: {
-        backgroundColor: '#F3F4F6',
-    },
-    deleteButtonText: {
-        color: '#FF3B30', // UIColor.systemRed,
-        fontWeight: '700',
-        fontSize: 14,
-        lineHeight: 18,
-    },
-
     // 农历信息卡片样式
     lunarInfoCard: {
         marginHorizontal: 12,
@@ -1325,60 +856,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '600',
         color: '#374151',
-    },
-
-    // 导入导出弹窗样式
-    sectionLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-        marginTop: 12,
-        marginBottom: 8,
-    },
-    exportButtons: {
-        flexDirection: 'row',
-        gap: 10,
-        marginBottom: 8,
-    },
-    exportButton: {
-        flex: 1,
-        paddingVertical: 12,
-        borderRadius: 8,
-        backgroundColor: '#F3F4F6',
-        alignItems: 'center',
-    },
-    exportButtonDark: {
-        backgroundColor: '#1C1C1E',
-    },
-    exportButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-    },
-    importButton: {
-        paddingVertical: 12,
-        borderRadius: 8,
-        backgroundColor: '#F3F4F6',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    importButtonDark: {
-        backgroundColor: '#1C1C1E',
-    },
-    importButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-    },
-    importTextInput: {
-        minHeight: 100,
-        textAlignVertical: 'top',
-    },
-    successText: {
-        color: '#10B981',
-        marginBottom: 10,
-        fontSize: 13,
-        fontWeight: '600',
     },
 });
 

@@ -1,11 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     Platform,
-    SafeAreaView,
     StatusBar,
-    StyleSheet,
-    Text,
-    View,
     useColorScheme,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,22 +15,25 @@ const Stack = createNativeStackNavigator();
 function App(): JSX.Element {
     const isDarkMode = useColorScheme() === 'dark';
 
+    // Memoize screen options to prevent re-creation on every render
+    const screenOptions = useMemo(() => ({
+        headerStyle: {
+            backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+        },
+        headerTintColor: isDarkMode ? '#ffffff' : '#000000',
+        headerTitleAlign: 'center' as const,
+    }), [isDarkMode]);
+
     return (
         <NavigationContainer>
             <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
             <Stack.Navigator
                 initialRouteName="Home"
-                screenOptions={{
-                    headerStyle: {
-                        backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-                    },
-                    headerTintColor: isDarkMode ? '#ffffff' : '#000000',
-                    headerTitleAlign: Platform.OS === 'android' ? 'center' : 'center',
-                }}>
+                screenOptions={screenOptions}>
                 <Stack.Screen
                     name="Home"
                     component={HomeScreen}
-                    options={{ title: 'DayMate Calendar' }}
+                    options={{ headerShown: false }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

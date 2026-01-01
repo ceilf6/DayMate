@@ -5,6 +5,10 @@ const STORAGE_KEY = 'daymate.events.v1';
 
 type EventsByDate = Record<string, CalendarEvent[]>;
 
+// 内存缓存，避免重复读取 AsyncStorage
+let memoryCache: EventsByDate | null = null;
+let cacheInitialized = false;
+
 const safeJsonParse = <T>(raw: string | null): T | null => {
     if (!raw) return null;
     try {
@@ -36,15 +40,30 @@ const normalizePriority = (value?: number): number | undefined => {
 
 export class EventStorage {
     static async getAllEventsByDate(): Promise<EventsByDate> {
+        // 使用内存缓存
+        if (cacheInitialized && memoryCache) {
+            return memoryCache;
+        }
+
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
         const parsed = safeJsonParse<EventsByDate>(raw);
-        if (!parsed || typeof parsed !== 'object') return {};
-        return parsed;
+        const result = (!parsed || typeof parsed !== 'object') ? {} : parsed;
+
+        // 初始化缓存
+        memoryCache = result;
+        cacheInitialized = true;
+
+        return result;
     }
 
     static async getEventsForDate(date: string): Promise<CalendarEvent[]> {
         const all = await EventStorage.getAllEventsByDate();
         return all[date] ?? [];
+    }
+
+    private static async persistAndUpdateCache(data: EventsByDate): Promise<void> {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        memoryCache = data;
     }
 
     static async addEvent(input: CreateCalendarEventInput): Promise<CalendarEvent> {
@@ -69,7 +88,7 @@ export class EventStorage {
         const nextForDate = [...(all[input.date] ?? []), event];
         all[input.date] = nextForDate;
 
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        await EventStorage.persistAndUpdateCache(all);
         return event;
     }
 
@@ -90,7 +109,7 @@ export class EventStorage {
         next[index] = updated;
         all[date] = next;
 
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        await EventStorage.persistAndUpdateCache(all);
         return updated;
     }
 
@@ -109,8 +128,16 @@ export class EventStorage {
             all[date] = next;
         }
 
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        await EventStorage.persistAndUpdateCache(all);
         return deleted;
+    }
+
+    /**
+     * 清除内存缓存（用于测试或强制刷新）
+     */
+    static clearCache(): void {
+        memoryCache = null;
+        cacheInitialized = false;
     }
 }
 

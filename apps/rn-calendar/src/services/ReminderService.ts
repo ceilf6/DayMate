@@ -10,14 +10,20 @@ import type { CalendarEvent } from '@daymate/shared';
 
 const ANDROID_CHANNEL_ID = 'daymate-reminders';
 
+// 缓存 Android Channel 创建状态
+let androidChannelCreated = false;
+
 const ensureAndroidChannel = async () => {
     if (Platform.OS !== 'android') return;
+    if (androidChannelCreated) return;
 
     await notifee.createChannel({
         id: ANDROID_CHANNEL_ID,
         name: '日程提醒',
         importance: AndroidImportance.DEFAULT,
     });
+
+    androidChannelCreated = true;
 };
 
 export class ReminderService {
