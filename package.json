@@ -4,8 +4,12 @@
   "private": true,
   "scripts": {
     "build:shared": "pnpm --filter @daymate/shared build",
+    "build:i18n": "pnpm --filter @daymate/i18n build",
     "dev:rn": "pnpm --filter rn-calendar start",
-    "android:rn": "pnpm --filter rn-calendar android"
+    "android:rn": "pnpm --filter rn-calendar android",
+    "i18n:check": "node scripts/manage-i18n.js check",
+    "i18n:list": "node scripts/manage-i18n.js list",
+    "i18n:stats": "node scripts/manage-i18n.js stats"
   },
   "engines": {
     "node": ">=16"

@@ -1,0 +1,24 @@
+{
+    "name": "@daymate/i18n",
+    "version": "0.1.0",
+    "description": "Internationalization package for DayMate",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch"
+    },
+    "keywords": [
+        "i18n",
+        "internationalization",
+        "daymate"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "i18next": "^23.7.16"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.3"
+    }
+}

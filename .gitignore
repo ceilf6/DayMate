@@ -62,3 +62,5 @@ CONFIG*
 # 内存泄漏分析
 Instruments/
 Memory-Graph/
+
+scripts/

@@ -1,0 +1,90 @@
+{
+    "common": {
+        "appName": "DayMate",
+        "cancel": "取消",
+        "save": "儲存",
+        "delete": "刪除",
+        "close": "關閉",
+        "confirm": "確定",
+        "back": "返回",
+        "ok": "好的"
+    },
+    "calendar": {
+        "month": "月",
+        "week": "週",
+        "day": "日",
+        "today": "今天",
+        "allDay": "全天",
+        "previousDay": "上一天",
+        "nextDay": "下一天"
+    },
+    "event": {
+        "title": "標題",
+        "startTime": "開始時間",
+        "endTime": "結束時間",
+        "notes": "備註",
+        "reminder": "提醒",
+        "priority": "優先順序",
+        "addEvent": "新增日程",
+        "eventDetail": "日程詳情",
+        "eventsOnDate": "{{date}} 的日程",
+        "noEvents": "暫無日程",
+        "deleteEvent": "刪除日程",
+        "deleteConfirm": "確定要刪除這條日程嗎？",
+        "time": "時間",
+        "location": "地點"
+    },
+    "priority": {
+        "none": "無",
+        "high": "高",
+        "medium": "中",
+        "low": "低"
+    },
+    "placeholder": {
+        "titleRequired": "標題（必填）",
+        "startTimeHint": "開始 HH:mm",
+        "endTimeHint": "結束 HH:mm",
+        "notesOptional": "備註（可選）",
+        "reminderHint": "提醒（提前分鐘，可選，如 10）",
+        "pasteICalendar": "貼上 iCalendar 資料..."
+    },
+    "validation": {
+        "noDateSelected": "未選擇日期",
+        "titleRequired": "請輸入標題",
+        "invalidTimeFormat": "時間格式應為 HH:mm",
+        "endTimeBeforeStart": "結束時間不能早於開始時間",
+        "invalidReminderMinutes": "提醒分鐘應為非負整數",
+        "reminderNeedsStartTime": "設定提醒需要填寫開始時間"
+    },
+    "error": {
+        "saveFailed": "儲存失敗，請重試",
+        "deleteFailed": "刪除失敗，請重試",
+        "reminderFailed": "提醒建立失敗（可能未授權或提醒時間已過）",
+        "importFailed": "匯入失敗，請檢查資料格式",
+        "noValidData": "沒有找到有效的日程資料",
+        "noClipboardData": "剪貼簿中沒有有效的日曆資料",
+        "enterICalendarData": "請輸入 iCalendar 資料"
+    },
+    "success": {
+        "exportSuccess": "匯出成功！",
+        "copiedToClipboard": "已複製到剪貼簿！",
+        "importSuccess": "匯入成功！",
+        "importedCount": "成功匯入 {{count}} 條日程！"
+    },
+    "importExport": {
+        "title": "匯入/匯出",
+        "export": "匯出日程",
+        "import": "匯入日程",
+        "share": "分享",
+        "copy": "複製",
+        "importFromClipboard": "從剪貼簿匯入",
+        "importButton": "匯入"
+    },
+    "reminder": {
+        "minutesBefore": "提前 {{minutes}} 分鐘",
+        "none": "無"
+    },
+    "lunar": {
+        "leapMonth": "閏"
+    }
+}

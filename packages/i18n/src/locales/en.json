@@ -1,0 +1,90 @@
+{
+    "common": {
+        "appName": "DayMate",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "close": "Close",
+        "confirm": "Confirm",
+        "back": "Back",
+        "ok": "OK"
+    },
+    "calendar": {
+        "month": "Month",
+        "week": "Week",
+        "day": "Day",
+        "today": "Today",
+        "allDay": "All Day",
+        "previousDay": "Previous Day",
+        "nextDay": "Next Day"
+    },
+    "event": {
+        "title": "Title",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "notes": "Notes",
+        "reminder": "Reminder",
+        "priority": "Priority",
+        "addEvent": "Add Event",
+        "eventDetail": "Event Details",
+        "eventsOnDate": "Events on {{date}}",
+        "noEvents": "No events",
+        "deleteEvent": "Delete Event",
+        "deleteConfirm": "Are you sure you want to delete this event?",
+        "time": "Time",
+        "location": "Location"
+    },
+    "priority": {
+        "none": "None",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+    },
+    "placeholder": {
+        "titleRequired": "Title (Required)",
+        "startTimeHint": "Start HH:mm",
+        "endTimeHint": "End HH:mm",
+        "notesOptional": "Notes (Optional)",
+        "reminderHint": "Reminder (minutes before, e.g., 10)",
+        "pasteICalendar": "Paste iCalendar data..."
+    },
+    "validation": {
+        "noDateSelected": "No date selected",
+        "titleRequired": "Please enter a title",
+        "invalidTimeFormat": "Time format should be HH:mm",
+        "endTimeBeforeStart": "End time cannot be before start time",
+        "invalidReminderMinutes": "Reminder minutes should be a non-negative integer",
+        "reminderNeedsStartTime": "Setting a reminder requires a start time"
+    },
+    "error": {
+        "saveFailed": "Save failed, please try again",
+        "deleteFailed": "Delete failed, please try again",
+        "reminderFailed": "Failed to create reminder (may be unauthorized or reminder time has passed)",
+        "importFailed": "Import failed, please check data format",
+        "noValidData": "No valid event data found",
+        "noClipboardData": "No valid calendar data in clipboard",
+        "enterICalendarData": "Please enter iCalendar data"
+    },
+    "success": {
+        "exportSuccess": "Export successful!",
+        "copiedToClipboard": "Copied to clipboard!",
+        "importSuccess": "Import successful!",
+        "importedCount": "Successfully imported {{count}} events!"
+    },
+    "importExport": {
+        "title": "Import/Export",
+        "export": "Export Events",
+        "import": "Import Events",
+        "share": "Share",
+        "copy": "Copy",
+        "importFromClipboard": "Import from Clipboard",
+        "importButton": "Import"
+    },
+    "reminder": {
+        "minutesBefore": "{{minutes}} minutes before",
+        "none": "None"
+    },
+    "lunar": {
+        "leapMonth": "Leap"
+    }
+}
