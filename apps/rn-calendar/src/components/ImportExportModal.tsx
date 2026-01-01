@@ -114,77 +114,77 @@ const ImportExportModal = memo(({
                             导入/导出
                         </Text>
 
-                    {/* 导出区域 */}
-                    <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
-                        导出日程
-                    </Text>
-                    <View style={styles.exportButtons}>
-                        <TouchableOpacity
-                            style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
-                            onPress={handleExportShare}
-                            accessibilityRole="button"
-                        >
-                            <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                分享
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
-                            onPress={handleExportCopy}
-                            accessibilityRole="button"
-                        >
-                            <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                复制
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* 导入区域 */}
-                    <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
-                        导入日程
-                    </Text>
-                    <TouchableOpacity
-                        style={[styles.importButton, isDarkMode && styles.importButtonDark]}
-                        onPress={handleImportFromClipboard}
-                        accessibilityRole="button"
-                    >
-                        <Text style={[styles.importButtonText, isDarkMode && styles.textPrimaryDark]}>
-                            从剪贴板导入
+                        {/* 导出区域 */}
+                        <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
+                            导出日程
                         </Text>
-                    </TouchableOpacity>
+                        <View style={styles.exportButtons}>
+                            <TouchableOpacity
+                                style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
+                                onPress={handleExportShare}
+                                accessibilityRole="button"
+                            >
+                                <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                    分享
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
+                                onPress={handleExportCopy}
+                                accessibilityRole="button"
+                            >
+                                <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                    复制
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
 
-                    <TextInput
-                        value={importContent}
-                        onChangeText={setImportContent}
-                        placeholder="粘贴 iCalendar 数据..."
-                        placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                        style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
-                        multiline
-                    />
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.saveButton]}
-                        onPress={handleImportFromText}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.saveButtonText}>导入</Text>
-                    </TouchableOpacity>
-
-                    {error ? (
-                        <Text style={styles.formErrorText}>{error}</Text>
-                    ) : null}
-                    {success ? (
-                        <Text style={styles.successText}>{success}</Text>
-                    ) : null}
-
-                    <View style={styles.modalActions}>
+                        {/* 导入区域 */}
+                        <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
+                            导入日程
+                        </Text>
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.cancelButton]}
-                            onPress={handleClose}
+                            style={[styles.importButton, isDarkMode && styles.importButtonDark]}
+                            onPress={handleImportFromClipboard}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.cancelButtonText}>关闭</Text>
+                            <Text style={[styles.importButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                从剪贴板导入
+                            </Text>
                         </TouchableOpacity>
-                    </View>
+
+                        <TextInput
+                            value={importContent}
+                            onChangeText={setImportContent}
+                            placeholder="粘贴 iCalendar 数据..."
+                            placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
+                            style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
+                            multiline
+                        />
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.saveButton]}
+                            onPress={handleImportFromText}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.saveButtonText}>导入</Text>
+                        </TouchableOpacity>
+
+                        {error ? (
+                            <Text style={styles.formErrorText}>{error}</Text>
+                        ) : null}
+                        {success ? (
+                            <Text style={styles.successText}>{success}</Text>
+                        ) : null}
+
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity
+                                style={[styles.actionButton, styles.cancelButton]}
+                                onPress={handleClose}
+                                accessibilityRole="button"
+                            >
+                                <Text style={styles.cancelButtonText}>关闭</Text>
+                            </TouchableOpacity>
+                        </View>
                     </ScrollView>
                 </View>
             </KeyboardAvoidingView>
