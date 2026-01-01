@@ -65,12 +65,6 @@ const HomeScreen = () => {
         setSelectedDate(day.dateString);
     };
 
-    // 月份切换时更新选中日期为该月第一天
-    const onMonthChange = useCallback((month: any) => {
-        const newDate = month.dateString;
-        setSelectedDate(newDate);
-    }, []);
-
     const shiftSelectedDate = (deltaDays: number) => {
         try {
             const base = selectedDate || today;
@@ -913,6 +907,73 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     eventItem: {
+        flexDirection: 'row',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 14,
+        shadowColor: '#000000',
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 6 },
+        elevation: 1,
+        overflow: 'hidden',
+    },
+    eventItemDark: {
+        backgroundColor: '#141418',
+    },
+    priorityIndicator: {
+        width: 4,
+        borderTopLeftRadius: 14,
+        borderBottomLeftRadius: 14,
+    },
+    eventItemContent: {
+        flex: 1,
+        padding: 14,
+    },
+    eventTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    prioritySymbol: {
+        fontSize: 12,
+        fontWeight: '700',
+        marginLeft: 6,
+    },
+    eventItemTitle: {
+        flex: 1,
+        fontSize: 16,
+        lineHeight: 22,
+        fontWeight: '600',
+        color: '#111827',
+    },
+    eventItemMeta: {
+        fontSize: 13,
+        lineHeight: 18,
+        color: '#6B7280',
+    },
+    eventItemNotes: {
+        marginTop: 8,
+        fontSize: 13,
+        lineHeight: 18,
+        color: '#6B7280',
+    },
+
+    detailRow: {
+        marginBottom: 10,
+    },
+    detailLabel: {
+        fontSize: 12,
+        lineHeight: 16,
+        color: '#6B7280',
+        marginBottom: 4,
+        fontWeight: '600',
+    },
+    detailValue: {
+        fontSize: 14,
+        lineHeight: 20,
+        color: '#111827',
+    },
+    priorityDetailRow: {
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         borderRadius: 14,
