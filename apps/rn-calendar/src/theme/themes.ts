@@ -47,9 +47,9 @@ const blueTheme: Theme = {
     name: '蓝色',
     colors: {
         primary: '#2196F3',
-        primaryLight: 'rgba(33, 150, 243, 0.15)',
+        primaryLight: 'rgba(33, 150, 243, 0.20)',
         primaryDark: '#1976D2',
-        primarySurface: 'rgba(33, 150, 243, 0.05)',
+        primarySurface: 'rgba(33, 150, 243, 0.12)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -79,9 +79,9 @@ const darkBlueTheme: Theme = {
     name: '深蓝',
     colors: {
         primary: '#1976D2',
-        primaryLight: 'rgba(25, 118, 210, 0.15)',
+        primaryLight: 'rgba(25, 118, 210, 0.20)',
         primaryDark: '#0D47A1',
-        primarySurface: 'rgba(25, 118, 210, 0.05)',
+        primarySurface: 'rgba(25, 118, 210, 0.12)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -111,9 +111,9 @@ const greenTheme: Theme = {
     name: '绿色',
     colors: {
         primary: '#10B981',
-        primaryLight: 'rgba(16, 185, 129, 0.15)',
+        primaryLight: 'rgba(16, 185, 129, 0.20)',
         primaryDark: '#059669',
-        primarySurface: 'rgba(16, 185, 129, 0.05)',
+        primarySurface: 'rgba(16, 185, 129, 0.12)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -143,9 +143,9 @@ const purpleTheme: Theme = {
     name: '紫色',
     colors: {
         primary: '#8B5CF6',
-        primaryLight: 'rgba(139, 92, 246, 0.15)',
+        primaryLight: 'rgba(139, 92, 246, 0.20)',
         primaryDark: '#7C3AED',
-        primarySurface: 'rgba(139, 92, 246, 0.05)',
+        primarySurface: 'rgba(139, 92, 246, 0.12)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -175,9 +175,9 @@ const orangeTheme: Theme = {
     name: '橙色',
     colors: {
         primary: '#F97316',
-        primaryLight: 'rgba(249, 115, 22, 0.15)',
+        primaryLight: 'rgba(249, 115, 22, 0.20)',
         primaryDark: '#EA580C',
-        primarySurface: 'rgba(249, 115, 22, 0.05)',
+        primarySurface: 'rgba(249, 115, 22, 0.12)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -207,9 +207,9 @@ const pinkTheme: Theme = {
     name: '粉色',
     colors: {
         primary: '#EC4899',
-        primaryLight: 'rgba(236, 72, 153, 0.15)',
+        primaryLight: 'rgba(236, 72, 153, 0.20)',
         primaryDark: '#DB2777',
-        primarySurface: 'rgba(236, 72, 153, 0.05)',
+        primarySurface: 'rgba(236, 72, 153, 0.12)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',

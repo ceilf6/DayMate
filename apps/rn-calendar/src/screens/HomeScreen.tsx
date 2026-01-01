@@ -478,7 +478,7 @@ const HomeScreen = () => {
                 <View style={styles.topActionRow}>
                     <TouchableOpacity
                         onPress={() => setIsSettingsModalVisible(true)}
-                        style={[styles.settingsButton, { backgroundColor: colors.backgroundTertiary }]}
+                        style={[styles.settingsButton, { backgroundColor: colors.primaryLight }]}
                         accessibilityRole="button">
                         <Text style={styles.settingsIcon}>
                             ⚙️
@@ -489,7 +489,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={openImportExportModal}
-                        style={[styles.importExportButton, { backgroundColor: colors.backgroundTertiary }]}
+                        style={[styles.importExportButton, { backgroundColor: colors.primaryLight }]}
                         accessibilityRole="button">
                         <Text style={[styles.importExportButtonText, { color: colors.textPrimary }]}>
                             {t('importExport.title', '导入/导出')}
@@ -497,7 +497,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-                <View style={[styles.viewModeRow, { backgroundColor: colors.backgroundSecondary }]}>
+                <View style={[styles.viewModeRow, { backgroundColor: colors.primarySurface }]}>
                     <TouchableOpacity
                         onPress={() => setViewMode('month')}
                         accessibilityRole="button"
@@ -618,7 +618,7 @@ const HomeScreen = () => {
                 )}
 
                 {selectedDate ? (
-                    <View style={styles.eventSection}>
+                    <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
                         <View style={styles.eventHeaderRow}>
                             <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
                                 {t('event.eventsOnDate', { date: selectedDate })}
@@ -843,9 +843,9 @@ const styles = StyleSheet.create({
     },
 
     eventSection: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
         paddingTop: 16,
-        paddingBottom: 20,
+        paddingBottom: 16,
     },
     eventHeaderRow: {
         flexDirection: 'row',
