@@ -13,13 +13,14 @@
         "postinstall": "patch-package"
     },
     "dependencies": {
-        "@daymate/shared": "workspace:*",
         "@daymate/i18n": "workspace:*",
+        "@daymate/shared": "workspace:*",
         "@notifee/react-native": "^9.1.8",
         "@react-native-async-storage/async-storage": "^1.19.5",
         "@react-navigation/native": "^6.1.9",
         "@react-navigation/native-stack": "^6.9.17",
         "i18next": "^23.7.16",
+        "intl-pluralrules": "^2.0.1",
         "react": "18.2.0",
         "react-native": "0.73.9",
         "react-native-calendars": "^1.1302.0",
