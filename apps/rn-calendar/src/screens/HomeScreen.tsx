@@ -231,7 +231,12 @@ const HomeScreen = () => {
 
             setEventsByDate(prev => {
                 const next = { ...prev };
-                next[selectedDate] = [...(next[selectedDate] ?? []), finalEvent];
+                const existingEvents = next[selectedDate] ?? [];
+                // 检查 ID 是否已存在，避免重复添加
+                const isDuplicate = existingEvents.some(e => e.id === finalEvent.id);
+                if (!isDuplicate) {
+                    next[selectedDate] = [...existingEvents, finalEvent];
+                }
                 return next;
             });
 
