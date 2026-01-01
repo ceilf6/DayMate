@@ -136,6 +136,7 @@
     "settings": {
         "title": "設定",
         "selectLanguage": "選擇語言",
-        "language": "語言"
+        "language": "語言",
+        "themeColor": "主題色"
     }
 }

@@ -99,6 +99,7 @@ export declare const resources: {
                 title: string;
                 selectLanguage: string;
                 language: string;
+                themeColor: string;
             };
         };
     };
@@ -200,6 +201,7 @@ export declare const resources: {
                 title: string;
                 selectLanguage: string;
                 language: string;
+                themeColor: string;
             };
         };
     };
@@ -301,6 +303,7 @@ export declare const resources: {
                 title: string;
                 selectLanguage: string;
                 language: string;
+                themeColor: string;
             };
         };
     };
