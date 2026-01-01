@@ -556,7 +556,7 @@ const HomeScreen = () => {
 
                 {/* 农历信息显示 */}
                 {lunarInfo && (
-                    <View style={[styles.lunarInfoCard, { backgroundColor: colors.surface }]}>
+                    <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
                         <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
                             {lunarInfo.yearInfo}
                         </Text>
@@ -568,7 +568,7 @@ const HomeScreen = () => {
                 )}
 
                 {viewMode === 'day' ? (
-                    <View style={[styles.dayNavRow, { backgroundColor: colors.surface }]}>
+                    <View style={[styles.dayNavRow, { backgroundColor: colors.primarySurface }]}>
                         <TouchableOpacity
                             onPress={() => shiftSelectedDate(-1)}
                             accessibilityRole="button"
@@ -592,7 +592,7 @@ const HomeScreen = () => {
                         </TouchableOpacity>
                     </View>
                 ) : viewMode === 'week' ? (
-                    <View style={[styles.calendarCard, { backgroundColor: colors.surface }]}>
+                    <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
                         <CalendarProvider date={selectedDate} onDateChanged={setSelectedDate}>
                             <WeekCalendar
                                 key={`week-${currentLanguage}`}
@@ -603,7 +603,7 @@ const HomeScreen = () => {
                         </CalendarProvider>
                     </View>
                 ) : (
-                    <View style={[styles.calendarCard, { backgroundColor: colors.surface }]}>
+                    <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
                         <Calendar
                             key={`month-${currentLanguage}`}
                             current={selectedDate}
@@ -632,7 +632,7 @@ const HomeScreen = () => {
                         </View>
 
                         {selectedEvents.length === 0 ? (
-                            <View style={[styles.eventCard, { backgroundColor: colors.surface }]}>
+                            <View style={[styles.eventCard, { backgroundColor: colors.primarySurface }]}>
                                 <Text style={[styles.eventText, { color: colors.textSecondary }]}>
                                     {t('event.noEvents', '暂无日程')}
                                 </Text>
@@ -647,7 +647,7 @@ const HomeScreen = () => {
                                     return (
                                         <TouchableOpacity
                                             key={event.id}
-                                            style={[styles.eventItem, { backgroundColor: colors.surface }]}
+                                            style={[styles.eventItem, { backgroundColor: colors.primarySurface }]}
                                             onPress={() => openDetailModal(event)}
                                             accessibilityRole="button">
                                             {/* 优先级指示条 */}

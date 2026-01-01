@@ -7,6 +7,7 @@ export interface ThemeColors {
     primary: string;
     primaryLight: string;
     primaryDark: string;
+    primarySurface: string; // 主题色的极浅背景色，用于卡片等
 
     // 背景色
     background: string;
@@ -48,6 +49,7 @@ const blueTheme: Theme = {
         primary: '#2196F3',
         primaryLight: 'rgba(33, 150, 243, 0.15)',
         primaryDark: '#1976D2',
+        primarySurface: 'rgba(33, 150, 243, 0.05)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -79,6 +81,7 @@ const darkBlueTheme: Theme = {
         primary: '#1976D2',
         primaryLight: 'rgba(25, 118, 210, 0.15)',
         primaryDark: '#0D47A1',
+        primarySurface: 'rgba(25, 118, 210, 0.05)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -110,6 +113,7 @@ const greenTheme: Theme = {
         primary: '#10B981',
         primaryLight: 'rgba(16, 185, 129, 0.15)',
         primaryDark: '#059669',
+        primarySurface: 'rgba(16, 185, 129, 0.05)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -141,6 +145,7 @@ const purpleTheme: Theme = {
         primary: '#8B5CF6',
         primaryLight: 'rgba(139, 92, 246, 0.15)',
         primaryDark: '#7C3AED',
+        primarySurface: 'rgba(139, 92, 246, 0.05)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -172,6 +177,7 @@ const orangeTheme: Theme = {
         primary: '#F97316',
         primaryLight: 'rgba(249, 115, 22, 0.15)',
         primaryDark: '#EA580C',
+        primarySurface: 'rgba(249, 115, 22, 0.05)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -203,6 +209,7 @@ const pinkTheme: Theme = {
         primary: '#EC4899',
         primaryLight: 'rgba(236, 72, 153, 0.15)',
         primaryDark: '#DB2777',
+        primarySurface: 'rgba(236, 72, 153, 0.05)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
