@@ -1,4 +1,5 @@
-import { Share, Clipboard, Platform } from 'react-native';
+import { Share, Platform } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {
     CalendarEvent,
     exportToICalendar,

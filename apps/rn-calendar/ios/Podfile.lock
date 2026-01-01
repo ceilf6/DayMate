@@ -1057,6 +1057,8 @@ PODS:
     - React-perflogger (= 0.73.9)
   - RNCAsyncStorage (1.24.0):
     - React-Core
+  - RNCClipboard (1.16.3):
+    - React-Core
   - RNLocalize (3.6.1):
     - React-Core
   - RNNotifee (9.1.8):
@@ -1125,6 +1127,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNLocalize (from `../node_modules/react-native-localize`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -1236,6 +1239,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCClipboard:
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
   RNNotifee:
@@ -1297,6 +1302,7 @@ SPEC CHECKSUMS:
   React-utils: 3914b10f3e2b95e78ab7cc53c98541d504ae387f
   ReactCommon: 03a07a32cbaf798b01e7025001d6fa5a862709f6
   RNCAsyncStorage: b6410dead2732b5c72a7fdb1ecb5651bbcf4674b
+  RNCClipboard: f6679d470d0da2bce2a37b0af7b9e0bf369ecda5
   RNLocalize: 0a9ffe84f0d25cf2fb0abacd4d7491a06e78ced2
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNScreens: 2597a28731cc8e967467c55b8844f43655af5aef

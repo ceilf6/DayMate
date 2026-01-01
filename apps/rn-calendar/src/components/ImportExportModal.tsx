@@ -7,6 +7,9 @@ import {
     TouchableOpacity,
     StyleSheet,
     useColorScheme,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
 
 interface ImportExportModalProps {
@@ -93,12 +96,23 @@ const ImportExportModal = memo(({
             animationType="fade"
             onRequestClose={handleClose}
         >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalBackdrop} />
+            <KeyboardAvoidingView
+                style={styles.modalOverlay}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
+                <TouchableOpacity
+                    style={styles.modalBackdrop}
+                    activeOpacity={1}
+                    onPress={handleClose}
+                />
                 <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
-                    <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                        导入/导出
-                    </Text>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
+                            导入/导出
+                        </Text>
 
                     {/* 导出区域 */}
                     <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
@@ -171,8 +185,9 @@ const ImportExportModal = memo(({
                             <Text style={styles.cancelButtonText}>关闭</Text>
                         </TouchableOpacity>
                     </View>
+                    </ScrollView>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         </Modal>
     );
 });
@@ -192,6 +207,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 16,
         padding: 16,
+        maxHeight: '80%',
         shadowColor: '#000000',
         shadowOpacity: 0.08,
         shadowRadius: 18,
