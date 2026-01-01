@@ -33,6 +33,8 @@ import {
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
 import { ImportExportService } from '../services/ImportExportService';
+// 导入日历本地化配置（必须在使用 Calendar 组件之前）
+import '../services/CalendarLocale';
 import AddEventModal from '../components/AddEventModal';
 import EventDetailModal from '../components/EventDetailModal';
 import ImportExportModal from '../components/ImportExportModal';
@@ -41,7 +43,7 @@ import { useI18n } from '../contexts/I18nContext';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
-    const { t } = useI18n();
+    const { t, currentLanguage } = useI18n();
 
     type ViewMode = 'month' | 'week' | 'day';
     const today = useMemo(() => getToday(), []);
@@ -591,6 +593,7 @@ const HomeScreen = () => {
                     <View style={[styles.calendarCard, isDarkMode && styles.calendarCardDark]}>
                         <CalendarProvider date={selectedDate} onDateChanged={setSelectedDate}>
                             <WeekCalendar
+                                key={`week-${currentLanguage}`}
                                 current={selectedDate}
                                 markedDates={markedDates}
                                 theme={calendarTheme}
@@ -600,6 +603,7 @@ const HomeScreen = () => {
                 ) : (
                     <View style={[styles.calendarCard, isDarkMode && styles.calendarCardDark]}>
                         <Calendar
+                            key={`month-${currentLanguage}`}
                             current={selectedDate}
                             onDayPress={onDayPress}
                             onMonthChange={onMonthChange}

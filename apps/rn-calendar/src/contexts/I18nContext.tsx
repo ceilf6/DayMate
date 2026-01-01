@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, Rea
 import { initI18n, t as i18nT, changeLanguage as i18nChangeLanguage } from '@daymate/i18n';
 import * as RNLocalize from 'react-native-localize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setCalendarLocale } from '../services/CalendarLocale';
 
 export type Language = 'zh-CN' | 'zh-TW' | 'en';
 
@@ -51,11 +52,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
                 const savedLang = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
                 const lang = (savedLang as Language) || getDefaultLanguage();
                 initI18n(lang);
+                setCalendarLocale(lang); // 同步设置日历语言
                 setCurrentLang(lang);
                 setIsReady(true);
             } catch (error) {
                 console.error('Failed to initialize i18n:', error);
                 initI18n('zh-CN');
+                setCalendarLocale('zh-CN');
                 setCurrentLang('zh-CN');
                 setIsReady(true);
             }
@@ -66,6 +69,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const changeLanguage = useCallback(async (lang: Language) => {
         try {
             await i18nChangeLanguage(lang);
+            setCalendarLocale(lang); // 同步设置日历语言
             await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
             setCurrentLang(lang);
             // 强制重新渲染所有使用 t 函数的组件
