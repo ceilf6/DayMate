@@ -36,9 +36,12 @@ import { ImportExportService } from '../services/ImportExportService';
 import AddEventModal from '../components/AddEventModal';
 import EventDetailModal from '../components/EventDetailModal';
 import ImportExportModal from '../components/ImportExportModal';
+import LanguageModal from '../components/LanguageModal';
+import { useI18n } from '../contexts/I18nContext';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
+    const { t } = useI18n();
 
     type ViewMode = 'month' | 'week' | 'day';
     const today = useMemo(() => getToday(), []);
@@ -52,6 +55,7 @@ const HomeScreen = () => {
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
     const [detailEvent, setDetailEvent] = useState<CalendarEvent | null>(null);
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
+    const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
@@ -465,15 +469,23 @@ const HomeScreen = () => {
 
                 {/* 顶部操作栏 */}
                 <View style={styles.topActionRow}>
-                    <Text style={[styles.appTitle, isDarkMode && styles.textPrimaryDark]}>
-                        DayMate
-                    </Text>
+                    <TouchableOpacity
+                        onPress={() => setIsLanguageModalVisible(true)}
+                        style={[styles.settingsButton, isDarkMode && styles.settingsButtonDark]}
+                        accessibilityRole="button">
+                        <Text style={[styles.settingsIcon, isDarkMode && styles.textPrimaryDark]}>
+                            ⚙️
+                        </Text>
+                        <Text style={[styles.settingsButtonText, isDarkMode && styles.textPrimaryDark]}>
+                            {t('settings.title')}
+                        </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         onPress={openImportExportModal}
                         style={[styles.importExportButton, isDarkMode && styles.importExportButtonDark]}
                         accessibilityRole="button">
                         <Text style={[styles.importExportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                            导入/导出
+                            {t('importExport.title')}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -558,7 +570,7 @@ const HomeScreen = () => {
                             accessibilityRole="button"
                             style={[styles.dayNavButton, isDarkMode && styles.dayNavButtonDark]}>
                             <Text style={[styles.dayNavButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                上一天
+                                {t('calendar.previousDay')}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.dayNavTitleContainer}>
@@ -571,7 +583,7 @@ const HomeScreen = () => {
                             accessibilityRole="button"
                             style={[styles.dayNavButton, isDarkMode && styles.dayNavButtonDark]}>
                             <Text style={[styles.dayNavButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                下一天
+                                {t('calendar.nextDay')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -603,20 +615,20 @@ const HomeScreen = () => {
                     <View style={styles.eventSection}>
                         <View style={styles.eventHeaderRow}>
                             <Text style={[styles.eventTitle, isDarkMode && styles.textPrimaryDark]}>
-                                {selectedDate} 的日程
+                                {t('event.eventsOnDate', { date: selectedDate })}
                             </Text>
                             <TouchableOpacity
                                 style={[styles.addButton, isDarkMode && styles.addButtonDark]}
                                 onPress={openAddModal}
                                 accessibilityRole="button">
-                                <Text style={styles.addButtonText}>添加日程</Text>
+                                <Text style={styles.addButtonText}>{t('event.addEvent')}</Text>
                             </TouchableOpacity>
                         </View>
 
                         {selectedEvents.length === 0 ? (
                             <View style={[styles.eventCard, isDarkMode && styles.eventCardDark]}>
                                 <Text style={[styles.eventText, isDarkMode && styles.textSecondaryDark]}>
-                                    暂无日程
+                                    {t('event.noEvents')}
                                 </Text>
                             </View>
                         ) : (
@@ -664,7 +676,7 @@ const HomeScreen = () => {
                                                     numberOfLines={1}>
                                                     {(event.startTime || event.endTime)
                                                         ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                                        : '全天'}
+                                                        : t('calendar.allDay')}
                                                 </Text>
                                                 {event.reminderMinutes && event.reminderMinutes > 0 ? (
                                                     <Text
@@ -673,7 +685,7 @@ const HomeScreen = () => {
                                                             isDarkMode && styles.textSecondaryDark,
                                                         ]}
                                                         numberOfLines={1}>
-                                                        提醒：提前 {event.reminderMinutes} 分钟
+                                                        {t('event.reminder')}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes })}
                                                     </Text>
                                                 ) : null}
                                                 {event.description ? (
@@ -717,6 +729,11 @@ const HomeScreen = () => {
                     onExportCopy={handleExportCopy}
                     onImportFromClipboard={handleImportFromClipboard}
                     onImportFromText={handleImportFromText}
+                />
+
+                <LanguageModal
+                    visible={isLanguageModalVisible}
+                    onClose={() => setIsLanguageModalVisible(false)}
                 />
             </ScrollView>
         </SafeAreaView>
@@ -1104,6 +1121,26 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '700',
         color: '#111827',
+    },
+    settingsButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        backgroundColor: '#F3F4F6',
+        gap: 6,
+    },
+    settingsButtonDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    settingsIcon: {
+        fontSize: 16,
+    },
+    settingsButtonText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#374151',
     },
     importExportButton: {
         paddingHorizontal: 12,

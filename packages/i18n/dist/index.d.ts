@@ -1,0 +1,300 @@
+import i18next from 'i18next';
+export type Language = 'zh-CN' | 'zh-TW' | 'en';
+export declare const resources: {
+    'zh-CN': {
+        translation: {
+            common: {
+                appName: string;
+                cancel: string;
+                save: string;
+                delete: string;
+                close: string;
+                confirm: string;
+                back: string;
+                ok: string;
+            };
+            calendar: {
+                month: string;
+                week: string;
+                day: string;
+                today: string;
+                allDay: string;
+                previousDay: string;
+                nextDay: string;
+            };
+            event: {
+                title: string;
+                startTime: string;
+                endTime: string;
+                notes: string;
+                reminder: string;
+                priority: string;
+                addEvent: string;
+                eventDetail: string;
+                eventsOnDate: string;
+                noEvents: string;
+                deleteEvent: string;
+                deleteConfirm: string;
+                time: string;
+                location: string;
+            };
+            priority: {
+                none: string;
+                high: string;
+                medium: string;
+                low: string;
+            };
+            placeholder: {
+                titleRequired: string;
+                startTimeHint: string;
+                endTimeHint: string;
+                notesOptional: string;
+                reminderHint: string;
+                pasteICalendar: string;
+            };
+            validation: {
+                noDateSelected: string;
+                titleRequired: string;
+                invalidTimeFormat: string;
+                endTimeBeforeStart: string;
+                invalidReminderMinutes: string;
+                reminderNeedsStartTime: string;
+            };
+            error: {
+                saveFailed: string;
+                deleteFailed: string;
+                reminderFailed: string;
+                importFailed: string;
+                noValidData: string;
+                noClipboardData: string;
+                enterICalendarData: string;
+            };
+            success: {
+                exportSuccess: string;
+                copiedToClipboard: string;
+                importSuccess: string;
+                importedCount: string;
+            };
+            importExport: {
+                title: string;
+                export: string;
+                import: string;
+                share: string;
+                copy: string;
+                importFromClipboard: string;
+                importButton: string;
+            };
+            reminder: {
+                minutesBefore: string;
+                none: string;
+            };
+            lunar: {
+                leapMonth: string;
+            };
+            settings: {
+                title: string;
+                selectLanguage: string;
+                language: string;
+            };
+        };
+    };
+    'zh-TW': {
+        translation: {
+            common: {
+                appName: string;
+                cancel: string;
+                save: string;
+                delete: string;
+                close: string;
+                confirm: string;
+                back: string;
+                ok: string;
+            };
+            calendar: {
+                month: string;
+                week: string;
+                day: string;
+                today: string;
+                allDay: string;
+                previousDay: string;
+                nextDay: string;
+            };
+            event: {
+                title: string;
+                startTime: string;
+                endTime: string;
+                notes: string;
+                reminder: string;
+                priority: string;
+                addEvent: string;
+                eventDetail: string;
+                eventsOnDate: string;
+                noEvents: string;
+                deleteEvent: string;
+                deleteConfirm: string;
+                time: string;
+                location: string;
+            };
+            priority: {
+                none: string;
+                high: string;
+                medium: string;
+                low: string;
+            };
+            placeholder: {
+                titleRequired: string;
+                startTimeHint: string;
+                endTimeHint: string;
+                notesOptional: string;
+                reminderHint: string;
+                pasteICalendar: string;
+            };
+            validation: {
+                noDateSelected: string;
+                titleRequired: string;
+                invalidTimeFormat: string;
+                endTimeBeforeStart: string;
+                invalidReminderMinutes: string;
+                reminderNeedsStartTime: string;
+            };
+            error: {
+                saveFailed: string;
+                deleteFailed: string;
+                reminderFailed: string;
+                importFailed: string;
+                noValidData: string;
+                noClipboardData: string;
+                enterICalendarData: string;
+            };
+            success: {
+                exportSuccess: string;
+                copiedToClipboard: string;
+                importSuccess: string;
+                importedCount: string;
+            };
+            importExport: {
+                title: string;
+                export: string;
+                import: string;
+                share: string;
+                copy: string;
+                importFromClipboard: string;
+                importButton: string;
+            };
+            reminder: {
+                minutesBefore: string;
+                none: string;
+            };
+            lunar: {
+                leapMonth: string;
+            };
+            settings: {
+                title: string;
+                selectLanguage: string;
+                language: string;
+            };
+        };
+    };
+    en: {
+        translation: {
+            common: {
+                appName: string;
+                cancel: string;
+                save: string;
+                delete: string;
+                close: string;
+                confirm: string;
+                back: string;
+                ok: string;
+            };
+            calendar: {
+                month: string;
+                week: string;
+                day: string;
+                today: string;
+                allDay: string;
+                previousDay: string;
+                nextDay: string;
+            };
+            event: {
+                title: string;
+                startTime: string;
+                endTime: string;
+                notes: string;
+                reminder: string;
+                priority: string;
+                addEvent: string;
+                eventDetail: string;
+                eventsOnDate: string;
+                noEvents: string;
+                deleteEvent: string;
+                deleteConfirm: string;
+                time: string;
+                location: string;
+            };
+            priority: {
+                none: string;
+                high: string;
+                medium: string;
+                low: string;
+            };
+            placeholder: {
+                titleRequired: string;
+                startTimeHint: string;
+                endTimeHint: string;
+                notesOptional: string;
+                reminderHint: string;
+                pasteICalendar: string;
+            };
+            validation: {
+                noDateSelected: string;
+                titleRequired: string;
+                invalidTimeFormat: string;
+                endTimeBeforeStart: string;
+                invalidReminderMinutes: string;
+                reminderNeedsStartTime: string;
+            };
+            error: {
+                saveFailed: string;
+                deleteFailed: string;
+                reminderFailed: string;
+                importFailed: string;
+                noValidData: string;
+                noClipboardData: string;
+                enterICalendarData: string;
+            };
+            success: {
+                exportSuccess: string;
+                copiedToClipboard: string;
+                importSuccess: string;
+                importedCount: string;
+            };
+            importExport: {
+                title: string;
+                export: string;
+                import: string;
+                share: string;
+                copy: string;
+                importFromClipboard: string;
+                importButton: string;
+            };
+            reminder: {
+                minutesBefore: string;
+                none: string;
+            };
+            lunar: {
+                leapMonth: string;
+            };
+            settings: {
+                title: string;
+                selectLanguage: string;
+                language: string;
+            };
+        };
+    };
+};
+export declare const initI18n: (language?: Language) => import("i18next").i18n;
+export declare const t: (key: string, options?: any) => string | import("i18next/typescript/helpers").$SpecialObject | import("i18next").TFunctionDetailedResult<string | import("i18next/typescript/helpers").$SpecialObject, any>;
+export declare const changeLanguage: (language: Language) => Promise<import("i18next").TFunction<"translation", undefined>>;
+export declare const getCurrentLanguage: () => Language;
+export default i18next;

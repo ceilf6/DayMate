@@ -10,6 +10,9 @@ importers:
 
   apps/rn-calendar:
     dependencies:
+      '@daymate/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@daymate/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -25,6 +28,9 @@ importers:
       '@react-navigation/native-stack':
         specifier: ^6.9.17
         version: 6.11.0(@react-navigation/native@6.1.18(react-native@0.73.9(@babel/core@7.28.5)(@babel/preset-env@7.28.5(@babel/core@7.28.5))(react@18.2.0))(react@18.2.0))(react-native-safe-area-context@4.14.1(react-native@0.73.9(@babel/core@7.28.5)(@babel/preset-env@7.28.5(@babel/core@7.28.5))(react@18.2.0))(react@18.2.0))(react-native-screens@3.34.1(react-native@0.73.9(@babel/core@7.28.5)(@babel/preset-env@7.28.5(@babel/core@7.28.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.9(@babel/core@7.28.5)(@babel/preset-env@7.28.5(@babel/core@7.28.5))(react@18.2.0))(react@18.2.0)
+      i18next:
+        specifier: ^23.7.16
+        version: 23.16.8
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -92,6 +98,16 @@ importers:
       typescript:
         specifier: 4.8.4
         version: 4.8.4
+
+  packages/i18n:
+    dependencies:
+      i18next:
+        specifier: ^23.7.16
+        version: 23.16.8
+    devDependencies:
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
 
   packages/shared:
     dependencies:
@@ -2230,6 +2246,9 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
 
+  i18next@23.16.8:
+    resolution: {integrity: sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==}
+
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
@@ -3751,6 +3770,11 @@ packages:
   typescript@4.8.4:
     resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
     engines: {node: '>=4.2.0'}
+    hasBin: true
+
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
     hasBin: true
 
   unbox-primitive@1.1.0:
@@ -6860,6 +6884,10 @@ snapshots:
 
   human-signals@2.1.0: {}
 
+  i18next@23.16.8:
+    dependencies:
+      '@babel/runtime': 7.28.4
+
   ieee754@1.2.1: {}
 
   ignore@5.3.2: {}
@@ -8889,6 +8917,8 @@ snapshots:
       reflect.getprototypeof: 1.0.10
 
   typescript@4.8.4: {}
+
+  typescript@5.9.3: {}
 
   unbox-primitive@1.1.0:
     dependencies:
