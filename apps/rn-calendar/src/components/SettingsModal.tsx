@@ -51,14 +51,14 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                 />
                 <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
                     <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
-                        {t('settings.title')}
+                        {t('settings.title', '设置')}
                     </Text>
 
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {/* 语言设置 */}
                         <View style={styles.section}>
                             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                                {t('settings.language')}
+                                {t('settings.language', '语言')}
                             </Text>
                             <View style={styles.optionList}>
                                 {languages.map((lang) => {
@@ -99,7 +99,7 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                         {/* 主题色设置 */}
                         <View style={styles.section}>
                             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                                {t('settings.themeColor')}
+                                {t('settings.themeColor', '主题色')}
                             </Text>
                             <View style={styles.themeGrid}>
                                 {themes.map((theme) => {
@@ -154,7 +154,7 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                         accessibilityRole="button"
                     >
                         <Text style={styles.closeButtonText}>
-                            {t('common.close')}
+                            {t('common.close', '关闭')}
                         </Text>
                     </TouchableOpacity>
                 </View>

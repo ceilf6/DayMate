@@ -479,7 +479,7 @@ const HomeScreen = () => {
                             ⚙️
                         </Text>
                         <Text style={[styles.settingsButtonText, { color: colors.textPrimary }]}>
-                            {t('settings.title')}
+                            {t('settings.title', '设置')}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -487,7 +487,7 @@ const HomeScreen = () => {
                         style={[styles.importExportButton, { backgroundColor: colors.backgroundTertiary }]}
                         accessibilityRole="button">
                         <Text style={[styles.importExportButtonText, { color: colors.textPrimary }]}>
-                            {t('importExport.title')}
+                            {t('importExport.title', '导入/导出')}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -569,7 +569,7 @@ const HomeScreen = () => {
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
-                                {t('calendar.previousDay')}
+                                {t('calendar.previousDay', '上一天')}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.dayNavTitleContainer}>
@@ -582,7 +582,7 @@ const HomeScreen = () => {
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
-                                {t('calendar.nextDay')}
+                                {t('calendar.nextDay', '下一天')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -622,14 +622,14 @@ const HomeScreen = () => {
                                 style={[styles.addButton, { backgroundColor: colors.primary }]}
                                 onPress={openAddModal}
                                 accessibilityRole="button">
-                                <Text style={styles.addButtonText}>{t('event.addEvent')}</Text>
+                                <Text style={styles.addButtonText}>{t('event.addEvent', '添加日程')}</Text>
                             </TouchableOpacity>
                         </View>
 
                         {selectedEvents.length === 0 ? (
                             <View style={[styles.eventCard, { backgroundColor: colors.surface }]}>
                                 <Text style={[styles.eventText, { color: colors.textSecondary }]}>
-                                    {t('event.noEvents')}
+                                    {t('event.noEvents', '暂无日程')}
                                 </Text>
                             </View>
                         ) : (
@@ -677,7 +677,7 @@ const HomeScreen = () => {
                                                     numberOfLines={1}>
                                                     {(event.startTime || event.endTime)
                                                         ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                                        : t('calendar.allDay')}
+                                                        : t('calendar.allDay', '全天')}
                                                 </Text>
                                                 {event.reminderMinutes && event.reminderMinutes > 0 ? (
                                                     <Text
@@ -686,7 +686,7 @@ const HomeScreen = () => {
                                                             { color: colors.textSecondary },
                                                         ]}
                                                         numberOfLines={1}>
-                                                        {t('event.reminder')}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes })}
+                                                        {t('event.reminder', '提醒')}: 提前 {event.reminderMinutes} 分钟
                                                     </Text>
                                                 ) : null}
                                                 {event.description ? (

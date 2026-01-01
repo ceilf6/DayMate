@@ -9,7 +9,7 @@ export type Language = 'zh-CN' | 'zh-TW' | 'en';
 const LANGUAGE_STORAGE_KEY = '@daymate/language';
 
 interface I18nContextType {
-    t: (key: string, options?: any) => string;
+    t: (key: string, defaultValueOrOptions?: string | any) => string;
     currentLanguage: Language;
     changeLanguage: (lang: Language) => Promise<void>;
     isReady: boolean;
@@ -79,9 +79,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    // 翻译函数 - 依赖 currentLang 以响应语言变化
-    const t = useCallback((key: string, options?: any): string => {
-        return String(i18nT(key, options));
+    // 翻译函数 - 支持默认值或插值参数
+    const t = useCallback((key: string, defaultValueOrOptions?: string | any): string => {
+        return String(i18nT(key, defaultValueOrOptions));
     }, [currentLang]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const value: I18nContextType = {

@@ -42,7 +42,7 @@ const LanguageModal = memo(({ visible, onClose }: LanguageModalProps) => {
                 <View style={styles.modalBackdrop} />
                 <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
                     <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                        {t('settings.selectLanguage')}
+                        {t('settings.selectLanguage', '选择语言')}
                     </Text>
 
                     <View style={styles.languageList}>
@@ -83,7 +83,7 @@ const LanguageModal = memo(({ visible, onClose }: LanguageModalProps) => {
                         accessibilityRole="button"
                     >
                         <Text style={[styles.closeButtonText, isDarkMode && styles.textPrimaryDark]}>
-                            {t('common.close')}
+                            {t('common.close', '关闭')}
                         </Text>
                     </TouchableOpacity>
                 </View>
