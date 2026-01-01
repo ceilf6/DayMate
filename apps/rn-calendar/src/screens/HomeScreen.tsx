@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     Platform,
     SafeAreaView,
@@ -33,6 +33,9 @@ import {
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
 import { ImportExportService } from '../services/ImportExportService';
+import AddEventModal from '../components/AddEventModal';
+import EventDetailModal from '../components/EventDetailModal';
+import ImportExportModal from '../components/ImportExportModal';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -64,6 +67,11 @@ const HomeScreen = () => {
     const onDayPress = (day: any) => {
         setSelectedDate(day.dateString);
     };
+
+    const onMonthChange = useCallback((month: any) => {
+        const newDate = month.dateString;
+        setSelectedDate(newDate);
+    }, []);
 
     const shiftSelectedDate = (deltaDays: number) => {
         try {
@@ -120,7 +128,6 @@ const HomeScreen = () => {
     }, []);
 
     const openDetailModal = (event: CalendarEvent) => {
-        setDetailError('');
         setDetailEvent(event);
         setIsDetailModalVisible(true);
     };
@@ -975,54 +982,7 @@ const styles = StyleSheet.create({
     },
     priorityDetailRow: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 14,
-        shadowColor: '#000000',
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 6 },
-        elevation: 1,
-        overflow: 'hidden',
-    },
-    eventItemDark: {
-        backgroundColor: '#141418',
-    },
-    priorityIndicator: {
-        width: 4,
-        borderTopLeftRadius: 14,
-        borderBottomLeftRadius: 14,
-    },
-    eventItemContent: {
-        flex: 1,
-        padding: 14,
-    },
-    eventTitleRow: {
-        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 6,
-    },
-    prioritySymbol: {
-        fontSize: 12,
-        fontWeight: '700',
-        marginLeft: 6,
-    },
-    eventItemTitle: {
-        flex: 1,
-        fontSize: 16,
-        lineHeight: 22,
-        fontWeight: '600',
-        color: '#111827',
-    },
-    eventItemMeta: {
-        fontSize: 13,
-        lineHeight: 18,
-        color: '#6B7280',
-    },
-    eventItemNotes: {
-        marginTop: 8,
-        fontSize: 13,
-        lineHeight: 18,
-        color: '#6B7280',
     },
 
     // 农历信息卡片样式
