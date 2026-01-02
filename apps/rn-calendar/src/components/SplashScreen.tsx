@@ -24,7 +24,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
 
     // 动画值
     const logoOpacity = useRef(new Animated.Value(0)).current;
-    const logoScale = useRef(new Animated.Value(0.5)).current;
     const subtitleOpacity = useRef(new Animated.Value(0)).current;
     const subtitleTranslate = useRef(new Animated.Value(20)).current;
 
@@ -46,47 +45,36 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
         useRef(new Animated.Value(0)).current,
     ];
 
-    // 脉冲动画值
-    const pulseAnim = useRef(new Animated.Value(1)).current;
-
     useEffect(() => {
         // 启动动画序列
         Animated.sequence([
-            // 1. Logo 淡入放大
-            Animated.parallel([
-                Animated.timing(logoOpacity, {
-                    toValue: 1,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(logoScale, {
-                    toValue: 1,
-                    friction: 8,
-                    tension: 40,
-                    useNativeDriver: true,
-                }),
-            ]),
+            // 1. Logo 淡入（无缩放）
+            Animated.timing(logoOpacity, {
+                toValue: 1,
+                duration: 400,
+                useNativeDriver: true,
+            }),
 
             // 2. 副标题淡入上移
             Animated.parallel([
                 Animated.timing(subtitleOpacity, {
                     toValue: 1,
-                    duration: 400,
+                    duration: 300,
                     useNativeDriver: true,
                 }),
                 Animated.timing(subtitleTranslate, {
                     toValue: 0,
-                    duration: 400,
+                    duration: 300,
                     easing: Easing.out(Easing.cubic),
                     useNativeDriver: true,
                 }),
             ]),
 
-            // 3. 日历图标淡入
+            // 3. 日历和待办同时淡入
             Animated.parallel([
                 Animated.timing(calendarOpacity, {
                     toValue: 1,
-                    duration: 400,
+                    duration: 300,
                     useNativeDriver: true,
                 }),
                 Animated.spring(calendarScale, {
@@ -95,54 +83,30 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     tension: 50,
                     useNativeDriver: true,
                 }),
-            ]),
-
-            // 4. 待办事项勾选框依次出现
-            Animated.stagger(150,
-                checkboxes.map(anim =>
-                    Animated.spring(anim, {
-                        toValue: 1,
-                        friction: 8,
-                        tension: 50,
-                        useNativeDriver: true,
-                    })
-                )
-            ),
-
-            // 5. 勾选动画依次完成
-            Animated.stagger(200,
-                checkmarks.map(anim =>
+                // 待办事项勾选框同时出现
+                ...checkboxes.map(anim =>
                     Animated.timing(anim, {
                         toValue: 1,
                         duration: 300,
+                        useNativeDriver: true,
+                    })
+                ),
+            ]),
+
+            // 4. 勾选动画快速完成
+            Animated.stagger(100,
+                checkmarks.map(anim =>
+                    Animated.timing(anim, {
+                        toValue: 1,
+                        duration: 200,
                         easing: Easing.out(Easing.cubic),
                         useNativeDriver: true,
                     })
                 )
             ),
         ]).start(() => {
-            // 动画完成后开始脉冲效果，然后回调
-            Animated.loop(
-                Animated.sequence([
-                    Animated.timing(pulseAnim, {
-                        toValue: 1.05,
-                        duration: 1000,
-                        easing: Easing.inOut(Easing.ease),
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(pulseAnim, {
-                        toValue: 1,
-                        duration: 1000,
-                        easing: Easing.inOut(Easing.ease),
-                        useNativeDriver: true,
-                    }),
-                ])
-            ).start();
-
-            // 延迟后触发完成回调
-            setTimeout(() => {
-                onAnimationComplete?.();
-            }, 500);
+            // 动画完成后立即触发回调进入应用
+            onAnimationComplete?.();
         });
     }, []);
 
@@ -165,17 +129,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     styles.logoContainer,
                     {
                         opacity: logoOpacity,
-                        transform: [
-                            { scale: logoScale },
-                            { scale: pulseAnim },
-                        ],
                     },
                 ]}
             >
-                <View style={[styles.logoIcon, { backgroundColor: primaryColor }]}>
-                    <Text style={styles.logoIconText}>📅</Text>
-                </View>
-                <Text style={[styles.title, { color: textColor }]}>DayMate</Text>
+                <Text style={[styles.title, { color: primaryColor }]}>DayMate</Text>
             </Animated.View>
 
             {/* 副标题 */}
@@ -393,28 +350,12 @@ const styles = StyleSheet.create({
     // Logo 和标题
     logoContainer: {
         alignItems: 'center',
-        marginBottom: 8,
-    },
-    logoIcon: {
-        width: 72,
-        height: 72,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
         marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-    },
-    logoIconText: {
-        fontSize: 36,
     },
     title: {
-        fontSize: 42,
+        fontSize: 48,
         fontWeight: '800',
-        letterSpacing: 1,
+        letterSpacing: 2,
     },
 
     // 副标题

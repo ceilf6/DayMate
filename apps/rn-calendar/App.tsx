@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
     Platform,
     StatusBar,
@@ -24,6 +24,7 @@ function AppContent(): JSX.Element {
     const { isReady } = useI18n();
     const { colors } = useTheme();
     const [showSplash, setShowSplash] = useState(true);
+    const [animationDone, setAnimationDone] = useState(false);
 
     // Memoize screen options to prevent re-creation on every render
     const screenOptions = useMemo(() => ({
@@ -34,14 +35,19 @@ function AppContent(): JSX.Element {
         headerTitleAlign: 'center' as const,
     }), [isDarkMode]);
 
-    // 显示启动画面（同时等待 i18n 初始化）
-    if (showSplash || !isReady) {
+    // 当动画完成且 i18n 准备好后，关闭启动画面
+    useEffect(() => {
+        if (animationDone && isReady) {
+            setShowSplash(false);
+        }
+    }, [animationDone, isReady]);
+
+    // 显示启动画面
+    if (showSplash) {
         return (
             <SplashScreen
                 onAnimationComplete={() => {
-                    if (isReady) {
-                        setShowSplash(false);
-                    }
+                    setAnimationDone(true);
                 }}
             />
         );
