@@ -138,5 +138,9 @@
         "selectLanguage": "选择语言",
         "language": "语言",
         "themeColor": "主题色"
+    },
+    "splash": {
+        "subtitle": "你的日程小帮手",
+        "date": "日期"
     }
 }

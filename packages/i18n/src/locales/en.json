@@ -138,5 +138,9 @@
         "selectLanguage": "Select Language",
         "language": "Language",
         "themeColor": "Theme Color"
+    },
+    "splash": {
+        "subtitle": "Your Schedule Assistant",
+        "date": "Date"
     }
 }

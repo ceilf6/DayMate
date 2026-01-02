@@ -6,11 +6,12 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    useColorScheme,
     ScrollView,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext';
+import { t } from '@daymate/i18n';
 
 interface ImportExportModalProps {
     visible: boolean;
@@ -29,7 +30,7 @@ const ImportExportModal = memo(({
     onImportFromClipboard,
     onImportFromText,
 }: ImportExportModalProps) => {
-    const isDarkMode = useColorScheme() === 'dark';
+    const { colors, isDarkMode } = useTheme();
 
     const [importContent, setImportContent] = useState('');
     const [error, setError] = useState('');
@@ -50,14 +51,14 @@ const ImportExportModal = memo(({
         setError('');
         setSuccess('');
         await onExportShare();
-        setSuccess('导出成功！');
+        setSuccess(t('success.exportSuccess', '导出成功！'));
     }, [onExportShare]);
 
     const handleExportCopy = useCallback(async () => {
         setError('');
         setSuccess('');
         await onExportCopy();
-        setSuccess('已复制到剪贴板！');
+        setSuccess(t('success.copiedToClipboard', '已复制到剪贴板！'));
     }, [onExportCopy]);
 
     const handleImportFromClipboard = useCallback(async () => {
@@ -65,9 +66,9 @@ const ImportExportModal = memo(({
         setSuccess('');
         const result = await onImportFromClipboard();
         if (result.success) {
-            setSuccess('导入成功！');
+            setSuccess(t('success.importSuccess', '导入成功！'));
         } else {
-            setError(result.error || '导入失败');
+            setError(result.error || t('error.importFailed', '导入失败'));
         }
     }, [onImportFromClipboard]);
 
@@ -75,15 +76,15 @@ const ImportExportModal = memo(({
         setError('');
         setSuccess('');
         if (!importContent.trim()) {
-            setError('请输入 iCalendar 数据');
+            setError(t('error.enterICalendarData', '请输入 iCalendar 数据'));
             return;
         }
         const result = await onImportFromText(importContent);
         if (result.success) {
-            setSuccess(result.message || '导入成功！');
+            setSuccess(result.message || t('success.importSuccess', '导入成功！'));
             setImportContent('');
         } else {
-            setError(result.error || '导入失败');
+            setError(result.error || t('error.importFailed', '导入失败'));
         }
     }, [importContent, onImportFromText]);
 
@@ -111,12 +112,12 @@ const ImportExportModal = memo(({
                         keyboardShouldPersistTaps="handled"
                     >
                         <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                            导入/导出
+                            {t('importExport.title', '导入/导出')}
                         </Text>
 
                         {/* 导出区域 */}
                         <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
-                            导出日程
+                            {t('importExport.export', '导出日程')}
                         </Text>
                         <View style={styles.exportButtons}>
                             <TouchableOpacity
@@ -125,7 +126,7 @@ const ImportExportModal = memo(({
                                 accessibilityRole="button"
                             >
                                 <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                    分享
+                                    {t('importExport.share', '分享')}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -134,14 +135,14 @@ const ImportExportModal = memo(({
                                 accessibilityRole="button"
                             >
                                 <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                    复制
+                                    {t('importExport.copy', '复制')}
                                 </Text>
                             </TouchableOpacity>
                         </View>
 
                         {/* 导入区域 */}
                         <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
-                            导入日程
+                            {t('importExport.import', '导入日程')}
                         </Text>
                         <TouchableOpacity
                             style={[styles.importButton, isDarkMode && styles.importButtonDark]}
@@ -149,24 +150,24 @@ const ImportExportModal = memo(({
                             accessibilityRole="button"
                         >
                             <Text style={[styles.importButtonText, isDarkMode && styles.textPrimaryDark]}>
-                                从剪贴板导入
+                                {t('importExport.importFromClipboard', '从剪贴板导入')}
                             </Text>
                         </TouchableOpacity>
 
                         <TextInput
                             value={importContent}
                             onChangeText={setImportContent}
-                            placeholder="粘贴 iCalendar 数据..."
+                            placeholder={t('placeholder.pasteICalendar', '粘贴 iCalendar 数据...')}
                             placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
                             style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
                             multiline
                         />
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.saveButton]}
+                            style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary }]}
                             onPress={handleImportFromText}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.saveButtonText}>导入</Text>
+                            <Text style={styles.saveButtonText}>{t('importExport.importButton', '导入')}</Text>
                         </TouchableOpacity>
 
                         {error ? (
@@ -182,7 +183,7 @@ const ImportExportModal = memo(({
                                 onPress={handleClose}
                                 accessibilityRole="button"
                             >
-                                <Text style={styles.cancelButtonText}>关闭</Text>
+                                <Text style={styles.cancelButtonText}>{t('common.close', '关闭')}</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
         lineHeight: 18,
     },
     saveButton: {
-        backgroundColor: '#2196F3',
+        // backgroundColor applied dynamically via colors.primary
     },
     saveButtonText: {
         color: '#ffffff',

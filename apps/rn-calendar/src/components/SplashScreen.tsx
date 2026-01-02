@@ -8,6 +8,7 @@ import {
     Easing,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+import { t, getCurrentLanguage } from '@daymate/i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ interface SplashScreenProps {
  */
 const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
     const { colors, isDarkMode } = useTheme();
+    const language = getCurrentLanguage();
 
     // 动画值 - Logo 初始就是可见的，与原生启动页保持一致
     const logoOpacity = useRef(new Animated.Value(1)).current;
@@ -113,11 +115,36 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
     }, []);
 
     const primaryColor = colors.primary || '#3B82F6';
-    const backgroundColor = isDarkMode ? '#1a1a2e' : '#F8FAFC';
-    const textColor = isDarkMode ? '#FFFFFF' : '#1F2937';
-    const secondaryTextColor = isDarkMode ? '#9CA3AF' : '#6B7280';
-    const cardColor = isDarkMode ? '#2D2D44' : '#FFFFFF';
+    const backgroundColor = colors.background;
+    const textColor = colors.textPrimary;
+    const secondaryTextColor = colors.textSecondary;
+    const cardColor = colors.surface;
     const checkColor = '#10B981';
+
+    // 获取星期名称（支持 i18n）
+    const getDayNames = (): string[] => {
+        const days = t('calendar.dayNamesShort', ['日', '一', '二', '三', '四', '五', '六']);
+        return Array.isArray(days) ? days : ['日', '一', '二', '三', '四', '五', '六'];
+    };
+
+    // 获取月份名称（支持 i18n）
+    const getMonthName = (monthIndex: number): string => {
+        const months = t('calendar.monthNames', ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']);
+        if (Array.isArray(months) && months[monthIndex]) {
+            return months[monthIndex];
+        }
+        return '一月';
+    };
+
+    // 获取待办事项文本（支持 i18n）
+    const getTodoItems = (): string[] => {
+        // 使用通用任务名称
+        return [
+            String(t('event.title', '会议安排')),
+            String(t('priority.high', '重要任务')),
+            String(t('calendar.today', '今日计划'))
+        ];
+    };
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
@@ -137,7 +164,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                 <Text style={[styles.title, { color: primaryColor }]}>DayMate</Text>
             </Animated.View>
 
-            {/* 副标题 */}
             <Animated.View
                 style={[
                     styles.subtitleContainer,
@@ -148,7 +174,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                 ]}
             >
                 <Text style={[styles.subtitle, { color: secondaryTextColor }]}>
-                    你的日程小帮手
+                    {String(t('splash.subtitle', '你的日程小帮手'))}
                 </Text>
             </Animated.View>
 
@@ -166,13 +192,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                 <View style={[styles.calendarCard, { backgroundColor: cardColor }]}>
                     {/* 日历头部 */}
                     <View style={[styles.calendarHeader, { backgroundColor: primaryColor }]}>
-                        <Text style={styles.calendarMonth}>一月</Text>
+                        <Text style={styles.calendarMonth}>{getMonthName(0)}</Text>
                         <Text style={styles.calendarYear}>2026</Text>
                     </View>
 
                     {/* 日历网格 */}
                     <View style={styles.calendarGrid}>
-                        {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+                        {getDayNames().map((day, index) => (
                             <Text key={`header-${index}`} style={[styles.calendarDayHeader, { color: secondaryTextColor }]}>
                                 {day}
                             </Text>
@@ -200,7 +226,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
 
                 {/* 待办事项列表 */}
                 <View style={styles.todoList}>
-                    {['会议安排', '重要任务', '生活计划'].map((item, index) => (
+                    {getTodoItems().map((item, index) => (
                         <Animated.View
                             key={`todo-${index}`}
                             style={[
@@ -264,7 +290,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     ))}
                 </View>
                 <Text style={[styles.loadingText, { color: secondaryTextColor }]}>
-                    正在加载...
+                    {language === 'en' ? 'Loading...' : '正在加载...'}
                 </Text>
             </Animated.View>
         </View>

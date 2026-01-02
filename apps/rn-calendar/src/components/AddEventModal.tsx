@@ -6,9 +6,10 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    useColorScheme,
 } from 'react-native';
 import { getPriorityColors } from '@daymate/shared';
+import { useTheme } from '../contexts/ThemeContext';
+import { t } from '@daymate/i18n';
 
 interface AddEventModalProps {
     visible: boolean;
@@ -30,7 +31,7 @@ const AddEventModal = memo(({
     onClose,
     onSave,
 }: AddEventModalProps) => {
-    const isDarkMode = useColorScheme() === 'dark';
+    const { colors, isDarkMode } = useTheme();
 
     const [title, setTitle] = useState('');
     const [startTime, setStartTime] = useState('');
@@ -85,16 +86,16 @@ const AddEventModal = memo(({
                 <View style={styles.modalBackdrop} />
                 <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
                     <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                        添加日程
+                        {t('event.addEvent', '添加日程')}
                     </Text>
                     <Text style={[styles.modalSubtitle, isDarkMode && styles.textSecondaryDark]}>
-                        日期：{selectedDate}
+                        {t('splash.date', '日期')}：{selectedDate}
                     </Text>
 
                     <TextInput
                         value={title}
                         onChangeText={setTitle}
-                        placeholder="标题（必填）"
+                        placeholder={t('placeholder.titleRequired', '标题（必填）')}
                         placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
                         style={[styles.input, isDarkMode && styles.inputDark]}
                     />
@@ -102,14 +103,14 @@ const AddEventModal = memo(({
                         <TextInput
                             value={startTime}
                             onChangeText={setStartTime}
-                            placeholder="开始 HH:mm"
+                            placeholder={t('placeholder.startTimeHint', '开始 HH:mm')}
                             placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
                             style={[styles.input, styles.timeInput, isDarkMode && styles.inputDark]}
                         />
                         <TextInput
                             value={endTime}
                             onChangeText={setEndTime}
-                            placeholder="结束 HH:mm"
+                            placeholder={t('placeholder.endTimeHint', '结束 HH:mm')}
                             placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
                             style={[styles.input, styles.timeInput, isDarkMode && styles.inputDark]}
                         />
@@ -117,7 +118,7 @@ const AddEventModal = memo(({
                     <TextInput
                         value={notes}
                         onChangeText={setNotes}
-                        placeholder="备注（可选）"
+                        placeholder={t('placeholder.notesOptional', '备注（可选）')}
                         placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
                         style={[styles.input, styles.notesInput, isDarkMode && styles.inputDark]}
                         multiline
@@ -126,7 +127,7 @@ const AddEventModal = memo(({
                     <TextInput
                         value={reminderMinutes}
                         onChangeText={setReminderMinutes}
-                        placeholder="提醒（提前分钟，可选，如 10）"
+                        placeholder={t('placeholder.reminderHint', '提醒（提前分钟，可选，如 10）')}
                         placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
                         keyboardType="number-pad"
                         style={[styles.input, isDarkMode && styles.inputDark]}
@@ -134,16 +135,16 @@ const AddEventModal = memo(({
 
                     {/* 优先级选择器 */}
                     <Text style={[styles.priorityLabel, isDarkMode && styles.textSecondaryDark]}>
-                        优先级
+                        {t('event.priority', '优先级')}
                     </Text>
                     <View style={styles.prioritySelector}>
                         {[
-                            { value: 0, label: '无' },
-                            { value: 2, label: '高' },
-                            { value: 5, label: '中' },
-                            { value: 8, label: '低' },
+                            { value: 0, label: t('priority.none', '无') },
+                            { value: 2, label: t('priority.high', '高') },
+                            { value: 5, label: t('priority.medium', '中') },
+                            { value: 8, label: t('priority.low', '低') },
                         ].map(option => {
-                            const colors = getPriorityColors(option.value);
+                            const priorityColors = getPriorityColors(option.value);
                             const isSelected = priority === option.value;
                             return (
                                 <TouchableOpacity
@@ -152,8 +153,8 @@ const AddEventModal = memo(({
                                     style={[
                                         styles.priorityOption,
                                         isSelected && {
-                                            backgroundColor: colors.background,
-                                            borderColor: colors.border,
+                                            backgroundColor: priorityColors.background,
+                                            borderColor: priorityColors.border,
                                         },
                                         !isSelected && isDarkMode && styles.priorityOptionDark,
                                     ]}
@@ -161,7 +162,7 @@ const AddEventModal = memo(({
                                     <Text
                                         style={[
                                             styles.priorityOptionText,
-                                            isSelected && { color: colors.text },
+                                            isSelected && { color: priorityColors.text },
                                             !isSelected && isDarkMode && styles.textSecondaryDark,
                                         ]}
                                     >
@@ -182,14 +183,14 @@ const AddEventModal = memo(({
                             onPress={handleClose}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.cancelButtonText}>取消</Text>
+                            <Text style={styles.cancelButtonText}>{t('common.cancel', '取消')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.saveButton]}
+                            style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary }]}
                             onPress={handleSave}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.saveButtonText}>保存</Text>
+                            <Text style={styles.saveButtonText}>{t('common.save', '保存')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
         lineHeight: 18,
     },
     saveButton: {
-        backgroundColor: '#2196F3',
+        // backgroundColor applied dynamically via colors.primary
     },
     saveButtonText: {
         color: '#ffffff',
