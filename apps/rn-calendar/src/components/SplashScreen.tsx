@@ -21,31 +21,31 @@ interface SplashScreenProps {
  */
 const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
     const { colors, isDarkMode } = useTheme();
-    
+
     // 动画值
     const logoOpacity = useRef(new Animated.Value(0)).current;
     const logoScale = useRef(new Animated.Value(0.5)).current;
     const subtitleOpacity = useRef(new Animated.Value(0)).current;
     const subtitleTranslate = useRef(new Animated.Value(20)).current;
-    
+
     // 日历动画值
     const calendarOpacity = useRef(new Animated.Value(0)).current;
     const calendarScale = useRef(new Animated.Value(0.8)).current;
-    
+
     // 勾选框动画值
     const checkboxes = [
         useRef(new Animated.Value(0)).current,
         useRef(new Animated.Value(0)).current,
         useRef(new Animated.Value(0)).current,
     ];
-    
+
     // 勾选动画值
     const checkmarks = [
         useRef(new Animated.Value(0)).current,
         useRef(new Animated.Value(0)).current,
         useRef(new Animated.Value(0)).current,
     ];
-    
+
     // 脉冲动画值
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -66,7 +66,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     useNativeDriver: true,
                 }),
             ]),
-            
+
             // 2. 副标题淡入上移
             Animated.parallel([
                 Animated.timing(subtitleOpacity, {
@@ -81,7 +81,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     useNativeDriver: true,
                 }),
             ]),
-            
+
             // 3. 日历图标淡入
             Animated.parallel([
                 Animated.timing(calendarOpacity, {
@@ -96,10 +96,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     useNativeDriver: true,
                 }),
             ]),
-            
+
             // 4. 待办事项勾选框依次出现
-            Animated.stagger(150, 
-                checkboxes.map(anim => 
+            Animated.stagger(150,
+                checkboxes.map(anim =>
                     Animated.spring(anim, {
                         toValue: 1,
                         friction: 8,
@@ -108,10 +108,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     })
                 )
             ),
-            
+
             // 5. 勾选动画依次完成
-            Animated.stagger(200, 
-                checkmarks.map(anim => 
+            Animated.stagger(200,
+                checkmarks.map(anim =>
                     Animated.timing(anim, {
                         toValue: 1,
                         duration: 300,
@@ -138,7 +138,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     }),
                 ])
             ).start();
-            
+
             // 延迟后触发完成回调
             setTimeout(() => {
                 onAnimationComplete?.();
@@ -158,9 +158,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
             {/* 背景装饰 */}
             <View style={[styles.decorCircle, styles.decorCircle1, { backgroundColor: `${primaryColor}15` }]} />
             <View style={[styles.decorCircle, styles.decorCircle2, { backgroundColor: `${primaryColor}10` }]} />
-            
+
             {/* Logo 和标题 */}
-            <Animated.View 
+            <Animated.View
                 style={[
                     styles.logoContainer,
                     {
@@ -177,9 +177,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                 </View>
                 <Text style={[styles.title, { color: textColor }]}>DayMate</Text>
             </Animated.View>
-            
+
             {/* 副标题 */}
-            <Animated.View 
+            <Animated.View
                 style={[
                     styles.subtitleContainer,
                     {
@@ -192,9 +192,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     你的日程小帮手
                 </Text>
             </Animated.View>
-            
+
             {/* 动画展示区 */}
-            <Animated.View 
+            <Animated.View
                 style={[
                     styles.animationContainer,
                     {
@@ -210,7 +210,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                         <Text style={styles.calendarMonth}>一月</Text>
                         <Text style={styles.calendarYear}>2026</Text>
                     </View>
-                    
+
                     {/* 日历网格 */}
                     <View style={styles.calendarGrid}>
                         {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
@@ -219,16 +219,16 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                             </Text>
                         ))}
                         {[...Array(7)].map((_, i) => (
-                            <View 
-                                key={`date-${i}`} 
+                            <View
+                                key={`date-${i}`}
                                 style={[
                                     styles.calendarDate,
                                     i === 4 && [styles.calendarDateToday, { backgroundColor: primaryColor }],
                                 ]}
                             >
-                                <Text 
+                                <Text
                                     style={[
-                                        styles.calendarDateText, 
+                                        styles.calendarDateText,
                                         { color: i === 4 ? '#FFFFFF' : textColor },
                                     ]}
                                 >
@@ -238,11 +238,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                         ))}
                     </View>
                 </View>
-                
+
                 {/* 待办事项列表 */}
                 <View style={styles.todoList}>
                     {['会议安排', '重要任务', '生活计划'].map((item, index) => (
-                        <Animated.View 
+                        <Animated.View
                             key={`todo-${index}`}
                             style={[
                                 styles.todoItem,
@@ -251,7 +251,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                                     opacity: checkboxes[index],
                                     transform: [
                                         { scale: checkboxes[index] },
-                                        { 
+                                        {
                                             translateX: checkboxes[index].interpolate({
                                                 inputRange: [0, 1],
                                                 outputRange: [-20, 0],
@@ -261,7 +261,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                                 },
                             ]}
                         >
-                            <Animated.View 
+                            <Animated.View
                                 style={[
                                     styles.checkbox,
                                     { borderColor: checkColor },
@@ -273,7 +273,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                                     },
                                 ]}
                             >
-                                <Animated.Text 
+                                <Animated.Text
                                     style={[
                                         styles.checkmark,
                                         {
@@ -291,9 +291,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                     ))}
                 </View>
             </Animated.View>
-            
+
             {/* 底部加载提示 */}
-            <Animated.View 
+            <Animated.View
                 style={[
                     styles.loadingContainer,
                     { opacity: subtitleOpacity },
@@ -321,7 +321,7 @@ const getIndicatorColor = (index: number): string => {
 // 加载点组件
 const LoadingDot: React.FC<{ delay: number; color: string }> = ({ delay, color }) => {
     const anim = useRef(new Animated.Value(0)).current;
-    
+
     useEffect(() => {
         const animation = Animated.loop(
             Animated.sequence([
@@ -341,9 +341,9 @@ const LoadingDot: React.FC<{ delay: number; color: string }> = ({ delay, color }
         animation.start();
         return () => animation.stop();
     }, [delay]);
-    
+
     return (
-        <Animated.View 
+        <Animated.View
             style={[
                 styles.loadingDot,
                 { backgroundColor: color },
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 24,
     },
-    
+
     // 装饰圆圈
     decorCircle: {
         position: 'absolute',
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
         bottom: -width * 0.4,
         left: -width * 0.2,
     },
-    
+
     // Logo 和标题
     logoContainer: {
         alignItems: 'center',
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         letterSpacing: 1,
     },
-    
+
     // 副标题
     subtitleContainer: {
         marginBottom: 32,
@@ -426,14 +426,14 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         letterSpacing: 2,
     },
-    
+
     // 动画展示区
     animationContainer: {
         width: '100%',
         maxWidth: 320,
         alignItems: 'center',
     },
-    
+
     // 日历卡片
     calendarCard: {
         width: '100%',
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
     },
-    
+
     // 待办事项
     todoList: {
         width: '100%',
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
     },
-    
+
     // 加载提示
     loadingContainer: {
         position: 'absolute',

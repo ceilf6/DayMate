@@ -37,7 +37,7 @@ function AppContent(): JSX.Element {
     // 显示启动画面（同时等待 i18n 初始化）
     if (showSplash || !isReady) {
         return (
-            <SplashScreen 
+            <SplashScreen
                 onAnimationComplete={() => {
                     if (isReady) {
                         setShowSplash(false);
