@@ -105,7 +105,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
             // 确保动画至少显示了最小时长
             const elapsed = Date.now() - startTime;
             const remaining = Math.max(0, MIN_DURATION - elapsed);
-            
+
             setTimeout(() => {
                 onAnimationComplete?.();
             }, remaining);

@@ -767,7 +767,7 @@ const styles = StyleSheet.create({
     viewModeRow: {
         flexDirection: 'row',
         marginHorizontal: 12,
-        marginTop: 10,
+        marginTop: 4,
         marginBottom: 12,
         padding: 4,
         borderRadius: 12,
@@ -846,6 +846,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 16,
+        marginTop: 12,
     },
     eventHeaderRow: {
         flexDirection: 'row',
@@ -1035,7 +1036,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingTop: 8,
+        paddingBottom: 8,
+        marginBottom: 4,
     },
     appTitle: {
         fontSize: 20,
