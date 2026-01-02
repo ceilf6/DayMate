@@ -101,6 +101,10 @@ export declare const resources: {
                 language: string;
                 themeColor: string;
             };
+            splash: {
+                subtitle: string;
+                date: string;
+            };
         };
     };
     'zh-TW': {
@@ -203,6 +207,10 @@ export declare const resources: {
                 language: string;
                 themeColor: string;
             };
+            splash: {
+                subtitle: string;
+                date: string;
+            };
         };
     };
     en: {
@@ -304,6 +312,10 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+            };
+            splash: {
+                subtitle: string;
+                date: string;
             };
         };
     };
