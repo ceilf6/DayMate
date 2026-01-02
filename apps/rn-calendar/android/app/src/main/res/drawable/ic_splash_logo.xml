@@ -1,0 +1,71 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- 日历图标背景 -->
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M40,50 L160,50 C170,50 175,55 175,65 L175,165 C175,175 170,180 160,180 L40,180 C30,180 25,175 25,165 L25,65 C25,55 30,50 40,50 Z"/>
+    
+    <!-- 日历顶部装饰条 -->
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M40,50 L160,50 C170,50 175,55 175,65 L175,85 L25,85 L25,65 C25,55 30,50 40,50 Z"/>
+    
+    <!-- 日历挂钩左 -->
+    <path
+        android:fillColor="#1E40AF"
+        android:pathData="M55,35 L55,60 C55,63 58,66 62,66 C66,66 69,63 69,60 L69,35 C69,31 66,28 62,28 C58,28 55,31 55,35 Z"/>
+    
+    <!-- 日历挂钩右 -->
+    <path
+        android:fillColor="#1E40AF"
+        android:pathData="M131,35 L131,60 C131,63 134,66 138,66 C142,66 145,63 145,60 L145,35 C145,31 142,28 138,28 C134,28 131,31 131,35 Z"/>
+    
+    <!-- 日期格子 - 第一行 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M40,100 L60,100 L60,120 L40,120 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M70,100 L90,100 L90,120 L70,120 Z"/>
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M100,100 L120,100 L120,120 L100,120 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M130,100 L150,100 L150,120 L130,120 Z"/>
+    
+    <!-- 日期格子 - 第二行 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M40,130 L60,130 L60,150 L40,150 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M70,130 L90,130 L90,150 L70,150 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M100,130 L120,130 L120,150 L100,150 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M130,130 L150,130 L150,150 L130,150 Z"/>
+    
+    <!-- 勾选标记 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M104,106 L108,114 L116,104"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    
+</vector>

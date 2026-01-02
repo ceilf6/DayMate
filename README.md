@@ -1,5 +1,7 @@
 # DayMate — 你的日程小帮手
 
+Calender+todos: 在日历应用中便捷进行事项管理  
+
 一个面向日常与专业场景的跨平台日历产品。DayMate 采用 Monorepo 架构，同时支持 Android 原生和 React Native 跨平台应用，以清晰直观的日历视图和灵活的事件管理为核心。
 
 ## 🏗️ 架构概览

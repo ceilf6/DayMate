@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     Platform,
     StatusBar,
     useColorScheme,
-    ActivityIndicator,
     View,
     StyleSheet,
 } from 'react-native';
@@ -16,6 +15,7 @@ import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 
 // 导入屏幕组件
 import HomeScreen from './src/screens/HomeScreen';
+import SplashScreen from './src/components/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +23,7 @@ function AppContent(): JSX.Element {
     const isDarkMode = useColorScheme() === 'dark';
     const { isReady } = useI18n();
     const { colors } = useTheme();
+    const [showSplash, setShowSplash] = useState(true);
 
     // Memoize screen options to prevent re-creation on every render
     const screenOptions = useMemo(() => ({
@@ -33,12 +34,16 @@ function AppContent(): JSX.Element {
         headerTitleAlign: 'center' as const,
     }), [isDarkMode]);
 
-    // 等待 i18n 初始化
-    if (!isReady) {
+    // 显示启动画面（同时等待 i18n 初始化）
+    if (showSplash || !isReady) {
         return (
-            <View style={[styles.loading, { backgroundColor: colors.background }]}>
-                <ActivityIndicator size="large" color={colors.primary} />
-            </View>
+            <SplashScreen 
+                onAnimationComplete={() => {
+                    if (isReady) {
+                        setShowSplash(false);
+                    }
+                }}
+            />
         );
     }
 
