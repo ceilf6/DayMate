@@ -22,8 +22,8 @@ interface SplashScreenProps {
 const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
     const { colors, isDarkMode } = useTheme();
 
-    // 动画值
-    const logoOpacity = useRef(new Animated.Value(0)).current;
+    // 动画值 - Logo 初始就是可见的，与原生启动页保持一致
+    const logoOpacity = useRef(new Animated.Value(1)).current;
     const subtitleOpacity = useRef(new Animated.Value(0)).current;
     const subtitleTranslate = useRef(new Animated.Value(20)).current;
 
@@ -46,35 +46,32 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
     ];
 
     useEffect(() => {
-        // 启动动画序列
-        Animated.sequence([
-            // 1. Logo 淡入（无缩放）
-            Animated.timing(logoOpacity, {
-                toValue: 1,
-                duration: 400,
-                useNativeDriver: true,
-            }),
+        // 记录开始时间，确保动画至少播放一定时长
+        const startTime = Date.now();
+        const MIN_DURATION = 2000; // 最少显示2秒
 
-            // 2. 副标题淡入上移
+        // 启动动画序列 - Logo 已经可见，直接开始后续动画
+        Animated.sequence([
+            // 1. 副标题淡入上移
             Animated.parallel([
                 Animated.timing(subtitleOpacity, {
                     toValue: 1,
-                    duration: 300,
+                    duration: 400,
                     useNativeDriver: true,
                 }),
                 Animated.timing(subtitleTranslate, {
                     toValue: 0,
-                    duration: 300,
+                    duration: 400,
                     easing: Easing.out(Easing.cubic),
                     useNativeDriver: true,
                 }),
             ]),
 
-            // 3. 日历和待办同时淡入
+            // 2. 日历和待办同时淡入
             Animated.parallel([
                 Animated.timing(calendarOpacity, {
                     toValue: 1,
-                    duration: 300,
+                    duration: 400,
                     useNativeDriver: true,
                 }),
                 Animated.spring(calendarScale, {
@@ -87,26 +84,31 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
                 ...checkboxes.map(anim =>
                     Animated.timing(anim, {
                         toValue: 1,
-                        duration: 300,
+                        duration: 400,
                         useNativeDriver: true,
                     })
                 ),
             ]),
 
-            // 4. 勾选动画快速完成
-            Animated.stagger(100,
+            // 3. 勾选动画依次完成
+            Animated.stagger(150,
                 checkmarks.map(anim =>
                     Animated.timing(anim, {
                         toValue: 1,
-                        duration: 200,
+                        duration: 250,
                         easing: Easing.out(Easing.cubic),
                         useNativeDriver: true,
                     })
                 )
             ),
         ]).start(() => {
-            // 动画完成后立即触发回调进入应用
-            onAnimationComplete?.();
+            // 确保动画至少显示了最小时长
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, MIN_DURATION - elapsed);
+            
+            setTimeout(() => {
+                onAnimationComplete?.();
+            }, remaining);
         });
     }, []);
 
