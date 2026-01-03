@@ -76,6 +76,7 @@ const EventDetailModal = memo(({
                         {t('splash.date', '日期')}：{event.date}
                     </Text>
 
+                    {/* 第一行：标题（单列） */}
                     <View style={styles.detailRow}>
                         <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
                             {t('event.title', '标题')}
@@ -85,52 +86,56 @@ const EventDetailModal = memo(({
                         </Text>
                     </View>
 
-                    <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                            {t('event.time', '时间')}
-                        </Text>
-                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                            {(event.startTime || event.endTime)
-                                ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                : t('calendar.allDay', '全天')}
-                        </Text>
-                    </View>
-
-                    <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                            {t('event.reminder', '提醒')}
-                        </Text>
-                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                            {event.reminderMinutes && event.reminderMinutes > 0
-                                ? t('reminder.minutesBefore', { minutes: event.reminderMinutes })
-                                : t('reminder.none', '无')}
-                        </Text>
-                    </View>
-
-                    <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                            {t('event.priority', '优先级')}
-                        </Text>
-                        <View style={styles.priorityDetailRow}>
-                            <View
-                                style={[
-                                    styles.priorityDot,
-                                    { backgroundColor: priorityColors.background },
-                                ]}
-                            />
+                    {/* 第二行：时间 + 提醒（双列） */}
+                    <View style={styles.detailTwoColumns}>
+                        <View style={styles.detailColumn}>
+                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                {t('event.time', '时间')}
+                            </Text>
                             <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                                {getPriorityText(event.priority)}
+                                {(event.startTime || event.endTime)
+                                    ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
+                                    : t('calendar.allDay', '全天')}
+                            </Text>
+                        </View>
+
+                        <View style={styles.detailColumn}>
+                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                {t('event.reminder', '提醒')}
+                            </Text>
+                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                {event.reminderMinutes && event.reminderMinutes > 0
+                                    ? t('reminder.minutesBefore', { minutes: event.reminderMinutes })
+                                    : t('reminder.none', '无')}
                             </Text>
                         </View>
                     </View>
 
-                    <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                            {t('event.notes', '备注')}
-                        </Text>
-                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                            {event.description?.trim() ? event.description : t('reminder.none', '无')}
-                        </Text>
+                    <View style={styles.detailTwoColumns}>
+                        <View style={styles.detailColumn}>
+                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                {t('event.priority', '优先级')}
+                            </Text>
+                            <View style={styles.priorityDetailRow}>
+                                <View
+                                    style={[
+                                        styles.priorityDot,
+                                        { backgroundColor: priorityColors.background },
+                                    ]}
+                                />
+                                <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                    {getPriorityText(event.priority)}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.detailColumn}>
+                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                {t('event.notes', '备注')}
+                            </Text>
+                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                {event.description?.trim() ? event.description : t('reminder.none', '无')}
+                            </Text>
+                        </View>
                     </View>
 
                     {error ? <Text style={styles.formErrorText}>{error}</Text> : null}
@@ -191,10 +196,17 @@ const styles = StyleSheet.create({
     detailRow: {
         marginBottom: 10,
     },
+    detailTwoColumns: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 10,
+    },
+    detailColumn: {
+        flex: 1,
+    },
     detailLabel: {
-        fontSize: 12,
+        fontSize: 15,
         lineHeight: 16,
-        color: '#6B7280',
         marginBottom: 4,
         fontWeight: '600',
     },
