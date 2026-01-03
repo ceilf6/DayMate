@@ -236,6 +236,17 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                                 </Text>
                             </TouchableOpacity>
 
+                            {/* 恢复默认背景按钮 */}
+                            {backgroundImage && (
+                                <TouchableOpacity
+                                    style={[styles.restoreDefaultButton, { borderColor: colors.textSecondary }]}
+                                    onPress={() => clearBackground()}>
+                                    <Text style={[styles.restoreDefaultText, { color: colors.textSecondary }]}>
+                                        {t('settings.restoreDefault', '恢复默认主题背景') as string}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+
                             {/* 透明度调节 */}
                             {backgroundImage && (
                                 <View style={styles.opacitySection}>
@@ -434,6 +445,16 @@ const styles = StyleSheet.create({
     selectImageText: {
         fontSize: 15,
         fontWeight: '600',
+    },
+    restoreDefaultButton: {
+        marginTop: 12,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        borderWidth: 1,
+    },
+    restoreDefaultText: {
+        fontSize: 14,
     },
     opacitySection: {
         marginTop: 16,

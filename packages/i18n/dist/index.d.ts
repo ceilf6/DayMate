@@ -108,6 +108,7 @@ export declare const resources: {
                 clearBackground: string;
                 clearBackgroundConfirm: string;
                 backgroundOpacity: string;
+                restoreDefault: string;
             };
             error: {
                 title: string;
@@ -241,6 +242,7 @@ export declare const resources: {
                 clearBackground: string;
                 clearBackgroundConfirm: string;
                 backgroundOpacity: string;
+                restoreDefault: string;
             };
             error: {
                 title: string;
@@ -374,6 +376,7 @@ export declare const resources: {
                 clearBackground: string;
                 clearBackgroundConfirm: string;
                 backgroundOpacity: string;
+                restoreDefault: string;
             };
             error: {
                 title: string;

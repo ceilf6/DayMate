@@ -145,7 +145,8 @@
         "changeImage": "更換圖片",
         "clearBackground": "清除背景",
         "clearBackgroundConfirm": "確定要清除背景圖片嗎？",
-        "backgroundOpacity": "背景透明度"
+        "backgroundOpacity": "背景透明度",
+        "restoreDefault": "恢復預設主題背景"
     },
     "error": {
         "title": "錯誤",
