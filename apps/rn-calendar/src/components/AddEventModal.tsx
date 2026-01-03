@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     priorityOption: {
         flex: 1,
         paddingVertical: 10,
-        paddingHorizontal: 12,
+        paddingHorizontal: 8,
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#E5E7EB',
@@ -294,9 +294,10 @@ const styles = StyleSheet.create({
         borderColor: '#3F3F46',
     },
     priorityOptionText: {
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '600',
         color: '#374151',
+        textAlign: 'center',
     },
     formErrorText: {
         color: '#EF4444',
