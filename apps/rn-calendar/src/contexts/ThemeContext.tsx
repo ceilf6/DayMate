@@ -55,6 +55,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         ? {
             ...theme.colors,
             ...darkModeColors,
+            // 深色模式下应用主题专属的深色主题色
+            ...theme.darkModeOverrides,
         }
         : theme.colors;
 
