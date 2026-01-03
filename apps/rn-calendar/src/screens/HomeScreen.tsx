@@ -39,6 +39,7 @@ import AddEventModal from '../components/AddEventModal';
 import EventDetailModal from '../components/EventDetailModal';
 import ImportExportModal from '../components/ImportExportModal';
 import SettingsModal from '../components/SettingsModal';
+import SwipeableEventItem from '../components/SwipeableEventItem';
 import { useI18n } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -819,107 +820,16 @@ const HomeScreen = () => {
                             </View>
                         ) : (
                             <View style={styles.eventList}>
-                                {selectedEvents.map(event => {
-                                    const priorityColors = getPriorityColors(event.priority);
-                                    const priorityIndicator = getPriorityIndicator(event.priority);
-                                    const highPriority = isHighPriority(event.priority);
-                                    const isCompleted = event.completed === true;
-
-                                    return (
-                                        <View
-                                            key={event.id}
-                                            style={[styles.eventItem, { backgroundColor: colors.primaryContent }]}>
-                                            {/* 优先级指示条 */}
-                                            <View
-                                                style={[
-                                                    styles.priorityIndicator,
-                                                    { backgroundColor: priorityColors.background }
-                                                ]}
-                                            />
-                                            {/* 完成状态圆圈按钮 */}
-                                            <TouchableOpacity
-                                                style={styles.completeCircleContainer}
-                                                onPress={() => handleToggleComplete(event)}
-                                                accessibilityRole="checkbox"
-                                                accessibilityState={{ checked: isCompleted }}
-                                                accessibilityLabel={isCompleted ? t('event.markIncomplete') as string : t('event.markComplete') as string}>
-                                                <View style={[
-                                                    styles.completeCircle,
-                                                    { borderColor: isCompleted ? colors.primary : colors.textDisabled },
-                                                    isCompleted && { backgroundColor: colors.primary },
-                                                ]}>
-                                                    {isCompleted && (
-                                                        <Text style={styles.checkmark}>✓</Text>
-                                                    )}
-                                                </View>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={styles.eventItemContent}
-                                                onPress={() => openDetailModal(event)}
-                                                accessibilityRole="button">
-                                                <View style={styles.eventTitleRow}>
-                                                    <Text
-                                                        style={[
-                                                            styles.eventItemTitle,
-                                                            { color: colors.textPrimary },
-                                                            highPriority && { color: priorityColors.background },
-                                                            isCompleted && styles.completedText,
-                                                        ]}
-                                                        numberOfLines={1}>
-                                                        {event.title}
-                                                    </Text>
-                                                    {priorityIndicator ? (
-                                                        <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
-                                                            {priorityIndicator}
-                                                        </Text>
-                                                    ) : null}
-                                                    {/* 完成状态标签 */}
-                                                    {/* <View style={[
-                                                        styles.statusBadge,
-                                                        { backgroundColor: isCompleted ? colors.primary : colors.textDisabled }
-                                                    ]}>
-                                                        <Text style={styles.statusBadgeText}>
-                                                            {isCompleted
-                                                                ? t('event.completed', '已完成') as string
-                                                                : t('event.incomplete', '未完成') as string}
-                                                        </Text>
-                                                    </View> */}
-                                                </View>
-                                                <Text
-                                                    style={[
-                                                        styles.eventItemMeta,
-                                                        { color: colors.textSecondary },
-                                                        isCompleted && styles.completedText,
-                                                    ]}
-                                                    numberOfLines={1}>
-                                                    {(event.startTime || event.endTime)
-                                                        ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                                        : t('calendar.allDay', '全天') as string}
-                                                </Text>
-                                                {event.reminderMinutes && event.reminderMinutes > 0 ? (
-                                                    <Text
-                                                        style={[
-                                                            styles.eventItemMeta,
-                                                            { color: colors.textSecondary },
-                                                        ]}
-                                                        numberOfLines={1}>
-                                                        {t('event.reminder', '提醒') as string}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes }) as string}
-                                                    </Text>
-                                                ) : null}
-                                                {event.description ? (
-                                                    <Text
-                                                        style={[
-                                                            styles.eventItemNotes,
-                                                            { color: colors.textSecondary },
-                                                        ]}
-                                                        numberOfLines={2}>
-                                                        {event.description}
-                                                    </Text>
-                                                ) : null}
-                                            </TouchableOpacity>
-                                        </View>
-                                    );
-                                })}
+                                {selectedEvents.map(event => (
+                                    <SwipeableEventItem
+                                        key={event.id}
+                                        event={event}
+                                        onPress={() => openDetailModal(event)}
+                                        onToggleComplete={() => handleToggleComplete(event)}
+                                        onDelete={() => handleDeleteEvent(event)}
+                                        showDate={false}
+                                    />
+                                ))}
                             </View>
                         )}
                     </View>
@@ -941,78 +851,16 @@ const HomeScreen = () => {
                         </View>
                     ) : (
                         <View style={styles.eventList}>
-                            {incompleteEvents.map(event => {
-                                const priorityColors = getPriorityColors(event.priority);
-                                const priorityIndicator = getPriorityIndicator(event.priority);
-                                const highPriority = isHighPriority(event.priority);
-
-                                return (
-                                    <View
-                                        key={event.id}
-                                        style={[styles.eventItem, { backgroundColor: colors.primaryContent }]}>
-                                        {/* 优先级指示条 */}
-                                        <View
-                                            style={[
-                                                styles.priorityIndicator,
-                                                { backgroundColor: priorityColors.background }
-                                            ]}
-                                        />
-                                        {/* 完成状态圆圈按钮 */}
-                                        <TouchableOpacity
-                                            style={styles.completeCircleContainer}
-                                            onPress={() => handleToggleComplete(event)}
-                                            accessibilityRole="checkbox"
-                                            accessibilityState={{ checked: false }}
-                                            accessibilityLabel={t('event.markComplete') as string}>
-                                            <View style={[
-                                                styles.completeCircle,
-                                                { borderColor: colors.textDisabled },
-                                            ]} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.eventItemContent}
-                                            onPress={() => openDetailModal(event)}
-                                            accessibilityRole="button">
-                                            <View style={styles.eventTitleRow}>
-                                                <Text
-                                                    style={[
-                                                        styles.eventItemTitle,
-                                                        { color: colors.textPrimary },
-                                                        highPriority && { color: priorityColors.background },
-                                                    ]}
-                                                    numberOfLines={1}>
-                                                    {event.title}
-                                                </Text>
-                                                {priorityIndicator ? (
-                                                    <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
-                                                        {priorityIndicator}
-                                                    </Text>
-                                                ) : null}
-                                            </View>
-                                            {/* 显示事项日期 */}
-                                            <Text
-                                                style={[
-                                                    styles.eventItemMeta,
-                                                    { color: colors.textSecondary },
-                                                ]}
-                                                numberOfLines={1}>
-                                                {event.date}
-                                                {(event.startTime || event.endTime) && ` · ${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
-                                            </Text>
-                                            {event.description ? (
-                                                <Text
-                                                    style={[
-                                                        styles.eventItemNotes,
-                                                        { color: colors.textSecondary },
-                                                    ]}
-                                                    numberOfLines={2}>
-                                                    {event.description}
-                                                </Text>
-                                            ) : null}
-                                        </TouchableOpacity>
-                                    </View>
-                                );
-                            })}
+                            {incompleteEvents.map(event => (
+                                <SwipeableEventItem
+                                    key={event.id}
+                                    event={event}
+                                    onPress={() => openDetailModal(event)}
+                                    onToggleComplete={() => handleToggleComplete(event)}
+                                    onDelete={() => handleDeleteEvent(event)}
+                                    showDate={true}
+                                />
+                            ))}
                         </View>
                     )}
                 </View>
