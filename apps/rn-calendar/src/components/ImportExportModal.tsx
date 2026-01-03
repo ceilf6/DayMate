@@ -162,13 +162,6 @@ const ImportExportModal = memo(({
                             style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
                             multiline
                         />
-                        <TouchableOpacity
-                            style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary }]}
-                            onPress={handleImportFromText}
-                            accessibilityRole="button"
-                        >
-                            <Text style={styles.saveButtonText}>{t('importExport.importButton', '导入')}</Text>
-                        </TouchableOpacity>
 
                         {error ? (
                             <Text style={styles.formErrorText}>{error}</Text>
@@ -184,6 +177,13 @@ const ImportExportModal = memo(({
                                 accessibilityRole="button"
                             >
                                 <Text style={styles.cancelButtonText}>{t('common.close', '关闭')}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary }]}
+                                onPress={handleImportFromText}
+                                accessibilityRole="button"
+                            >
+                                <Text style={styles.saveButtonText}>{t('importExport.importButton', '导入')}</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
