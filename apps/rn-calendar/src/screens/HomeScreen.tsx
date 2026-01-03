@@ -8,6 +8,7 @@ import {
     View,
     TouchableOpacity,
     useColorScheme,
+    ImageBackground,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import type { Theme } from 'react-native-calendars/src/types';
@@ -42,11 +43,13 @@ import SettingsModal from '../components/SettingsModal';
 import SwipeableEventItem from '../components/SwipeableEventItem';
 import { useI18n } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const HomeScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
     const { t, currentLanguage } = useI18n();
     const { colors } = useTheme();
+    const { backgroundImage } = useBackground();
 
     type ViewMode = 'month' | 'week' | 'day';
     const today = useMemo(() => getToday(), []);
@@ -581,72 +584,89 @@ const HomeScreen = () => {
         };
     }, [selectedDate, today, isDarkMode, eventsByDate, drillDown, colors, currentLanguage]);
 
-    return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.primaryBackground }]}>
-            <ScrollView contentInsetAdjustmentBehavior="automatic">
-                {/* <View style={styles.header}>
-                    <Text style={[styles.title, isDarkMode && styles.textDark]}>
-                        DayMate 日历
-                    </Text>
-                    <Text style={[styles.subtitle, isDarkMode && styles.textDark]}>
-                        跨平台日程管理
-                    </Text>
-                </View> */}
-
-                {/* 顶部操作栏 - 三个按钮同行 */}
-                <View style={[styles.topActionRowCard, { backgroundColor: colors.primarySurface }]}>
-                    {/* 左侧：视图切换 */}
-                    {canGoBack ? (
-                        <TouchableOpacity
-                            onPress={goBack}
-                            accessibilityRole="button"
-                            style={[styles.topActionButton, { backgroundColor: colors.primary }]}>
-                            <Text style={[styles.backButtonIcon]}>‹</Text>
-                            <Text style={[styles.topActionButtonText]}>
-                                {viewMode === 'week' ? t('calendar.month', '月') as string : t('calendar.week', '周') as string}
-                            </Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity
-                            style={[styles.topActionButton, { backgroundColor: colors.primary }]}
-                            disabled>
-                            <Text style={[styles.topActionButtonText]}>
-                                {viewMode === 'month' && t('calendar.monthView', '月视图') as string}
-                                {viewMode === 'week' && t('calendar.weekView', '周视图') as string}
-                                {viewMode === 'day' && t('calendar.dayView', '日视图') as string}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-
-                    {/* 中间：设置 */}
+    // 渲染主内容
+    const renderContent = () => (
+        <ScrollView contentInsetAdjustmentBehavior="automatic">
+            {/* 顶部操作栏 - 三个按钮同行 */}
+            <View style={[styles.topActionRowCard, { backgroundColor: backgroundImage ? `${colors.primarySurface}E6` : colors.primarySurface }]}>
+                {/* 左侧：视图切换 */}
+                {canGoBack ? (
                     <TouchableOpacity
-                        onPress={() => setIsSettingsModalVisible(true)}
-                        style={[styles.topActionButton, { backgroundColor: colors.primary }]}
-                        accessibilityRole="button">
+                        onPress={goBack}
+                        accessibilityRole="button"
+                        style={[styles.topActionButton, { backgroundColor: colors.primary }]}>
+                        <Text style={[styles.backButtonIcon]}>‹</Text>
                         <Text style={[styles.topActionButtonText]}>
-                            {t('settings.title', '设置') as string}
+                            {viewMode === 'week' ? t('calendar.month', '月') as string : t('calendar.week', '周') as string}
                         </Text>
                     </TouchableOpacity>
-
-                    {/* 右侧：导入/导出 */}
+                ) : (
                     <TouchableOpacity
-                        onPress={openImportExportModal}
                         style={[styles.topActionButton, { backgroundColor: colors.primary }]}
-                        accessibilityRole="button">
+                        disabled>
                         <Text style={[styles.topActionButtonText]}>
-                            {t('importExport.title', '导入/导出') as string}
+                            {viewMode === 'month' && t('calendar.monthView', '月视图') as string}
+                            {viewMode === 'week' && t('calendar.weekView', '周视图') as string}
+                            {viewMode === 'day' && t('calendar.dayView', '日视图') as string}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+
+                {/* 中间：设置 */}
+                <TouchableOpacity
+                    onPress={() => setIsSettingsModalVisible(true)}
+                    style={[styles.topActionButton, { backgroundColor: colors.primary }]}
+                    accessibilityRole="button">
+                    <Text style={[styles.topActionButtonText]}>
+                        {t('settings.title', '设置') as string}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* 右侧：导入/导出 */}
+                <TouchableOpacity
+                    onPress={openImportExportModal}
+                    style={[styles.topActionButton, { backgroundColor: colors.primary }]}
+                    accessibilityRole="button">
+                    <Text style={[styles.topActionButtonText]}>
+                        {t('importExport.title', '导入/导出') as string}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {viewMode === 'day' ? (
+                <View style={[styles.dayNavRow, { backgroundColor: colors.primarySurface }]}>
+                    <TouchableOpacity
+                        onPress={() => shiftSelectedDate(-1)}
+                        accessibilityRole="button"
+                        style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
+                        <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
+                            {t('calendar.previousDay', '上一天') as string}
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={styles.dayNavTitleContainer}>
+                        <Text style={[styles.dayNavTitle, { color: colors.textPrimary }]}>
+                            {selectedDate}
+                        </Text>
+                    </View>
+                    <TouchableOpacity
+                        onPress={() => shiftSelectedDate(1)}
+                        accessibilityRole="button"
+                        style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
+                        <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
+                            {t('calendar.nextDay', '下一天') as string}
                         </Text>
                     </TouchableOpacity>
                 </View>
-
-                {viewMode === 'day' ? (
+            ) : viewMode === 'week' ? (
+                <>
+                    {/* 周视图导航行 */}
                     <View style={[styles.dayNavRow, { backgroundColor: colors.primarySurface }]}>
                         <TouchableOpacity
-                            onPress={() => shiftSelectedDate(-1)}
+                            onPress={() => shiftWeek('prev')}
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                {t('calendar.previousDay', '上一天') as string}
+                                {t('calendar.previousWeek', '上一周') as string}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.dayNavTitleContainer}>
@@ -655,281 +675,272 @@ const HomeScreen = () => {
                             </Text>
                         </View>
                         <TouchableOpacity
-                            onPress={() => shiftSelectedDate(1)}
+                            onPress={() => shiftWeek('next')}
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                {t('calendar.nextDay', '下一天') as string}
+                                {t('calendar.nextWeek', '下一周') as string}
                             </Text>
                         </TouchableOpacity>
                     </View>
-                ) : viewMode === 'week' ? (
-                    <>
-                        {/* 周视图导航行 */}
-                        <View style={[styles.dayNavRow, { backgroundColor: colors.primarySurface }]}>
-                            <TouchableOpacity
-                                onPress={() => shiftWeek('prev')}
-                                accessibilityRole="button"
-                                style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
-                                <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                    {t('calendar.previousWeek', '上一周') as string}
-                                </Text>
-                            </TouchableOpacity>
-                            <View style={styles.dayNavTitleContainer}>
-                                <Text style={[styles.dayNavTitle, { color: colors.textPrimary }]}>
-                                    {selectedDate}
-                                </Text>
-                            </View>
-                            <TouchableOpacity
-                                onPress={() => shiftWeek('next')}
-                                accessibilityRole="button"
-                                style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
-                                <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                    {t('calendar.nextWeek', '下一周') as string}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
 
-                        {/* 周视图日历卡片 */}
-                        <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
-                            {/* 星期标题行 */}
-                            <View style={styles.weekViewRow}>
-                                {(t('calendar.dayNamesShort', undefined, { returnObjects: true }) as string[]).map((day, index) => (
-                                    <View key={index} style={styles.weekViewDayContainer}>
-                                        <Text style={[styles.weekDayHeaderText, { color: colors.textSecondary }]}>
-                                            {day}
-                                        </Text>
-                                    </View>
-                                ))}
-                            </View>
-
-                            {/* 日期数字行 */}
-                            <View style={styles.weekViewRow}>
-                                {getWeekDates(selectedDate).map((dateString, index) => {
-                                    const date = new Date(dateString);
-                                    const dayNumber = date.getDate();
-                                    const isSelected = dateString === selectedDate;
-                                    const isToday = dateString === today;
-                                    const hasEvent = (eventsByDate[dateString] ?? []).length > 0;
-
-                                    const lunar = solarToLunar(dateString);
-                                    const lunarHoliday = getLunarHoliday(dateString);
-                                    const solarHoliday = getSolarHoliday(dateString);
-                                    const isHoliday = !!(lunarHoliday || solarHoliday);
-
-                                    let lunarText = getLunarShortString(lunar);
-                                    if (solarHoliday) lunarText = solarHoliday;
-                                    else if (lunarHoliday) lunarText = lunarHoliday;
-
-                                    return (
-                                        <TouchableOpacity
-                                            key={dateString}
-                                            style={styles.weekViewDayContainer}
-                                            onPress={() => {
-                                                setSelectedDate(dateString);
-                                                drillDown(dateString);
-                                            }}
-                                            activeOpacity={0.7}
-                                        >
-                                            <View
-                                                style={[
-                                                    styles.weekViewDayContent,
-                                                    isSelected && [styles.weekViewDaySelected, { backgroundColor: colors.primary }],
-                                                    isToday && !isSelected && [styles.weekViewDayToday, { backgroundColor: colors.primaryLight }],
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={[
-                                                        styles.weekViewDayNumber,
-                                                        { color: colors.textPrimary },
-                                                        isSelected && styles.weekViewDayNumberSelected,
-                                                        isToday && !isSelected && [styles.weekViewDayNumberToday, { color: colors.primary }],
-                                                    ]}
-                                                >
-                                                    {dayNumber}
-                                                </Text>
-                                                {/* 只在简体中文时显示农历 */}
-                                                {currentLanguage === 'zh-CN' && (
-                                                    <Text
-                                                        style={[
-                                                            styles.weekViewLunarText,
-                                                            { color: colors.textTertiary },
-                                                            isSelected && styles.weekViewLunarTextSelected,
-                                                            isToday && !isSelected && [styles.weekViewLunarTextToday, { color: colors.primary }],
-                                                            isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
-                                                            !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
-                                                        ]}
-                                                        numberOfLines={1}
-                                                    >
-                                                        {lunarText}
-                                                    </Text>
-                                                )}
-                                                {hasEvent && !isSelected && (
-                                                    <View style={[styles.weekViewEventDot, { backgroundColor: colors.primary }]} />
-                                                )}
-                                            </View>
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </View>
-                        </View>
-                    </>
-                ) : (
+                    {/* 周视图日历卡片 */}
                     <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
-                        <Calendar
-                            key={`month-${currentLanguage}`}
-                            current={selectedDate}
-                            onDayPress={onDayPress}
-                            onMonthChange={onMonthChange}
-                            markedDates={markedDates}
-                            theme={calendarTheme}
-                            dayComponent={renderDay}
-                            hideExtraDays={false}
-                        />
-                    </View>
-                )}
-
-                {/* 农历信息显示 - 只在简体中文时显示 */}
-                {currentLanguage === 'zh-CN' && lunarInfo && (
-                    <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
-                        <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
-                            {lunarInfo.yearInfo}
-                        </Text>
-                        <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
-                            {lunarInfo.monthInfo}
-                            {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
-                        </Text>
-                    </View>
-                )}
-
-                {selectedDate ? (
-                    <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
-                        <View style={styles.eventHeaderRow}>
-                            <TouchableOpacity
-                                style={styles.sectionTitleRow}
-                                onPress={() => setIsScheduleExpanded(!isScheduleExpanded)}
-                                activeOpacity={0.7}>
-                                <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
-                                    {isScheduleExpanded ? '▼' : '▶'}
-                                </Text>
-                                <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
-                                    {t('event.eventsOnDate', { date: selectedDate }) as string}
-                                </Text>
-                                <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
-                                    ({selectedEvents.length})
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.addButton, { backgroundColor: colors.primary }]}
-                                onPress={openAddModal}
-                                accessibilityRole="button">
-                                <Text style={styles.addButtonText}>{t('event.addEvent', '添加日程') as string}</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {isScheduleExpanded && (
-                            selectedEvents.length === 0 ? (
-                                <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
-                                    <Text style={[styles.eventText, { color: colors.textSecondary }]}>
-                                        {t('event.noEvents', '暂无日程') as string}
+                        {/* 星期标题行 */}
+                        <View style={styles.weekViewRow}>
+                            {(t('calendar.dayNamesShort', undefined, { returnObjects: true }) as string[]).map((day, index) => (
+                                <View key={index} style={styles.weekViewDayContainer}>
+                                    <Text style={[styles.weekDayHeaderText, { color: colors.textSecondary }]}>
+                                        {day}
                                     </Text>
                                 </View>
-                            ) : (
-                                <View style={styles.eventList}>
-                                    {selectedEvents.map(event => (
-                                        <SwipeableEventItem
-                                            key={event.id}
-                                            event={event}
-                                            onPress={() => openDetailModal(event)}
-                                            onToggleComplete={() => handleToggleComplete(event)}
-                                            onDelete={() => handleDeleteEvent(event)}
-                                            showDate={false}
-                                        />
-                                    ))}
-                                </View>
-                            )
-                        )}
-                    </View>
-                ) : null}
+                            ))}
+                        </View>
 
-                {/* 未完成事项区域 */}
-                <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12, marginTop: 12 }]}>
+                        {/* 日期数字行 */}
+                        <View style={styles.weekViewRow}>
+                            {getWeekDates(selectedDate).map((dateString, index) => {
+                                const date = new Date(dateString);
+                                const dayNumber = date.getDate();
+                                const isSelected = dateString === selectedDate;
+                                const isToday = dateString === today;
+                                const hasEvent = (eventsByDate[dateString] ?? []).length > 0;
+
+                                const lunar = solarToLunar(dateString);
+                                const lunarHoliday = getLunarHoliday(dateString);
+                                const solarHoliday = getSolarHoliday(dateString);
+                                const isHoliday = !!(lunarHoliday || solarHoliday);
+
+                                let lunarText = getLunarShortString(lunar);
+                                if (solarHoliday) lunarText = solarHoliday;
+                                else if (lunarHoliday) lunarText = lunarHoliday;
+
+                                return (
+                                    <TouchableOpacity
+                                        key={dateString}
+                                        style={styles.weekViewDayContainer}
+                                        onPress={() => {
+                                            setSelectedDate(dateString);
+                                            drillDown(dateString);
+                                        }}
+                                        activeOpacity={0.7}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.weekViewDayContent,
+                                                isSelected && [styles.weekViewDaySelected, { backgroundColor: colors.primary }],
+                                                isToday && !isSelected && [styles.weekViewDayToday, { backgroundColor: colors.primaryLight }],
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    styles.weekViewDayNumber,
+                                                    { color: colors.textPrimary },
+                                                    isSelected && styles.weekViewDayNumberSelected,
+                                                    isToday && !isSelected && [styles.weekViewDayNumberToday, { color: colors.primary }],
+                                                ]}
+                                            >
+                                                {dayNumber}
+                                            </Text>
+                                            {/* 只在简体中文时显示农历 */}
+                                            {currentLanguage === 'zh-CN' && (
+                                                <Text
+                                                    style={[
+                                                        styles.weekViewLunarText,
+                                                        { color: colors.textTertiary },
+                                                        isSelected && styles.weekViewLunarTextSelected,
+                                                        isToday && !isSelected && [styles.weekViewLunarTextToday, { color: colors.primary }],
+                                                        isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
+                                                        !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
+                                                    ]}
+                                                    numberOfLines={1}
+                                                >
+                                                    {lunarText}
+                                                </Text>
+                                            )}
+                                            {hasEvent && !isSelected && (
+                                                <View style={[styles.weekViewEventDot, { backgroundColor: colors.primary }]} />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    </View>
+                </>
+            ) : (
+                <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
+                    <Calendar
+                        key={`month-${currentLanguage}`}
+                        current={selectedDate}
+                        onDayPress={onDayPress}
+                        onMonthChange={onMonthChange}
+                        markedDates={markedDates}
+                        theme={calendarTheme}
+                        dayComponent={renderDay}
+                        hideExtraDays={false}
+                    />
+                </View>
+            )}
+
+            {/* 农历信息显示 - 只在简体中文时显示 */}
+            {currentLanguage === 'zh-CN' && lunarInfo && (
+                <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
+                    <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
+                        {lunarInfo.yearInfo}
+                    </Text>
+                    <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
+                        {lunarInfo.monthInfo}
+                        {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
+                    </Text>
+                </View>
+            )}
+
+            {selectedDate ? (
+                <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
                     <View style={styles.eventHeaderRow}>
                         <TouchableOpacity
                             style={styles.sectionTitleRow}
-                            onPress={() => setIsIncompleteExpanded(!isIncompleteExpanded)}
+                            onPress={() => setIsScheduleExpanded(!isScheduleExpanded)}
                             activeOpacity={0.7}>
                             <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
-                                {isIncompleteExpanded ? '▼' : '▶'}
+                                {isScheduleExpanded ? '▼' : '▶'}
                             </Text>
                             <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
-                                {t('event.incompleteEvents', '待完成事项') as string}
+                                {t('event.eventsOnDate', { date: selectedDate }) as string}
                             </Text>
                             <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
-                                ({incompleteEvents.length})
+                                ({selectedEvents.length})
                             </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.addButton, { backgroundColor: colors.primary }]}
+                            onPress={openAddModal}
+                            accessibilityRole="button">
+                            <Text style={styles.addButtonText}>{t('event.addEvent', '添加日程') as string}</Text>
                         </TouchableOpacity>
                     </View>
 
-                    {isIncompleteExpanded && (
-                        incompleteEvents.length === 0 ? (
+                    {isScheduleExpanded && (
+                        selectedEvents.length === 0 ? (
                             <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
                                 <Text style={[styles.eventText, { color: colors.textSecondary }]}>
-                                    {t('event.noIncompleteEvents', '暂无待完成事项') as string}
+                                    {t('event.noEvents', '暂无日程') as string}
                                 </Text>
                             </View>
                         ) : (
                             <View style={styles.eventList}>
-                                {incompleteEvents.map(event => (
+                                {selectedEvents.map(event => (
                                     <SwipeableEventItem
                                         key={event.id}
                                         event={event}
                                         onPress={() => openDetailModal(event)}
                                         onToggleComplete={() => handleToggleComplete(event)}
                                         onDelete={() => handleDeleteEvent(event)}
-                                        showDate={true}
+                                        showDate={false}
                                     />
                                 ))}
                             </View>
                         )
                     )}
                 </View>
+            ) : null}
 
-                {/* Modal Components - only rendered when visible */}
-                <AddEventModal
-                    visible={isAddModalVisible}
-                    selectedDate={selectedDate}
-                    onClose={closeAddModal}
-                    onSave={handleSaveEvent}
-                />
+            {/* 未完成事项区域 */}
+            <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12, marginTop: 12 }]}>
+                <View style={styles.eventHeaderRow}>
+                    <TouchableOpacity
+                        style={styles.sectionTitleRow}
+                        onPress={() => setIsIncompleteExpanded(!isIncompleteExpanded)}
+                        activeOpacity={0.7}>
+                        <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
+                            {isIncompleteExpanded ? '▼' : '▶'}
+                        </Text>
+                        <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
+                            {t('event.incompleteEvents', '待完成事项') as string}
+                        </Text>
+                        <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
+                            ({incompleteEvents.length})
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
-                <EventDetailModal
-                    visible={isDetailModalVisible}
-                    event={detailEvent}
-                    onClose={closeDetailModal}
-                    onDelete={handleDeleteEvent}
-                />
+                {isIncompleteExpanded && (
+                    incompleteEvents.length === 0 ? (
+                        <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
+                            <Text style={[styles.eventText, { color: colors.textSecondary }]}>
+                                {t('event.noIncompleteEvents', '暂无待完成事项') as string}
+                            </Text>
+                        </View>
+                    ) : (
+                        <View style={styles.eventList}>
+                            {incompleteEvents.map(event => (
+                                <SwipeableEventItem
+                                    key={event.id}
+                                    event={event}
+                                    onPress={() => openDetailModal(event)}
+                                    onToggleComplete={() => handleToggleComplete(event)}
+                                    onDelete={() => handleDeleteEvent(event)}
+                                    showDate={true}
+                                />
+                            ))}
+                        </View>
+                    )
+                )}
+            </View>
 
-                <ImportExportModal
-                    visible={isImportExportModalVisible}
-                    onClose={closeImportExportModal}
-                    onExportShare={handleExportShare}
-                    onExportCopy={handleExportCopy}
-                    onImportFromClipboard={handleImportFromClipboard}
-                    onImportFromText={handleImportFromText}
-                />
+            {/* Modal Components - only rendered when visible */}
+            <AddEventModal
+                visible={isAddModalVisible}
+                selectedDate={selectedDate}
+                onClose={closeAddModal}
+                onSave={handleSaveEvent}
+            />
 
-                <SettingsModal
-                    visible={isSettingsModalVisible}
-                    onClose={() => setIsSettingsModalVisible(false)}
-                />
-            </ScrollView>
+            <EventDetailModal
+                visible={isDetailModalVisible}
+                event={detailEvent}
+                onClose={closeDetailModal}
+                onDelete={handleDeleteEvent}
+            />
+
+            <ImportExportModal
+                visible={isImportExportModalVisible}
+                onClose={closeImportExportModal}
+                onExportShare={handleExportShare}
+                onExportCopy={handleExportCopy}
+                onImportFromClipboard={handleImportFromClipboard}
+                onImportFromText={handleImportFromText}
+            />
+
+            <SettingsModal
+                visible={isSettingsModalVisible}
+                onClose={() => setIsSettingsModalVisible(false)}
+            />
+        </ScrollView>
+    );
+
+    return (
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.primaryBackground }]}>
+            {backgroundImage ? (
+                <ImageBackground
+                    source={{ uri: backgroundImage.uri }}
+                    style={styles.backgroundImage}
+                    imageStyle={{ opacity: backgroundImage.opacity }}>
+                    {renderContent()}
+                </ImageBackground>
+            ) : (
+                renderContent()
+            )}
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+    },
+    backgroundImage: {
         flex: 1,
     },
     header: {

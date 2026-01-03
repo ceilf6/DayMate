@@ -12,6 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // 导入 Provider
 import { I18nProvider, useI18n } from './src/contexts/I18nContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { BackgroundProvider } from './src/contexts/BackgroundContext';
 
 // 导入屏幕组件
 import HomeScreen from './src/screens/HomeScreen';
@@ -72,9 +73,11 @@ function AppContent(): JSX.Element {
 function App(): JSX.Element {
     return (
         <ThemeProvider>
-            <I18nProvider>
-                <AppContent />
-            </I18nProvider>
+            <BackgroundProvider>
+                <I18nProvider>
+                    <AppContent />
+                </I18nProvider>
+            </BackgroundProvider>
         </ThemeProvider>
     );
 }

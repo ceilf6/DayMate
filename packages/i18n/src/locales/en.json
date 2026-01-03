@@ -113,15 +113,6 @@
         "invalidReminderMinutes": "Reminder minutes should be a non-negative integer",
         "reminderNeedsStartTime": "Setting a reminder requires a start time"
     },
-    "error": {
-        "saveFailed": "Save failed, please try again",
-        "deleteFailed": "Delete failed, please try again",
-        "reminderFailed": "Failed to create reminder (may be unauthorized or reminder time has passed)",
-        "importFailed": "Import failed, please check data format",
-        "noValidData": "No valid event data found",
-        "noClipboardData": "No valid calendar data in clipboard",
-        "enterICalendarData": "Please enter iCalendar data"
-    },
     "success": {
         "exportSuccess": "Export successful!",
         "copiedToClipboard": "Copied to clipboard!",
@@ -148,7 +139,24 @@
         "title": "Settings",
         "selectLanguage": "Select Language",
         "language": "Language",
-        "themeColor": "Theme Color"
+        "themeColor": "Theme Color",
+        "backgroundImage": "Background Image",
+        "selectImage": "Select Image",
+        "changeImage": "Change Image",
+        "clearBackground": "Clear Background",
+        "clearBackgroundConfirm": "Are you sure you want to clear the background image?",
+        "backgroundOpacity": "Background Opacity"
+    },
+    "error": {
+        "title": "Error",
+        "saveFailed": "Save failed, please try again",
+        "deleteFailed": "Delete failed, please try again",
+        "reminderFailed": "Failed to create reminder (may be unauthorized or reminder time has passed)",
+        "importFailed": "Import failed, please check data format",
+        "noValidData": "No valid event data found",
+        "noClipboardData": "No valid calendar data in clipboard",
+        "enterICalendarData": "Please enter iCalendar data",
+        "selectImageFailed": "Failed to select image"
     },
     "themes": {
         "blue": "Blue",

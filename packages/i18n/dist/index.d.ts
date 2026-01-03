@@ -75,15 +75,6 @@ export declare const resources: {
                 invalidReminderMinutes: string;
                 reminderNeedsStartTime: string;
             };
-            error: {
-                saveFailed: string;
-                deleteFailed: string;
-                reminderFailed: string;
-                importFailed: string;
-                noValidData: string;
-                noClipboardData: string;
-                enterICalendarData: string;
-            };
             success: {
                 exportSuccess: string;
                 copiedToClipboard: string;
@@ -111,6 +102,23 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+                backgroundImage: string;
+                selectImage: string;
+                changeImage: string;
+                clearBackground: string;
+                clearBackgroundConfirm: string;
+                backgroundOpacity: string;
+            };
+            error: {
+                title: string;
+                saveFailed: string;
+                deleteFailed: string;
+                reminderFailed: string;
+                importFailed: string;
+                noValidData: string;
+                noClipboardData: string;
+                enterICalendarData: string;
+                selectImageFailed: string;
             };
             themes: {
                 blue: string;
@@ -200,15 +208,6 @@ export declare const resources: {
                 invalidReminderMinutes: string;
                 reminderNeedsStartTime: string;
             };
-            error: {
-                saveFailed: string;
-                deleteFailed: string;
-                reminderFailed: string;
-                importFailed: string;
-                noValidData: string;
-                noClipboardData: string;
-                enterICalendarData: string;
-            };
             success: {
                 exportSuccess: string;
                 copiedToClipboard: string;
@@ -236,6 +235,23 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+                backgroundImage: string;
+                selectImage: string;
+                changeImage: string;
+                clearBackground: string;
+                clearBackgroundConfirm: string;
+                backgroundOpacity: string;
+            };
+            error: {
+                title: string;
+                saveFailed: string;
+                deleteFailed: string;
+                reminderFailed: string;
+                importFailed: string;
+                noValidData: string;
+                noClipboardData: string;
+                enterICalendarData: string;
+                selectImageFailed: string;
             };
             themes: {
                 blue: string;
@@ -325,15 +341,6 @@ export declare const resources: {
                 invalidReminderMinutes: string;
                 reminderNeedsStartTime: string;
             };
-            error: {
-                saveFailed: string;
-                deleteFailed: string;
-                reminderFailed: string;
-                importFailed: string;
-                noValidData: string;
-                noClipboardData: string;
-                enterICalendarData: string;
-            };
             success: {
                 exportSuccess: string;
                 copiedToClipboard: string;
@@ -361,6 +368,23 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+                backgroundImage: string;
+                selectImage: string;
+                changeImage: string;
+                clearBackground: string;
+                clearBackgroundConfirm: string;
+                backgroundOpacity: string;
+            };
+            error: {
+                title: string;
+                saveFailed: string;
+                deleteFailed: string;
+                reminderFailed: string;
+                importFailed: string;
+                noValidData: string;
+                noClipboardData: string;
+                enterICalendarData: string;
+                selectImageFailed: string;
             };
             themes: {
                 blue: string;

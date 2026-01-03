@@ -113,15 +113,6 @@
         "invalidReminderMinutes": "提醒分钟应为非负整数",
         "reminderNeedsStartTime": "设置提醒需要填写开始时间"
     },
-    "error": {
-        "saveFailed": "保存失败，请重试",
-        "deleteFailed": "删除失败，请重试",
-        "reminderFailed": "提醒创建失败（可能未授权或提醒时间已过）",
-        "importFailed": "导入失败，请检查数据格式",
-        "noValidData": "没有找到有效的日程数据",
-        "noClipboardData": "剪贴板中没有有效的日历数据",
-        "enterICalendarData": "请输入 iCalendar 数据"
-    },
     "success": {
         "exportSuccess": "导出成功！",
         "copiedToClipboard": "已复制到剪贴板！",
@@ -148,7 +139,24 @@
         "title": "设置",
         "selectLanguage": "选择语言",
         "language": "语言",
-        "themeColor": "主题色"
+        "themeColor": "主题色",
+        "backgroundImage": "背景图片",
+        "selectImage": "选择图片",
+        "changeImage": "更换图片",
+        "clearBackground": "清除背景",
+        "clearBackgroundConfirm": "确定要清除背景图片吗？",
+        "backgroundOpacity": "背景透明度"
+    },
+    "error": {
+        "title": "错误",
+        "saveFailed": "保存失败，请重试",
+        "deleteFailed": "删除失败，请重试",
+        "reminderFailed": "提醒创建失败（可能未授权或提醒时间已过）",
+        "importFailed": "导入失败，请检查数据格式",
+        "noValidData": "没有找到有效的日程数据",
+        "noClipboardData": "剪贴板中没有有效的日历数据",
+        "enterICalendarData": "请输入 iCalendar 数据",
+        "selectImageFailed": "选择图片失败"
     },
     "themes": {
         "blue": "蓝色",

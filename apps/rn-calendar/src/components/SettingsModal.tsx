@@ -6,9 +6,14 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
+    Image,
+    Alert,
+    Platform,
 } from 'react-native';
+import { launchImageLibrary, type ImagePickerResponse } from 'react-native-image-picker';
 import { useI18n, type Language } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBackground } from '../contexts/BackgroundContext';
 import { themes, type ThemeId } from '../theme/themes';
 
 interface SettingsModalProps {
@@ -25,6 +30,8 @@ const languages: { code: Language; name: string; nativeName: string }[] = [
 const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
     const { t, currentLanguage, changeLanguage } = useI18n();
     const { colors, themeId, setTheme } = useTheme();
+    const { backgroundImage, setBackgroundImage, setBackgroundOpacity, clearBackground } = useBackground();
+    const [opacity, setOpacity] = useState(backgroundImage?.opacity ?? 0.3);
 
     const handleSelectLanguage = async (lang: Language) => {
         await changeLanguage(lang);
@@ -32,6 +39,55 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
 
     const handleSelectTheme = async (newThemeId: ThemeId) => {
         await setTheme(newThemeId);
+    };
+
+    const handleSelectImage = async () => {
+        try {
+            const result: ImagePickerResponse = await launchImageLibrary({
+                mediaType: 'photo',
+                quality: 0.8,
+                maxWidth: 1920,
+                maxHeight: 1920,
+            });
+
+            if (result.didCancel) return;
+            if (result.errorCode) {
+                Alert.alert(t('error.title', '错误') as string, result.errorMessage || t('error.selectImageFailed', '选择图片失败') as string);
+                return;
+            }
+
+            const asset = result.assets?.[0];
+            if (asset?.uri) {
+                await setBackgroundImage({
+                    uri: asset.uri,
+                    opacity: opacity,
+                });
+            }
+        } catch (error) {
+            Alert.alert(t('error.title', '错误') as string, t('error.selectImageFailed', '选择图片失败') as string);
+        }
+    };
+
+    const handleClearBackground = async () => {
+        Alert.alert(
+            t('settings.clearBackground', '清除背景') as string,
+            t('settings.clearBackgroundConfirm', '确定要清除背景图片吗？') as string,
+            [
+                { text: t('common.cancel', '取消') as string, style: 'cancel' },
+                {
+                    text: t('common.confirm', '确定') as string,
+                    style: 'destructive',
+                    onPress: () => clearBackground(),
+                },
+            ]
+        );
+    };
+
+    const handleOpacityChange = async (newOpacity: number) => {
+        setOpacity(newOpacity);
+        if (backgroundImage) {
+            await setBackgroundOpacity(newOpacity);
+        }
     };
 
     if (!visible) return null;
@@ -145,6 +201,72 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                                     );
                                 })}
                             </View>
+                        </View>
+
+                        {/* 背景图片设置 */}
+                        <View style={styles.section}>
+                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                                {t('settings.backgroundImage', '背景图片')}
+                            </Text>
+
+                            {/* 当前背景预览 */}
+                            {backgroundImage && (
+                                <View style={styles.backgroundPreviewContainer}>
+                                    <Image
+                                        source={{ uri: backgroundImage.uri }}
+                                        style={styles.backgroundPreview}
+                                        resizeMode="cover"
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.clearBackgroundButton}
+                                        onPress={handleClearBackground}>
+                                        <Text style={styles.clearBackgroundText}>✕</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+
+                            {/* 选择图片按钮 */}
+                            <TouchableOpacity
+                                style={[styles.selectImageButton, { backgroundColor: colors.primarySurface, borderColor: colors.primary }]}
+                                onPress={handleSelectImage}>
+                                <Text style={[styles.selectImageText, { color: colors.primary }]}>
+                                    {backgroundImage
+                                        ? t('settings.changeImage', '更换图片') as string
+                                        : t('settings.selectImage', '选择图片') as string}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {/* 透明度调节 */}
+                            {backgroundImage && (
+                                <View style={styles.opacitySection}>
+                                    <Text style={[styles.opacityLabel, { color: colors.textSecondary }]}>
+                                        {t('settings.backgroundOpacity', '背景透明度')}
+                                    </Text>
+                                    <View style={styles.opacityOptions}>
+                                        {[0.1, 0.2, 0.3, 0.4, 0.5].map((value) => {
+                                            const isSelected = Math.abs(opacity - value) < 0.05;
+                                            return (
+                                                <TouchableOpacity
+                                                    key={value}
+                                                    style={[
+                                                        styles.opacityButton,
+                                                        { backgroundColor: colors.primarySurface },
+                                                        isSelected && { backgroundColor: colors.primary },
+                                                    ]}
+                                                    onPress={() => handleOpacityChange(value)}>
+                                                    <Text style={[
+                                                        styles.opacityButtonText,
+                                                        { color: colors.textPrimary },
+                                                        isSelected && { color: '#FFFFFF' },
+                                                    ]}>
+                                                        {Math.round(value * 100)}%
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
+                                </View>
+                            )}
                         </View>
                     </ScrollView>
 
@@ -273,6 +395,67 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '700',
+    },
+    // 背景图片相关样式
+    backgroundPreviewContainer: {
+        position: 'relative',
+        marginBottom: 12,
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    backgroundPreview: {
+        width: '100%',
+        height: 120,
+        borderRadius: 12,
+    },
+    clearBackgroundButton: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: 'rgba(239, 68, 68, 0.9)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    clearBackgroundText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    selectImageButton: {
+        padding: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        borderWidth: 2,
+        borderStyle: 'dashed',
+    },
+    selectImageText: {
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    opacitySection: {
+        marginTop: 16,
+    },
+    opacityLabel: {
+        fontSize: 14,
+        marginBottom: 10,
+    },
+    opacityOptions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 8,
+    },
+    opacityButton: {
+        flex: 1,
+        padding: 10,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    opacityButtonText: {
+        fontSize: 13,
+        fontWeight: '600',
     },
 });
 
