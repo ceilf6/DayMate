@@ -83,7 +83,13 @@
         "deleteEvent": "刪除日程",
         "deleteConfirm": "確定要刪除這條日程嗎？",
         "time": "時間",
-        "location": "地點"
+        "location": "地點",
+        "incompleteEvents": "待完成事項",
+        "noIncompleteEvents": "暫無待完成事項",
+        "completed": "已完成",
+        "incomplete": "未完成",
+        "markComplete": "標記完成",
+        "markIncomplete": "標記未完成"
     },
     "priority": {
         "none": "無",

@@ -83,6 +83,7 @@ const HomeScreen = () => {
     // 是否可以返回
     const canGoBack = viewHistory.length > 0;
     const [eventsByDate, setEventsByDate] = useState<Record<string, CalendarEvent[]>>({});
+    const [incompleteEvents, setIncompleteEvents] = useState<CalendarEvent[]>([]);
 
     // Modal visibility states
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -91,11 +92,24 @@ const HomeScreen = () => {
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
     const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
+    // 刷新未完成事项列表
+    const refreshIncompleteEvents = useCallback(async () => {
+        const incomplete = await EventStorage.getIncompleteEvents();
+        setIncompleteEvents(incomplete);
+    }, []);
+
     useEffect(() => {
         let isMounted = true;
         (async () => {
             const all = await EventStorage.getAllEventsByDate();
-            if (isMounted) setEventsByDate(all);
+            if (isMounted) {
+                setEventsByDate(all);
+            }
+            // 加载未完成事项
+            const incomplete = await EventStorage.getIncompleteEvents();
+            if (isMounted) {
+                setIncompleteEvents(incomplete);
+            }
         })();
         return () => {
             isMounted = false;
@@ -299,11 +313,14 @@ const HomeScreen = () => {
                 return next;
             });
 
+            // 刷新未完成事项列表
+            await refreshIncompleteEvents();
+
             return null; // Success
         } catch {
             return '保存失败，请重试';
         }
-    }, [selectedDate]);
+    }, [selectedDate, refreshIncompleteEvents]);
 
     const handleDeleteEvent = useCallback(async (event: CalendarEvent): Promise<boolean> => {
         try {
@@ -323,11 +340,42 @@ const HomeScreen = () => {
                 return next;
             });
 
+            // 刷新未完成事项列表
+            await refreshIncompleteEvents();
+
             return true;
         } catch {
             return false;
         }
-    }, []);
+    }, [refreshIncompleteEvents]);
+
+    // 切换事项完成状态
+    const handleToggleComplete = useCallback(async (event: CalendarEvent): Promise<boolean> => {
+        try {
+            const updated = await EventStorage.toggleEventComplete(event.date, event.id);
+            if (!updated) return false;
+
+            // 更新本地状态
+            setEventsByDate(prev => {
+                const next = { ...prev };
+                const list = next[updated.date] ?? [];
+                const index = list.findIndex(e => e.id === updated.id);
+                if (index !== -1) {
+                    const newList = [...list];
+                    newList[index] = updated;
+                    next[updated.date] = newList;
+                }
+                return next;
+            });
+
+            // 刷新未完成事项列表
+            await refreshIncompleteEvents();
+
+            return true;
+        } catch {
+            return false;
+        }
+    }, [refreshIncompleteEvents]);
 
     const handleExportShare = useCallback(async () => {
         const events = getAllEvents();
@@ -775,13 +823,12 @@ const HomeScreen = () => {
                                     const priorityColors = getPriorityColors(event.priority);
                                     const priorityIndicator = getPriorityIndicator(event.priority);
                                     const highPriority = isHighPriority(event.priority);
+                                    const isCompleted = event.completed === true;
 
                                     return (
-                                        <TouchableOpacity
+                                        <View
                                             key={event.id}
-                                            style={[styles.eventItem, { backgroundColor: colors.primaryContent }]}
-                                            onPress={() => openDetailModal(event)}
-                                            accessibilityRole="button">
+                                            style={[styles.eventItem, { backgroundColor: colors.primaryContent }]}>
                                             {/* 优先级指示条 */}
                                             <View
                                                 style={[
@@ -789,13 +836,34 @@ const HomeScreen = () => {
                                                     { backgroundColor: priorityColors.background }
                                                 ]}
                                             />
-                                            <View style={styles.eventItemContent}>
+                                            {/* 完成状态圆圈按钮 */}
+                                            <TouchableOpacity
+                                                style={styles.completeCircleContainer}
+                                                onPress={() => handleToggleComplete(event)}
+                                                accessibilityRole="checkbox"
+                                                accessibilityState={{ checked: isCompleted }}
+                                                accessibilityLabel={isCompleted ? t('event.markIncomplete') as string : t('event.markComplete') as string}>
+                                                <View style={[
+                                                    styles.completeCircle,
+                                                    { borderColor: isCompleted ? colors.primary : colors.textDisabled },
+                                                    isCompleted && { backgroundColor: colors.primary },
+                                                ]}>
+                                                    {isCompleted && (
+                                                        <Text style={styles.checkmark}>✓</Text>
+                                                    )}
+                                                </View>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.eventItemContent}
+                                                onPress={() => openDetailModal(event)}
+                                                accessibilityRole="button">
                                                 <View style={styles.eventTitleRow}>
                                                     <Text
                                                         style={[
                                                             styles.eventItemTitle,
                                                             { color: colors.textPrimary },
                                                             highPriority && { color: priorityColors.background },
+                                                            isCompleted && styles.completedText,
                                                         ]}
                                                         numberOfLines={1}>
                                                         {event.title}
@@ -805,11 +873,23 @@ const HomeScreen = () => {
                                                             {priorityIndicator}
                                                         </Text>
                                                     ) : null}
+                                                    {/* 完成状态标签 */}
+                                                    <View style={[
+                                                        styles.statusBadge,
+                                                        { backgroundColor: isCompleted ? colors.primary : colors.textDisabled }
+                                                    ]}>
+                                                        <Text style={styles.statusBadgeText}>
+                                                            {isCompleted
+                                                                ? t('event.completed', '已完成') as string
+                                                                : t('event.incomplete', '未完成') as string}
+                                                        </Text>
+                                                    </View>
                                                 </View>
                                                 <Text
                                                     style={[
                                                         styles.eventItemMeta,
                                                         { color: colors.textSecondary },
+                                                        isCompleted && styles.completedText,
                                                     ]}
                                                     numberOfLines={1}>
                                                     {(event.startTime || event.endTime)
@@ -836,14 +916,106 @@ const HomeScreen = () => {
                                                         {event.description}
                                                     </Text>
                                                 ) : null}
-                                            </View>
-                                        </TouchableOpacity>
+                                            </TouchableOpacity>
+                                        </View>
                                     );
                                 })}
                             </View>
                         )}
                     </View>
                 ) : null}
+
+                {/* 未完成事项区域 */}
+                <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12, marginTop: 12 }]}>
+                    <View style={styles.eventHeaderRow}>
+                        <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
+                            {t('event.incompleteEvents', '待完成事项') as string}
+                        </Text>
+                    </View>
+
+                    {incompleteEvents.length === 0 ? (
+                        <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
+                            <Text style={[styles.eventText, { color: colors.textSecondary }]}>
+                                {t('event.noIncompleteEvents', '暂无待完成事项') as string}
+                            </Text>
+                        </View>
+                    ) : (
+                        <View style={styles.eventList}>
+                            {incompleteEvents.map(event => {
+                                const priorityColors = getPriorityColors(event.priority);
+                                const priorityIndicator = getPriorityIndicator(event.priority);
+                                const highPriority = isHighPriority(event.priority);
+
+                                return (
+                                    <View
+                                        key={event.id}
+                                        style={[styles.eventItem, { backgroundColor: colors.primaryContent }]}>
+                                        {/* 优先级指示条 */}
+                                        <View
+                                            style={[
+                                                styles.priorityIndicator,
+                                                { backgroundColor: priorityColors.background }
+                                            ]}
+                                        />
+                                        {/* 完成状态圆圈按钮 */}
+                                        <TouchableOpacity
+                                            style={styles.completeCircleContainer}
+                                            onPress={() => handleToggleComplete(event)}
+                                            accessibilityRole="checkbox"
+                                            accessibilityState={{ checked: false }}
+                                            accessibilityLabel={t('event.markComplete') as string}>
+                                            <View style={[
+                                                styles.completeCircle,
+                                                { borderColor: colors.textDisabled },
+                                            ]} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.eventItemContent}
+                                            onPress={() => openDetailModal(event)}
+                                            accessibilityRole="button">
+                                            <View style={styles.eventTitleRow}>
+                                                <Text
+                                                    style={[
+                                                        styles.eventItemTitle,
+                                                        { color: colors.textPrimary },
+                                                        highPriority && { color: priorityColors.background },
+                                                    ]}
+                                                    numberOfLines={1}>
+                                                    {event.title}
+                                                </Text>
+                                                {priorityIndicator ? (
+                                                    <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
+                                                        {priorityIndicator}
+                                                    </Text>
+                                                ) : null}
+                                            </View>
+                                            {/* 显示事项日期 */}
+                                            <Text
+                                                style={[
+                                                    styles.eventItemMeta,
+                                                    { color: colors.textSecondary },
+                                                ]}
+                                                numberOfLines={1}>
+                                                {event.date}
+                                                {(event.startTime || event.endTime) && ` · ${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
+                                            </Text>
+                                            {event.description ? (
+                                                <Text
+                                                    style={[
+                                                        styles.eventItemNotes,
+                                                        { color: colors.textSecondary },
+                                                    ]}
+                                                    numberOfLines={2}>
+                                                    {event.description}
+                                                </Text>
+                                            ) : null}
+                                        </TouchableOpacity>
+                                    </View>
+                                );
+                            })}
+                        </View>
+                    )}
+                </View>
 
                 {/* Modal Components - only rendered when visible */}
                 <AddEventModal
@@ -1080,6 +1252,42 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '700',
         marginLeft: 6,
+    },
+    // 完成状态圆圈样式
+    completeCircleContainer: {
+        paddingLeft: 12,
+        paddingVertical: 14,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    completeCircle: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checkmark: {
+        color: '#ffffff',
+        fontSize: 12,
+        fontWeight: '700',
+        marginTop: -1,
+    },
+    completedText: {
+        textDecorationLine: 'line-through',
+        opacity: 0.6,
+    },
+    statusBadge: {
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        marginLeft: 8,
+    },
+    statusBadgeText: {
+        color: '#ffffff',
+        fontSize: 10,
+        fontWeight: '600',
     },
     eventItemTitle: {
         flex: 1,

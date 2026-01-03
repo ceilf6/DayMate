@@ -21,7 +21,6 @@ const initI18n = (language = 'zh-CN') => {
         interpolation: {
             escapeValue: false,
         },
-        returnObjects: true, // 支持返回数组和对象
     });
     return i18next_1.default;
 };

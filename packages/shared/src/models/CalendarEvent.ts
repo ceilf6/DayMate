@@ -46,6 +46,7 @@ export type CalendarEvent = {
     // 状态
     status?: EventStatus;
     transparency?: EventTransparency;
+    completed?: boolean;    // 事项完成状态
 
     // 创建和更新时间
     createdAt: string;      // ISO string

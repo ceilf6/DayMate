@@ -46,6 +46,12 @@ export declare const resources: {
                 deleteConfirm: string;
                 time: string;
                 location: string;
+                incompleteEvents: string;
+                noIncompleteEvents: string;
+                completed: string;
+                incomplete: string;
+                markComplete: string;
+                markIncomplete: string;
             };
             priority: {
                 none: string;
@@ -165,6 +171,12 @@ export declare const resources: {
                 deleteConfirm: string;
                 time: string;
                 location: string;
+                incompleteEvents: string;
+                noIncompleteEvents: string;
+                completed: string;
+                incomplete: string;
+                markComplete: string;
+                markIncomplete: string;
             };
             priority: {
                 none: string;
@@ -284,6 +296,12 @@ export declare const resources: {
                 deleteConfirm: string;
                 time: string;
                 location: string;
+                incompleteEvents: string;
+                noIncompleteEvents: string;
+                completed: string;
+                incomplete: string;
+                markComplete: string;
+                markIncomplete: string;
             };
             priority: {
                 none: string;

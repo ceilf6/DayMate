@@ -139,6 +139,39 @@ export class EventStorage {
         memoryCache = null;
         cacheInitialized = false;
     }
+
+    /**
+     * 获取所有未完成的事项（跨所有日期）
+     */
+    static async getIncompleteEvents(): Promise<CalendarEvent[]> {
+        const all = await EventStorage.getAllEventsByDate();
+        const incompleteEvents: CalendarEvent[] = [];
+
+        for (const dateEvents of Object.values(all)) {
+            for (const event of dateEvents) {
+                if (!event.completed) {
+                    incompleteEvents.push(event);
+                }
+            }
+        }
+
+        // 按日期排序，最近的在前
+        return incompleteEvents.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    /**
+     * 切换事项的完成状态
+     */
+    static async toggleEventComplete(date: string, eventId: string): Promise<CalendarEvent | null> {
+        const all = await EventStorage.getAllEventsByDate();
+        const list = all[date] ?? [];
+        const event = list.find(e => e.id === eventId);
+        if (!event) return null;
+
+        return EventStorage.updateEvent(date, eventId, {
+            completed: !event.completed,
+        });
+    }
 }
 
 export type { EventsByDate };

@@ -83,7 +83,13 @@
         "deleteEvent": "删除日程",
         "deleteConfirm": "确定要删除这条日程吗？",
         "time": "时间",
-        "location": "地点"
+        "location": "地点",
+        "incompleteEvents": "待完成事项",
+        "noIncompleteEvents": "暂无待完成事项",
+        "completed": "已完成",
+        "incomplete": "未完成",
+        "markComplete": "标记完成",
+        "markIncomplete": "标记未完成"
     },
     "priority": {
         "none": "无",
