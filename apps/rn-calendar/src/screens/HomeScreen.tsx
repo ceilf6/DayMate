@@ -503,27 +503,30 @@ const HomeScreen = () => {
                     >
                         {date.day}
                     </Text>
-                    <Text
-                        style={[
-                            styles.lunarText,
-                            { color: colors.textTertiary },
-                            isSelected && styles.lunarTextSelected,
-                            isToday && !isSelected && [styles.lunarTextToday, { color: colors.primary }],
-                            isDisabled && [styles.lunarTextDisabled, { color: colors.textDisabled }],
-                            isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
-                            !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
-                        ]}
-                        numberOfLines={1}
-                    >
-                        {lunarText}
-                    </Text>
+                    {/* 只在简体中文时显示农历 */}
+                    {currentLanguage === 'zh-CN' && (
+                        <Text
+                            style={[
+                                styles.lunarText,
+                                { color: colors.textTertiary },
+                                isSelected && styles.lunarTextSelected,
+                                isToday && !isSelected && [styles.lunarTextToday, { color: colors.primary }],
+                                isDisabled && [styles.lunarTextDisabled, { color: colors.textDisabled }],
+                                isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
+                                !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
+                            ]}
+                            numberOfLines={1}
+                        >
+                            {lunarText}
+                        </Text>
+                    )}
                     {hasEvent && !isSelected && (
                         <View style={[styles.eventDot, { backgroundColor: colors.primary }]} />
                     )}
                 </TouchableOpacity>
             );
         };
-    }, [selectedDate, today, isDarkMode, eventsByDate, drillDown, colors]);
+    }, [selectedDate, today, isDarkMode, eventsByDate, drillDown, colors, currentLanguage]);
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -583,8 +586,8 @@ const HomeScreen = () => {
                     <View style={styles.backButtonPlaceholder} />
                 </View>
 
-                {/* 农历信息显示 */}
-                {lunarInfo && (
+                {/* 农历信息显示 - 只在简体中文时显示 */}
+                {currentLanguage === 'zh-CN' && lunarInfo && (
                     <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
                         <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
                             {lunarInfo.yearInfo}
@@ -705,19 +708,22 @@ const HomeScreen = () => {
                                                 >
                                                     {dayNumber}
                                                 </Text>
-                                                <Text
-                                                    style={[
-                                                        styles.weekViewLunarText,
-                                                        { color: colors.textTertiary },
-                                                        isSelected && styles.weekViewLunarTextSelected,
-                                                        isToday && !isSelected && [styles.weekViewLunarTextToday, { color: colors.primary }],
-                                                        isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
-                                                        !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
-                                                    ]}
-                                                    numberOfLines={1}
-                                                >
-                                                    {lunarText}
-                                                </Text>
+                                                {/* 只在简体中文时显示农历 */}
+                                                {currentLanguage === 'zh-CN' && (
+                                                    <Text
+                                                        style={[
+                                                            styles.weekViewLunarText,
+                                                            { color: colors.textTertiary },
+                                                            isSelected && styles.weekViewLunarTextSelected,
+                                                            isToday && !isSelected && [styles.weekViewLunarTextToday, { color: colors.primary }],
+                                                            isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
+                                                            !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
+                                                        ]}
+                                                        numberOfLines={1}
+                                                    >
+                                                        {lunarText}
+                                                    </Text>
+                                                )}
                                                 {hasEvent && !isSelected && (
                                                     <View style={[styles.weekViewEventDot, { backgroundColor: colors.primary }]} />
                                                 )}
