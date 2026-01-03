@@ -93,6 +93,10 @@ const HomeScreen = () => {
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
     const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
+    // 展开/收起状态
+    const [isScheduleExpanded, setIsScheduleExpanded] = useState(true);
+    const [isIncompleteExpanded, setIsIncompleteExpanded] = useState(true);
+
     // 刷新未完成事项列表
     const refreshIncompleteEvents = useCallback(async () => {
         const incomplete = await EventStorage.getIncompleteEvents();
@@ -801,9 +805,20 @@ const HomeScreen = () => {
                 {selectedDate ? (
                     <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
                         <View style={styles.eventHeaderRow}>
-                            <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
-                                {t('event.eventsOnDate', { date: selectedDate }) as string}
-                            </Text>
+                            <TouchableOpacity
+                                style={styles.sectionTitleRow}
+                                onPress={() => setIsScheduleExpanded(!isScheduleExpanded)}
+                                activeOpacity={0.7}>
+                                <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
+                                    {isScheduleExpanded ? '▼' : '▶'}
+                                </Text>
+                                <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
+                                    {t('event.eventsOnDate', { date: selectedDate }) as string}
+                                </Text>
+                                <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
+                                    ({selectedEvents.length})
+                                </Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.addButton, { backgroundColor: colors.primary }]}
                                 onPress={openAddModal}
@@ -812,25 +827,27 @@ const HomeScreen = () => {
                             </TouchableOpacity>
                         </View>
 
-                        {selectedEvents.length === 0 ? (
-                            <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
-                                <Text style={[styles.eventText, { color: colors.textSecondary }]}>
-                                    {t('event.noEvents', '暂无日程') as string}
-                                </Text>
-                            </View>
-                        ) : (
-                            <View style={styles.eventList}>
-                                {selectedEvents.map(event => (
-                                    <SwipeableEventItem
-                                        key={event.id}
-                                        event={event}
-                                        onPress={() => openDetailModal(event)}
-                                        onToggleComplete={() => handleToggleComplete(event)}
-                                        onDelete={() => handleDeleteEvent(event)}
-                                        showDate={false}
-                                    />
-                                ))}
-                            </View>
+                        {isScheduleExpanded && (
+                            selectedEvents.length === 0 ? (
+                                <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
+                                    <Text style={[styles.eventText, { color: colors.textSecondary }]}>
+                                        {t('event.noEvents', '暂无日程') as string}
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View style={styles.eventList}>
+                                    {selectedEvents.map(event => (
+                                        <SwipeableEventItem
+                                            key={event.id}
+                                            event={event}
+                                            onPress={() => openDetailModal(event)}
+                                            onToggleComplete={() => handleToggleComplete(event)}
+                                            onDelete={() => handleDeleteEvent(event)}
+                                            showDate={false}
+                                        />
+                                    ))}
+                                </View>
+                            )
                         )}
                     </View>
                 ) : null}
@@ -838,30 +855,43 @@ const HomeScreen = () => {
                 {/* 未完成事项区域 */}
                 <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12, marginTop: 12 }]}>
                     <View style={styles.eventHeaderRow}>
-                        <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
-                            {t('event.incompleteEvents', '待完成事项') as string}
-                        </Text>
+                        <TouchableOpacity
+                            style={styles.sectionTitleRow}
+                            onPress={() => setIsIncompleteExpanded(!isIncompleteExpanded)}
+                            activeOpacity={0.7}>
+                            <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
+                                {isIncompleteExpanded ? '▼' : '▶'}
+                            </Text>
+                            <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
+                                {t('event.incompleteEvents', '待完成事项') as string}
+                            </Text>
+                            <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
+                                ({incompleteEvents.length})
+                            </Text>
+                        </TouchableOpacity>
                     </View>
 
-                    {incompleteEvents.length === 0 ? (
-                        <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
-                            <Text style={[styles.eventText, { color: colors.textSecondary }]}>
-                                {t('event.noIncompleteEvents', '暂无待完成事项') as string}
-                            </Text>
-                        </View>
-                    ) : (
-                        <View style={styles.eventList}>
-                            {incompleteEvents.map(event => (
-                                <SwipeableEventItem
-                                    key={event.id}
-                                    event={event}
-                                    onPress={() => openDetailModal(event)}
-                                    onToggleComplete={() => handleToggleComplete(event)}
-                                    onDelete={() => handleDeleteEvent(event)}
-                                    showDate={true}
-                                />
-                            ))}
-                        </View>
+                    {isIncompleteExpanded && (
+                        incompleteEvents.length === 0 ? (
+                            <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
+                                <Text style={[styles.eventText, { color: colors.textSecondary }]}>
+                                    {t('event.noIncompleteEvents', '暂无待完成事项') as string}
+                                </Text>
+                            </View>
+                        ) : (
+                            <View style={styles.eventList}>
+                                {incompleteEvents.map(event => (
+                                    <SwipeableEventItem
+                                        key={event.id}
+                                        event={event}
+                                        onPress={() => openDetailModal(event)}
+                                        onToggleComplete={() => handleToggleComplete(event)}
+                                        onDelete={() => handleDeleteEvent(event)}
+                                        showDate={true}
+                                    />
+                                ))}
+                            </View>
+                        )
                     )}
                 </View>
 
@@ -1036,6 +1066,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 10,
+    },
+    sectionTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    expandIcon: {
+        fontSize: 10,
+        marginRight: 8,
+        width: 12,
+    },
+    countBadge: {
+        fontSize: 14,
+        marginLeft: 6,
     },
     eventTitle: {
         fontSize: 17,
