@@ -540,50 +540,50 @@ const HomeScreen = () => {
                     </Text>
                 </View> */}
 
-                {/* 顶部操作栏 */}
-                <View style={styles.topActionRow}>
-                    <TouchableOpacity
-                        onPress={() => setIsSettingsModalVisible(true)}
-                        style={[styles.settingsButton, { backgroundColor: colors.primaryLight }]}
-                        accessibilityRole="button">
-                        <Text style={styles.settingsIcon}>
-                            ⚙️
-                        </Text>
-                        <Text style={[styles.settingsButtonText, { color: colors.textPrimary }]}>
-                            {t('settings.title', '设置')}
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={openImportExportModal}
-                        style={[styles.importExportButton, { backgroundColor: colors.primaryLight }]}
-                        accessibilityRole="button">
-                        <Text style={[styles.importExportButtonText, { color: colors.textPrimary }]}>
-                            {t('importExport.title', '导入/导出')}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* 导航栏 - 带返回按钮 */}
-                <View style={[styles.navigationBar, { backgroundColor: colors.primarySurface }]}>
+                {/* 顶部操作栏 - 三个按钮同行 */}
+                <View style={[styles.topActionRow, { backgroundColor: colors.primarySurface }]}>
+                    {/* 左侧：视图切换 */}
                     {canGoBack ? (
                         <TouchableOpacity
                             onPress={goBack}
                             accessibilityRole="button"
-                            style={styles.backButton}>
+                            style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}>
                             <Text style={[styles.backButtonIcon, { color: colors.primary }]}>‹</Text>
-                            <Text style={[styles.backButtonText, { color: colors.primary }]}>
+                            <Text style={[styles.topActionButtonText, { color: colors.primary }]}>
                                 {viewMode === 'week' ? t('calendar.month', '月') : t('calendar.week', '周')}
                             </Text>
                         </TouchableOpacity>
                     ) : (
-                        <View style={styles.backButtonPlaceholder} />
+                        <TouchableOpacity
+                            style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}
+                            disabled>
+                            <Text style={[styles.topActionButtonText, { color: colors.textPrimary }]}>
+                                {viewMode === 'month' && t('calendar.monthView', '月视图')}
+                                {viewMode === 'week' && t('calendar.weekView', '周视图')}
+                                {viewMode === 'day' && t('calendar.dayView', '日视图')}
+                            </Text>
+                        </TouchableOpacity>
                     )}
-                    <Text style={[styles.navigationTitle, { color: colors.textPrimary }]}>
-                        {viewMode === 'month' && t('calendar.monthView', '月视图')}
-                        {viewMode === 'week' && t('calendar.weekView', '周视图')}
-                        {viewMode === 'day' && t('calendar.dayView', '日视图')}
-                    </Text>
-                    <View style={styles.backButtonPlaceholder} />
+
+                    {/* 中间：设置 */}
+                    <TouchableOpacity
+                        onPress={() => setIsSettingsModalVisible(true)}
+                        style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}
+                        accessibilityRole="button">
+                        <Text style={[styles.topActionButtonText, { color: colors.textPrimary }]}>
+                            {t('settings.title', '设置')}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* 右侧：导入/导出 */}
+                    <TouchableOpacity
+                        onPress={openImportExportModal}
+                        style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}
+                        accessibilityRole="button">
+                        <Text style={[styles.topActionButtonText, { color: colors.textPrimary }]}>
+                            {t('importExport.title', '导入/导出')}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
 
                 {/* 农历信息显示 - 只在简体中文时显示 */}
@@ -896,40 +896,12 @@ const styles = StyleSheet.create({
         color: '#666666',
         marginTop: 5,
     },
-    // 导航栏样式
-    navigationBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginHorizontal: 12,
-        marginTop: 4,
-        marginBottom: 12,
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-        borderRadius: 12,
-    },
-    backButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        minWidth: 70,
-    },
+    // 返回按钮图标样式
     backButtonIcon: {
         fontSize: 28,
         fontWeight: '300',
         marginRight: 2,
         marginTop: -2,
-    },
-    backButtonText: {
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    backButtonPlaceholder: {
-        minWidth: 70,
-    },
-    navigationTitle: {
-        fontSize: 17,
-        fontWeight: '600',
-        textAlign: 'center',
     },
     calendarCard: {
         marginHorizontal: 12,
@@ -1226,41 +1198,33 @@ const styles = StyleSheet.create({
     // 顶部操作栏样式
     topActionRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingTop: 8,
-        paddingBottom: 8,
-        marginBottom: 4,
+        justifyContent: 'space-between',
+        marginHorizontal: 12,
+        marginTop: 8,
+        marginBottom: 12,
+        paddingVertical: 6,
+        paddingHorizontal: 6,
+        borderRadius: 12,
+        gap: 8,
+    },
+    topActionButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 8,
+        paddingVertical: 10,
+        borderRadius: 8,
+    },
+    topActionButtonText: {
+        fontSize: 13,
+        fontWeight: '600',
     },
     appTitle: {
         fontSize: 20,
         fontWeight: '700',
         color: '#111827',
-    },
-    settingsButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-        gap: 6,
-    },
-    settingsIcon: {
-        fontSize: 16,
-    },
-    settingsButtonText: {
-        fontSize: 13,
-        fontWeight: '600',
-    },
-    importExportButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-    },
-    importExportButtonText: {
-        fontSize: 13,
-        fontWeight: '600',
     },
 });
 
