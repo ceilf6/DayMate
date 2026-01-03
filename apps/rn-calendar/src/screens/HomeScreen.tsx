@@ -409,7 +409,7 @@ const HomeScreen = () => {
             const all = await EventStorage.getAllEventsByDate();
             setEventsByDate(all);
 
-            return { success: true, message: t('success.importedCount', { count: savedCount }) };
+            return { success: true, message: t('success.importedCount', { count: savedCount }) as string };
         } catch {
             return { success: false, error: '导入失败，请检查数据格式' };
         }
@@ -550,7 +550,7 @@ const HomeScreen = () => {
                             style={[styles.topActionButton, { backgroundColor: colors.primary }]}>
                             <Text style={[styles.backButtonIcon]}>‹</Text>
                             <Text style={[styles.topActionButtonText]}>
-                                {viewMode === 'week' ? t('calendar.month', '月') : t('calendar.week', '周')}
+                                {viewMode === 'week' ? t('calendar.month', '月') as string : t('calendar.week', '周') as string}
                             </Text>
                         </TouchableOpacity>
                     ) : (
@@ -558,9 +558,9 @@ const HomeScreen = () => {
                             style={[styles.topActionButton, { backgroundColor: colors.primary }]}
                             disabled>
                             <Text style={[styles.topActionButtonText]}>
-                                {viewMode === 'month' && t('calendar.monthView', '月视图')}
-                                {viewMode === 'week' && t('calendar.weekView', '周视图')}
-                                {viewMode === 'day' && t('calendar.dayView', '日视图')}
+                                {viewMode === 'month' && t('calendar.monthView', '月视图') as string}
+                                {viewMode === 'week' && t('calendar.weekView', '周视图') as string}
+                                {viewMode === 'day' && t('calendar.dayView', '日视图') as string}
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -571,7 +571,7 @@ const HomeScreen = () => {
                         style={[styles.topActionButton, { backgroundColor: colors.primary }]}
                         accessibilityRole="button">
                         <Text style={[styles.topActionButtonText]}>
-                            {t('settings.title', '设置')}
+                            {t('settings.title', '设置') as string}
                         </Text>
                     </TouchableOpacity>
 
@@ -581,7 +581,7 @@ const HomeScreen = () => {
                         style={[styles.topActionButton, { backgroundColor: colors.primary }]}
                         accessibilityRole="button">
                         <Text style={[styles.topActionButtonText]}>
-                            {t('importExport.title', '导入/导出')}
+                            {t('importExport.title', '导入/导出') as string}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -593,7 +593,7 @@ const HomeScreen = () => {
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                {t('calendar.previousDay', '上一天')}
+                                {t('calendar.previousDay', '上一天') as string}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.dayNavTitleContainer}>
@@ -606,7 +606,7 @@ const HomeScreen = () => {
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                {t('calendar.nextDay', '下一天')}
+                                {t('calendar.nextDay', '下一天') as string}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -619,7 +619,7 @@ const HomeScreen = () => {
                                 accessibilityRole="button"
                                 style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                                 <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                    {t('calendar.previousWeek', '上一周')}
+                                    {t('calendar.previousWeek', '上一周') as string}
                                 </Text>
                             </TouchableOpacity>
                             <View style={styles.dayNavTitleContainer}>
@@ -632,7 +632,7 @@ const HomeScreen = () => {
                                 accessibilityRole="button"
                                 style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                                 <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
-                                    {t('calendar.nextWeek', '下一周')}
+                                    {t('calendar.nextWeek', '下一周') as string}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -753,20 +753,20 @@ const HomeScreen = () => {
                     <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
                         <View style={styles.eventHeaderRow}>
                             <Text style={[styles.eventTitle, { color: colors.textPrimary }]}>
-                                {t('event.eventsOnDate', { date: selectedDate })}
+                                {t('event.eventsOnDate', { date: selectedDate }) as string}
                             </Text>
                             <TouchableOpacity
                                 style={[styles.addButton, { backgroundColor: colors.primary }]}
                                 onPress={openAddModal}
                                 accessibilityRole="button">
-                                <Text style={styles.addButtonText}>{t('event.addEvent', '添加日程')}</Text>
+                                <Text style={styles.addButtonText}>{t('event.addEvent', '添加日程') as string}</Text>
                             </TouchableOpacity>
                         </View>
 
                         {selectedEvents.length === 0 ? (
                             <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
                                 <Text style={[styles.eventText, { color: colors.textSecondary }]}>
-                                    {t('event.noEvents', '暂无日程')}
+                                    {t('event.noEvents', '暂无日程') as string}
                                 </Text>
                             </View>
                         ) : (
@@ -814,7 +814,7 @@ const HomeScreen = () => {
                                                     numberOfLines={1}>
                                                     {(event.startTime || event.endTime)
                                                         ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                                        : t('calendar.allDay', '全天')}
+                                                        : t('calendar.allDay', '全天') as string}
                                                 </Text>
                                                 {event.reminderMinutes && event.reminderMinutes > 0 ? (
                                                     <Text
@@ -823,7 +823,7 @@ const HomeScreen = () => {
                                                             { color: colors.textSecondary },
                                                         ]}
                                                         numberOfLines={1}>
-                                                        {t('event.reminder', '提醒')}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes })}
+                                                        {t('event.reminder', '提醒') as string}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes }) as string}
                                                     </Text>
                                                 ) : null}
                                                 {event.description ? (
