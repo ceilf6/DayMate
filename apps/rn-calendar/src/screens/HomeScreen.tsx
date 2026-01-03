@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
     useColorScheme,
 } from 'react-native';
-import { Calendar, CalendarProvider, WeekCalendar } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import type { Theme } from 'react-native-calendars/src/types';
 
 import type { CalendarEvent } from '@daymate/shared';
@@ -128,6 +128,27 @@ const HomeScreen = () => {
             setSelectedDate(today);
         }
     };
+
+    // 获取当前选中日期所在周的所有日期
+    const getWeekDates = useCallback((dateString: string) => {
+        const date = new Date(dateString);
+        const dayOfWeek = date.getDay(); // 0 (周日) 到 6 (周六)
+        const dates: string[] = [];
+
+        // 从周日开始
+        for (let i = 0; i < 7; i++) {
+            const offset = i - dayOfWeek;
+            dates.push(addDays(dateString, offset));
+        }
+
+        return dates;
+    }, []);
+
+    // 切换到上一周或下一周
+    const shiftWeek = useCallback((direction: 'prev' | 'next') => {
+        const offset = direction === 'prev' ? -7 : 7;
+        shiftSelectedDate(offset);
+    }, [selectedDate, today]);
 
     const selectedEvents = useMemo(() => {
         const list = eventsByDate[selectedDate] ?? [];
@@ -421,38 +442,6 @@ const HomeScreen = () => {
         [calendarDayFontWeight, colors],
     );
 
-    // 周视图专用主题
-    const weekCalendarTheme = useMemo<Theme>(
-        () => ({
-            ...calendarTheme,
-            // 周视图对齐修复：让 dayHeader 和 dayContainer 使用相同的 flex 布局
-            'stylesheet.expandable.main': {
-                // 星期标题文字 - 使用 flex: 1 代替固定宽度
-                dayHeader: {
-                    flex: 1,
-                    textAlign: 'center',
-                    fontSize: 12,
-                    fontWeight: '600',
-                    color: colors.textSecondary,
-                },
-                // 日期行 - 移除 justifyContent，只使用 flex: 1 均分
-                week: {
-                    marginTop: 7,
-                    marginBottom: 7,
-                    paddingRight: 15,
-                    paddingLeft: 15,
-                    flexDirection: 'row',
-                },
-                // 日期容器 - 使用 flex: 1
-                dayContainer: {
-                    flex: 1,
-                    alignItems: 'center',
-                },
-            },
-        }),
-        [calendarTheme, colors],
-    );
-
     // 获取当前选中日期的农历信息
     const lunarInfo = useMemo(() => {
         if (!selectedDate) return null;
@@ -632,35 +621,113 @@ const HomeScreen = () => {
                         </TouchableOpacity>
                     </View>
                 ) : viewMode === 'week' ? (
-                    <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
-                        {/* 自定义星期标题行 - 与日期行使用相同的布局 */}
-                        <View style={styles.weekDayNamesRow}>
-                            {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
-                                <View key={index} style={styles.weekDayNameContainer}>
-                                    <Text style={[styles.weekDayNameText, { color: colors.textSecondary }]}>
-                                        {day}
-                                    </Text>
-                                </View>
-                            ))}
+                    <>
+                        {/* 周视图导航行 */}
+                        <View style={[styles.dayNavRow, { backgroundColor: colors.primarySurface }]}>
+                            <TouchableOpacity
+                                onPress={() => shiftWeek('prev')}
+                                accessibilityRole="button"
+                                style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                                <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
+                                    {t('calendar.previousWeek', '上一周')}
+                                </Text>
+                            </TouchableOpacity>
+                            <View style={styles.dayNavTitleContainer}>
+                                <Text style={[styles.dayNavTitle, { color: colors.textPrimary }]}>
+                                    {selectedDate}
+                                </Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => shiftWeek('next')}
+                                accessibilityRole="button"
+                                style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                                <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
+                                    {t('calendar.nextWeek', '下一周')}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
-                        <CalendarProvider date={selectedDate} onDateChanged={(date) => {
-                            setSelectedDate(date);
-                            // 在周视图中点击日期进入日视图
-                            drillDown(date);
-                        }}>
-                            <WeekCalendar
-                                key={`week-${currentLanguage}`}
-                                current={selectedDate}
-                                markedDates={markedDates}
-                                theme={weekCalendarTheme}
-                                hideDayNames={true}
-                                onDayPress={(day: any) => {
-                                    setSelectedDate(day.dateString);
-                                    drillDown(day.dateString);
-                                }}
-                            />
-                        </CalendarProvider>
-                    </View>
+
+                        {/* 周视图日历卡片 */}
+                        <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
+                            {/* 星期标题行 */}
+                            <View style={styles.weekViewRow}>
+                                {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+                                    <View key={index} style={styles.weekViewDayContainer}>
+                                        <Text style={[styles.weekDayHeaderText, { color: colors.textSecondary }]}>
+                                            {day}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+
+                            {/* 日期数字行 */}
+                            <View style={styles.weekViewRow}>
+                                {getWeekDates(selectedDate).map((dateString, index) => {
+                                    const date = new Date(dateString);
+                                    const dayNumber = date.getDate();
+                                    const isSelected = dateString === selectedDate;
+                                    const isToday = dateString === today;
+                                    const hasEvent = (eventsByDate[dateString] ?? []).length > 0;
+
+                                    const lunar = solarToLunar(dateString);
+                                    const lunarHoliday = getLunarHoliday(dateString);
+                                    const solarHoliday = getSolarHoliday(dateString);
+                                    const isHoliday = !!(lunarHoliday || solarHoliday);
+
+                                    let lunarText = getLunarShortString(lunar);
+                                    if (solarHoliday) lunarText = solarHoliday;
+                                    else if (lunarHoliday) lunarText = lunarHoliday;
+
+                                    return (
+                                        <TouchableOpacity
+                                            key={dateString}
+                                            style={styles.weekViewDayContainer}
+                                            onPress={() => {
+                                                setSelectedDate(dateString);
+                                                drillDown(dateString);
+                                            }}
+                                            activeOpacity={0.7}
+                                        >
+                                            <View
+                                                style={[
+                                                    styles.weekViewDayContent,
+                                                    isSelected && [styles.weekViewDaySelected, { backgroundColor: colors.primary }],
+                                                    isToday && !isSelected && [styles.weekViewDayToday, { backgroundColor: colors.primaryLight }],
+                                                ]}
+                                            >
+                                                <Text
+                                                    style={[
+                                                        styles.weekViewDayNumber,
+                                                        { color: colors.textPrimary },
+                                                        isSelected && styles.weekViewDayNumberSelected,
+                                                        isToday && !isSelected && [styles.weekViewDayNumberToday, { color: colors.primary }],
+                                                    ]}
+                                                >
+                                                    {dayNumber}
+                                                </Text>
+                                                <Text
+                                                    style={[
+                                                        styles.weekViewLunarText,
+                                                        { color: colors.textTertiary },
+                                                        isSelected && styles.weekViewLunarTextSelected,
+                                                        isToday && !isSelected && [styles.weekViewLunarTextToday, { color: colors.primary }],
+                                                        isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
+                                                        !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
+                                                    ]}
+                                                    numberOfLines={1}
+                                                >
+                                                    {lunarText}
+                                                </Text>
+                                                {hasEvent && !isSelected && (
+                                                    <View style={[styles.weekViewEventDot, { backgroundColor: colors.primary }]} />
+                                                )}
+                                            </View>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                    </>
                 ) : (
                     <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
                         <Calendar
@@ -870,22 +937,59 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 8 },
         elevation: 2,
     },
-    // 周视图自定义星期标题行样式 - 与日期行使用完全相同的布局
-    weekDayNamesRow: {
+    // 周视图样式
+    weekViewRow: {
         flexDirection: 'row',
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingTop: 12,
-        paddingBottom: 4,
+        paddingHorizontal: 8,
     },
-    weekDayNameContainer: {
+    weekViewDayContainer: {
         flex: 1,
         alignItems: 'center',
+        paddingVertical: 4,
     },
-    weekDayNameText: {
+    weekDayHeaderText: {
         fontSize: 12,
         fontWeight: '600',
         textAlign: 'center',
+        marginBottom: 8,
+    },
+    weekViewDayContent: {
+        width: 44,
+        height: 52,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 8,
+    },
+    weekViewDaySelected: {
+    },
+    weekViewDayToday: {
+    },
+    weekViewDayNumber: {
+        fontSize: 16,
+        fontWeight: '500',
+        marginBottom: 2,
+    },
+    weekViewDayNumberSelected: {
+        color: '#FFFFFF',
+        fontWeight: '600',
+    },
+    weekViewDayNumberToday: {
+        fontWeight: '600',
+    },
+    weekViewLunarText: {
+        fontSize: 10,
+    },
+    weekViewLunarTextSelected: {
+        color: 'rgba(255, 255, 255, 0.85)',
+    },
+    weekViewLunarTextToday: {
+    },
+    weekViewEventDot: {
+        position: 'absolute',
+        bottom: 4,
+        width: 4,
+        height: 4,
+        borderRadius: 2,
     },
     dayNavRow: {
         flexDirection: 'row',
