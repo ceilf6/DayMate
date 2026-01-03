@@ -69,7 +69,7 @@ const blueTheme: Theme = {
         textPrimary: '#111827',
         textSecondary: '#6B7280',
         textTertiary: '#9CA3AF',
-        textDisabled: '#D1D5DB',
+        textDisabled: '#A0A0A8',
 
         border: '#E5E7EB',
         borderLight: '#F3F4F6',
@@ -104,7 +104,7 @@ const darkBlueTheme: Theme = {
         textPrimary: '#111827',
         textSecondary: '#6B7280',
         textTertiary: '#9CA3AF',
-        textDisabled: '#D1D5DB',
+        textDisabled: '#A0A0A8',
 
         border: '#E5E7EB',
         borderLight: '#F3F4F6',
@@ -139,7 +139,7 @@ const greenTheme: Theme = {
         textPrimary: '#111827',
         textSecondary: '#6B7280',
         textTertiary: '#9CA3AF',
-        textDisabled: '#D1D5DB',
+        textDisabled: '#A0A0A8',
 
         border: '#E5E7EB',
         borderLight: '#F3F4F6',
@@ -174,7 +174,7 @@ const purpleTheme: Theme = {
         textPrimary: '#111827',
         textSecondary: '#6B7280',
         textTertiary: '#9CA3AF',
-        textDisabled: '#D1D5DB',
+        textDisabled: '#A0A0A8',
 
         border: '#E5E7EB',
         borderLight: '#F3F4F6',
@@ -209,7 +209,7 @@ const orangeTheme: Theme = {
         textPrimary: '#111827',
         textSecondary: '#6B7280',
         textTertiary: '#9CA3AF',
-        textDisabled: '#D1D5DB',
+        textDisabled: '#A0A0A8',
 
         border: '#E5E7EB',
         borderLight: '#F3F4F6',
@@ -244,7 +244,7 @@ const pinkTheme: Theme = {
         textPrimary: '#111827',
         textSecondary: '#6B7280',
         textTertiary: '#9CA3AF',
-        textDisabled: '#D1D5DB',
+        textDisabled: '#A0A0A8',
 
         border: '#E5E7EB',
         borderLight: '#F3F4F6',
@@ -258,10 +258,10 @@ const pinkTheme: Theme = {
 
 // 深色模式下的颜色调整
 export const darkModeColors = {
-    // 深色模式三层透明度系统（使用白色透明度）
-    primaryBackground: 'rgba(255, 255, 255, 0.04)',  // 页面背景 - 最淡
-    primarySurface: 'rgba(255, 255, 255, 0.08)',     // 卡片背景 - 中等
-    primaryContent: 'rgba(255, 255, 255, 0.12)',    // 卡片内子区域 - 较浓
+    // 深色模式三层透明度系统（使用白色透明度，提高可见度）
+    primaryBackground: 'rgba(255, 255, 255, 0.08)',  // 页面背景 - 最淡
+    primarySurface: 'rgba(255, 255, 255, 0.14)',     // 卡片背景 - 中等
+    primaryContent: 'rgba(255, 255, 255, 0.20)',     // 卡片内子区域 - 较浓
 
     background: '#0B0B0F',
     backgroundSecondary: '#141418',
