@@ -146,7 +146,8 @@
         "clearBackground": "清除背景",
         "clearBackgroundConfirm": "确定要清除背景图片吗？",
         "backgroundOpacity": "背景透明度",
-        "restoreDefault": "恢复默认主题背景"
+        "restoreDefault": "恢复默认主题背景",
+        "cropImage": "裁剪图片"
     },
     "error": {
         "title": "错误",

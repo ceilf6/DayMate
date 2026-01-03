@@ -1121,6 +1121,19 @@ PODS:
     - React-Core
   - RNCClipboard (1.16.3):
     - React-Core
+  - RNImageCropPicker (0.51.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.51.1)
+    - TOCropViewController (~> 2.8.0)
+  - RNImageCropPicker/QBImagePickerController (0.51.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController (~> 2.8.0)
   - RNLocalize (3.6.1):
     - React-Core
   - RNNotifee (9.1.8):
@@ -1134,6 +1147,7 @@ PODS:
     - React-Core
     - React-RCTImage
   - SocketRocket (0.6.1)
+  - TOCropViewController (2.8.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1213,6 +1227,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -1233,6 +1248,7 @@ SPEC REPOS:
     - libevent
     - OpenSSL-Universal
     - SocketRocket
+    - TOCropViewController
 
 EXTERNAL SOURCES:
   boost:
@@ -1338,6 +1354,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
   RNNotifee:
@@ -1411,10 +1429,12 @@ SPEC CHECKSUMS:
   ReactCommon: 03a07a32cbaf798b01e7025001d6fa5a862709f6
   RNCAsyncStorage: b6410dead2732b5c72a7fdb1ecb5651bbcf4674b
   RNCClipboard: f6679d470d0da2bce2a37b0af7b9e0bf369ecda5
+  RNImageCropPicker: e2af973019fc2e23e54d2a91a5deb0db73b05c3b
   RNLocalize: 0a9ffe84f0d25cf2fb0abacd4d7491a06e78ced2
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNScreens: 2597a28731cc8e967467c55b8844f43655af5aef
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  TOCropViewController: 797deaf39c90e6e9ddd848d88817f6b9a8a09888
   Yoga: 57d2ffe418d024d56f8b0047f335c677e4c4d9ac
 
 PODFILE CHECKSUM: 4589fe32eb14483698fe4bcb11b0aee8d02e854e

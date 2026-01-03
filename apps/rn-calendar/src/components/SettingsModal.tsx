@@ -9,8 +9,9 @@ import {
     Image,
     Alert,
     Platform,
+    Dimensions,
 } from 'react-native';
-import { launchImageLibrary, type ImagePickerResponse } from 'react-native-image-picker';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import { useI18n, type Language } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useBackground } from '../contexts/BackgroundContext';
@@ -26,6 +27,9 @@ const languages: { code: Language; name: string; nativeName: string }[] = [
     { code: 'zh-TW', name: '繁體中文', nativeName: '繁體中文' },
     { code: 'en', name: 'English', nativeName: 'English' },
 ];
+
+// 获取屏幕尺寸用于裁剪比例
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
     const { t, currentLanguage, changeLanguage } = useI18n();
@@ -43,27 +47,26 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
 
     const handleSelectImage = async () => {
         try {
-            const result: ImagePickerResponse = await launchImageLibrary({
+            const result = await ImageCropPicker.openPicker({
                 mediaType: 'photo',
-                quality: 0.8,
-                maxWidth: 1920,
-                maxHeight: 1920,
+                cropping: true,
+                cropperToolbarTitle: t('settings.cropImage', '裁剪图片') as string,
+                width: screenWidth * 2,
+                height: screenHeight * 2,
+                compressImageQuality: 0.8,
+                cropperChooseText: t('common.confirm', '确定') as string,
+                cropperCancelText: t('common.cancel', '取消') as string,
             });
 
-            if (result.didCancel) return;
-            if (result.errorCode) {
-                Alert.alert(t('error.title', '错误') as string, result.errorMessage || t('error.selectImageFailed', '选择图片失败') as string);
-                return;
-            }
-
-            const asset = result.assets?.[0];
-            if (asset?.uri) {
+            if (result.path) {
                 await setBackgroundImage({
-                    uri: asset.uri,
+                    uri: result.path,
                     opacity: opacity,
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
+            // 用户取消选择不需要提示
+            if (error?.code === 'E_PICKER_CANCELLED') return;
             Alert.alert(t('error.title', '错误') as string, t('error.selectImageFailed', '选择图片失败') as string);
         }
     };

@@ -146,7 +146,8 @@
         "clearBackground": "Clear Background",
         "clearBackgroundConfirm": "Are you sure you want to clear the background image?",
         "backgroundOpacity": "Background Opacity",
-        "restoreDefault": "Restore Default Theme Background"
+        "restoreDefault": "Restore Default Theme Background",
+        "cropImage": "Crop Image"
     },
     "error": {
         "title": "Error",
