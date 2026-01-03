@@ -555,9 +555,9 @@ const HomeScreen = () => {
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity
-                            style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}
+                            style={[styles.topActionButton, { backgroundColor: colors.primary }]}
                             disabled>
-                            <Text style={[styles.topActionButtonText, { color: colors.textPrimary }]}>
+                            <Text style={[styles.topActionButtonText]}>
                                 {viewMode === 'month' && t('calendar.monthView', '月视图')}
                                 {viewMode === 'week' && t('calendar.weekView', '周视图')}
                                 {viewMode === 'day' && t('calendar.dayView', '日视图')}
@@ -568,9 +568,9 @@ const HomeScreen = () => {
                     {/* 中间：设置 */}
                     <TouchableOpacity
                         onPress={() => setIsSettingsModalVisible(true)}
-                        style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}
+                        style={[styles.topActionButton, { backgroundColor: colors.primary }]}
                         accessibilityRole="button">
-                        <Text style={[styles.topActionButtonText, { color: colors.textPrimary }]}>
+                        <Text style={[styles.topActionButtonText]}>
                             {t('settings.title', '设置')}
                         </Text>
                     </TouchableOpacity>
@@ -578,9 +578,9 @@ const HomeScreen = () => {
                     {/* 右侧：导入/导出 */}
                     <TouchableOpacity
                         onPress={openImportExportModal}
-                        style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}
+                        style={[styles.topActionButton, { backgroundColor: colors.primary }]}
                         accessibilityRole="button">
-                        <Text style={[styles.topActionButtonText, { color: colors.textPrimary }]}>
+                        <Text style={[styles.topActionButtonText]}>
                             {t('importExport.title', '导入/导出')}
                         </Text>
                     </TouchableOpacity>
@@ -605,7 +605,7 @@ const HomeScreen = () => {
                             onPress={() => shiftSelectedDate(-1)}
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
-                            <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
+                            <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                 {t('calendar.previousDay', '上一天')}
                             </Text>
                         </TouchableOpacity>
@@ -618,7 +618,7 @@ const HomeScreen = () => {
                             onPress={() => shiftSelectedDate(1)}
                             accessibilityRole="button"
                             style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
-                            <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
+                            <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                 {t('calendar.nextDay', '下一天')}
                             </Text>
                         </TouchableOpacity>
@@ -631,7 +631,7 @@ const HomeScreen = () => {
                                 onPress={() => shiftWeek('prev')}
                                 accessibilityRole="button"
                                 style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
-                                <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
+                                <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                     {t('calendar.previousWeek', '上一周')}
                                 </Text>
                             </TouchableOpacity>
@@ -644,7 +644,7 @@ const HomeScreen = () => {
                                 onPress={() => shiftWeek('next')}
                                 accessibilityRole="button"
                                 style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
-                                <Text style={[styles.dayNavButtonText, { color: colors.textPrimary }]}>
+                                <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                     {t('calendar.nextWeek', '下一周')}
                                 </Text>
                             </TouchableOpacity>
@@ -898,7 +898,7 @@ const styles = StyleSheet.create({
     },
     // 返回按钮图标样式
     backButtonIcon: {
-        fontSize: 28,
+        fontSize: 14,
         fontWeight: '300',
         marginRight: 2,
         marginTop: -2,
@@ -1218,7 +1218,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     topActionButtonText: {
-        fontSize: 13,
+        fontSize: 14,
+        color: '#ffffff',
         fontWeight: '600',
     },
     appTitle: {
