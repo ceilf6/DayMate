@@ -997,7 +997,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     dayNavTitle: {
-        flex: 1,
         textAlign: 'center',
         fontSize: 15,
         lineHeight: 20,
