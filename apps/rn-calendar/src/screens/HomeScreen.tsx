@@ -641,7 +641,7 @@ const HomeScreen = () => {
                         <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
                             {/* 星期标题行 */}
                             <View style={styles.weekViewRow}>
-                                {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+                                {(t('calendar.dayNamesShort', undefined, { returnObjects: true }) as string[]).map((day, index) => (
                                     <View key={index} style={styles.weekViewDayContainer}>
                                         <Text style={[styles.weekDayHeaderText, { color: colors.textSecondary }]}>
                                             {day}

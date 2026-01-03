@@ -144,6 +144,14 @@
         "language": "Language",
         "themeColor": "Theme Color"
     },
+    "themes": {
+        "blue": "Blue",
+        "green": "Green",
+        "purple": "Purple",
+        "orange": "Orange",
+        "pink": "Pink",
+        "gray": "Gray"
+    },
     "splash": {
         "subtitle": "Your Schedule Assistant",
         "date": "Date"

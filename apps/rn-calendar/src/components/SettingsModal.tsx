@@ -134,7 +134,7 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                                                     },
                                                 ]}
                                             >
-                                                {theme.name}
+                                                {t(`themes.${theme.id}`)}
                                             </Text>
                                             {isSelected && (
                                                 <View style={styles.selectedBadge}>

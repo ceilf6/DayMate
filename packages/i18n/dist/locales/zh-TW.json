@@ -144,6 +144,14 @@
         "language": "語言",
         "themeColor": "主題色"
     },
+    "themes": {
+        "blue": "藍色",
+        "green": "綠色",
+        "purple": "紫色",
+        "orange": "橙色",
+        "pink": "粉色",
+        "gray": "灰色"
+    },
     "splash": {
         "subtitle": "你的日程小幫手",
         "date": "日期"

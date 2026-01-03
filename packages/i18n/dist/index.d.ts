@@ -106,6 +106,14 @@ export declare const resources: {
                 language: string;
                 themeColor: string;
             };
+            themes: {
+                blue: string;
+                green: string;
+                purple: string;
+                orange: string;
+                pink: string;
+                gray: string;
+            };
             splash: {
                 subtitle: string;
                 date: string;
@@ -217,6 +225,14 @@ export declare const resources: {
                 language: string;
                 themeColor: string;
             };
+            themes: {
+                blue: string;
+                green: string;
+                purple: string;
+                orange: string;
+                pink: string;
+                gray: string;
+            };
             splash: {
                 subtitle: string;
                 date: string;
@@ -327,6 +343,14 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+            };
+            themes: {
+                blue: string;
+                green: string;
+                purple: string;
+                orange: string;
+                pink: string;
+                gray: string;
             };
             splash: {
                 subtitle: string;
