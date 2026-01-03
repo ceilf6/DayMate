@@ -421,6 +421,38 @@ const HomeScreen = () => {
         [calendarDayFontWeight, colors],
     );
 
+    // 周视图专用主题
+    const weekCalendarTheme = useMemo<Theme>(
+        () => ({
+            ...calendarTheme,
+            // 周视图对齐修复：让 dayHeader 和 dayContainer 使用相同的 flex 布局
+            'stylesheet.expandable.main': {
+                // 星期标题文字 - 使用 flex: 1 代替固定宽度
+                dayHeader: {
+                    flex: 1,
+                    textAlign: 'center',
+                    fontSize: 12,
+                    fontWeight: '600',
+                    color: colors.textSecondary,
+                },
+                // 日期行 - 移除 justifyContent，只使用 flex: 1 均分
+                week: {
+                    marginTop: 7,
+                    marginBottom: 7,
+                    paddingRight: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                },
+                // 日期容器 - 使用 flex: 1
+                dayContainer: {
+                    flex: 1,
+                    alignItems: 'center',
+                },
+            },
+        }),
+        [calendarTheme, colors],
+    );
+
     // 获取当前选中日期的农历信息
     const lunarInfo = useMemo(() => {
         if (!selectedDate) return null;
@@ -601,6 +633,16 @@ const HomeScreen = () => {
                     </View>
                 ) : viewMode === 'week' ? (
                     <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
+                        {/* 自定义星期标题行 - 与日期行使用相同的布局 */}
+                        <View style={styles.weekDayNamesRow}>
+                            {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+                                <View key={index} style={styles.weekDayNameContainer}>
+                                    <Text style={[styles.weekDayNameText, { color: colors.textSecondary }]}>
+                                        {day}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
                         <CalendarProvider date={selectedDate} onDateChanged={(date) => {
                             setSelectedDate(date);
                             // 在周视图中点击日期进入日视图
@@ -610,7 +652,8 @@ const HomeScreen = () => {
                                 key={`week-${currentLanguage}`}
                                 current={selectedDate}
                                 markedDates={markedDates}
-                                theme={calendarTheme}
+                                theme={weekCalendarTheme}
+                                hideDayNames={true}
                                 onDayPress={(day: any) => {
                                     setSelectedDate(day.dateString);
                                     drillDown(day.dateString);
@@ -820,11 +863,29 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         paddingVertical: 8,
         paddingHorizontal: 8,
+        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.06,
         shadowRadius: 14,
         shadowOffset: { width: 0, height: 8 },
         elevation: 2,
+    },
+    // 周视图自定义星期标题行样式 - 与日期行使用完全相同的布局
+    weekDayNamesRow: {
+        flexDirection: 'row',
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 12,
+        paddingBottom: 4,
+    },
+    weekDayNameContainer: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    weekDayNameText: {
+        fontSize: 12,
+        fontWeight: '600',
+        textAlign: 'center',
     },
     dayNavRow: {
         flexDirection: 'row',
@@ -835,6 +896,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         borderRadius: 16,
+        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.06,
         shadowRadius: 14,
@@ -891,6 +953,7 @@ const styles = StyleSheet.create({
     eventCard: {
         padding: 16,
         borderRadius: 16,
+        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.05,
         shadowRadius: 12,
@@ -908,6 +971,7 @@ const styles = StyleSheet.create({
     eventItem: {
         flexDirection: 'row',
         borderRadius: 14,
+        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.05,
         shadowRadius: 10,
@@ -975,6 +1039,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
+        backgroundColor: '#FFFFFF',
         shadowColor: '#000000',
         shadowOpacity: 0.04,
         shadowRadius: 8,
