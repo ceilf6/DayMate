@@ -51,7 +51,37 @@ const HomeScreen = () => {
     const today = useMemo(() => getToday(), []);
 
     const [viewMode, setViewMode] = useState<ViewMode>('month');
+    const [viewHistory, setViewHistory] = useState<ViewMode[]>([]);
     const [selectedDate, setSelectedDate] = useState(today);
+
+    // 进入下一层视图（月->周->日）
+    const drillDown = useCallback((targetDate?: string) => {
+        if (targetDate) {
+            setSelectedDate(targetDate);
+        }
+        if (viewMode === 'month') {
+            setViewHistory(prev => [...prev, 'month']);
+            setViewMode('week');
+        } else if (viewMode === 'week') {
+            setViewHistory(prev => [...prev, 'week']);
+            setViewMode('day');
+        }
+    }, [viewMode]);
+
+    // 返回上一层视图
+    const goBack = useCallback(() => {
+        if (viewHistory.length > 0) {
+            const newHistory = [...viewHistory];
+            const previousView = newHistory.pop();
+            setViewHistory(newHistory);
+            if (previousView) {
+                setViewMode(previousView);
+            }
+        }
+    }, [viewHistory]);
+
+    // 是否可以返回
+    const canGoBack = viewHistory.length > 0;
     const [eventsByDate, setEventsByDate] = useState<Record<string, CalendarEvent[]>>({});
 
     // Modal visibility states
@@ -72,9 +102,17 @@ const HomeScreen = () => {
         };
     }, []);
 
-    const onDayPress = (day: any) => {
-        setSelectedDate(day.dateString);
-    };
+    const onDayPress = useCallback((day: any) => {
+        const dateString = day.dateString;
+        setSelectedDate(dateString);
+        // 在月视图中点击日期，进入周视图
+        if (viewMode === 'month') {
+            drillDown(dateString);
+        } else if (viewMode === 'week') {
+            // 在周视图中点击日期，进入日视图
+            drillDown(dateString);
+        }
+    }, [viewMode, drillDown]);
 
     const onMonthChange = useCallback((month: any) => {
         const newDate = month.dateString;
@@ -421,7 +459,11 @@ const HomeScreen = () => {
 
             return (
                 <TouchableOpacity
-                    onPress={() => onDayPress({ dateString })}
+                    onPress={() => {
+                        setSelectedDate(dateString);
+                        // 点击日期进入周视图
+                        drillDown(dateString);
+                    }}
                     style={[
                         styles.dayContainer,
                         isSelected && [styles.dayContainerSelected, { backgroundColor: colors.primary }],
@@ -460,7 +502,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
             );
         };
-    }, [selectedDate, today, isDarkMode, eventsByDate, onDayPress]);
+    }, [selectedDate, today, isDarkMode, eventsByDate, drillDown, colors]);
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -497,61 +539,27 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-                <View style={[styles.viewModeRow, { backgroundColor: colors.primarySurface }]}>
-                    <TouchableOpacity
-                        onPress={() => setViewMode('month')}
-                        accessibilityRole="button"
-                        style={[
-                            styles.viewModeButton,
-                            viewMode === 'month' && styles.viewModeButtonActive,
-                            viewMode === 'month' && { backgroundColor: colors.surface },
-                        ]}>
-                        <Text
-                            style={[
-                                styles.viewModeButtonText,
-                                { color: colors.textSecondary },
-                                viewMode === 'month' && styles.viewModeButtonTextActive,
-                                viewMode === 'month' && { color: colors.textPrimary },
-                            ]}>
-                            月
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setViewMode('week')}
-                        accessibilityRole="button"
-                        style={[
-                            styles.viewModeButton,
-                            viewMode === 'week' && styles.viewModeButtonActive,
-                            viewMode === 'week' && { backgroundColor: colors.surface },
-                        ]}>
-                        <Text
-                            style={[
-                                styles.viewModeButtonText,
-                                { color: colors.textSecondary },
-                                viewMode === 'week' && styles.viewModeButtonTextActive,
-                                viewMode === 'week' && { color: colors.textPrimary },
-                            ]}>
-                            周
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setViewMode('day')}
-                        accessibilityRole="button"
-                        style={[
-                            styles.viewModeButton,
-                            viewMode === 'day' && styles.viewModeButtonActive,
-                            viewMode === 'day' && { backgroundColor: colors.surface },
-                        ]}>
-                        <Text
-                            style={[
-                                styles.viewModeButtonText,
-                                { color: colors.textSecondary },
-                                viewMode === 'day' && styles.viewModeButtonTextActive,
-                                viewMode === 'day' && { color: colors.textPrimary },
-                            ]}>
-                            日
-                        </Text>
-                    </TouchableOpacity>
+                {/* 导航栏 - 带返回按钮 */}
+                <View style={[styles.navigationBar, { backgroundColor: colors.primarySurface }]}>
+                    {canGoBack ? (
+                        <TouchableOpacity
+                            onPress={goBack}
+                            accessibilityRole="button"
+                            style={styles.backButton}>
+                            <Text style={[styles.backButtonIcon, { color: colors.primary }]}>‹</Text>
+                            <Text style={[styles.backButtonText, { color: colors.primary }]}>
+                                {viewMode === 'week' ? t('calendar.month', '月') : t('calendar.week', '周')}
+                            </Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={styles.backButtonPlaceholder} />
+                    )}
+                    <Text style={[styles.navigationTitle, { color: colors.textPrimary }]}>
+                        {viewMode === 'month' && t('calendar.monthView', '月视图')}
+                        {viewMode === 'week' && t('calendar.weekView', '周视图')}
+                        {viewMode === 'day' && t('calendar.dayView', '日视图')}
+                    </Text>
+                    <View style={styles.backButtonPlaceholder} />
                 </View>
 
                 {/* 农历信息显示 */}
@@ -593,12 +601,20 @@ const HomeScreen = () => {
                     </View>
                 ) : viewMode === 'week' ? (
                     <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
-                        <CalendarProvider date={selectedDate} onDateChanged={setSelectedDate}>
+                        <CalendarProvider date={selectedDate} onDateChanged={(date) => {
+                            setSelectedDate(date);
+                            // 在周视图中点击日期进入日视图
+                            drillDown(date);
+                        }}>
                             <WeekCalendar
                                 key={`week-${currentLanguage}`}
                                 current={selectedDate}
                                 markedDates={markedDates}
                                 theme={calendarTheme}
+                                onDayPress={(day: any) => {
+                                    setSelectedDate(day.dateString);
+                                    drillDown(day.dateString);
+                                }}
                             />
                         </CalendarProvider>
                     </View>
@@ -764,38 +780,40 @@ const styles = StyleSheet.create({
         color: '#666666',
         marginTop: 5,
     },
-    viewModeRow: {
+    // 导航栏样式
+    navigationBar: {
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginHorizontal: 12,
         marginTop: 4,
         marginBottom: 12,
-        padding: 4,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
         borderRadius: 12,
     },
-    viewModeButton: {
-        flex: 1,
-        paddingVertical: 10,
-        borderRadius: 10,
-        backgroundColor: 'transparent',
+    backButton: {
+        flexDirection: 'row',
         alignItems: 'center',
+        minWidth: 70,
     },
-    viewModeButtonDark: {
-        backgroundColor: 'transparent',
+    backButtonIcon: {
+        fontSize: 28,
+        fontWeight: '300',
+        marginRight: 2,
+        marginTop: -2,
     },
-    viewModeButtonActive: {
-        shadowColor: '#000000',
-        shadowOpacity: 0.06,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 6 },
-        elevation: 2,
+    backButtonText: {
+        fontSize: 16,
+        fontWeight: '500',
     },
-    viewModeButtonText: {
-        fontSize: 13,
-        lineHeight: 18,
+    backButtonPlaceholder: {
+        minWidth: 70,
+    },
+    navigationTitle: {
+        fontSize: 17,
         fontWeight: '600',
-    },
-    viewModeButtonTextActive: {
-        fontWeight: '700',
+        textAlign: 'center',
     },
     calendarCard: {
         marginHorizontal: 12,
