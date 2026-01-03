@@ -55,9 +55,9 @@ const blueTheme: Theme = {
         primaryDark: '#1976D2',
 
         // 三层透明度系统
-        primaryBackground: 'rgba(33, 150, 243, 0.06)',  // 页面背景 - 最淡
-        primarySurface: 'rgba(33, 150, 243, 0.12)',     // 卡片背景 - 中等
-        primaryContent: 'rgba(33, 150, 243, 0.18)',     // 卡片内子区域 - 较浓
+        primaryBackground: 'rgba(33, 150, 243, 0.10)',  // 页面背景 - 最淡
+        primarySurface: 'rgba(33, 150, 243, 0.15)',     // 卡片背景 - 中等
+        primaryContent: 'rgba(33, 150, 243, 0.20)',     // 卡片内子区域 - 较浓
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
