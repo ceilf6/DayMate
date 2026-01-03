@@ -337,9 +337,9 @@ export const darkModeColors = {
     surfaceHover: '#27272A',
 
     textPrimary: '#F4F4F5',
-    textSecondary: '#A1A1AA',
-    textTertiary: '#71717A',
-    textDisabled: '#52525B',
+    textSecondary: '#D4D4D8',  // 提高亮度，确保星期几清晰可见
+    textTertiary: '#A1A1AA',
+    textDisabled: '#71717A',
 
     border: '#27272A',
     borderLight: '#1C1C1E',

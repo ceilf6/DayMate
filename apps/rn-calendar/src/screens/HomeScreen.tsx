@@ -591,7 +591,7 @@ const HomeScreen = () => {
                         <TouchableOpacity
                             onPress={() => shiftSelectedDate(-1)}
                             accessibilityRole="button"
-                            style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                            style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                 {t('calendar.previousDay', '上一天')}
                             </Text>
@@ -604,7 +604,7 @@ const HomeScreen = () => {
                         <TouchableOpacity
                             onPress={() => shiftSelectedDate(1)}
                             accessibilityRole="button"
-                            style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                            style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                             <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                 {t('calendar.nextDay', '下一天')}
                             </Text>
@@ -617,7 +617,7 @@ const HomeScreen = () => {
                             <TouchableOpacity
                                 onPress={() => shiftWeek('prev')}
                                 accessibilityRole="button"
-                                style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                                style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                                 <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                     {t('calendar.previousWeek', '上一周')}
                                 </Text>
@@ -630,7 +630,7 @@ const HomeScreen = () => {
                             <TouchableOpacity
                                 onPress={() => shiftWeek('next')}
                                 accessibilityRole="button"
-                                style={[styles.dayNavButton, { backgroundColor: colors.backgroundTertiary }]}>
+                                style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
                                 <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
                                     {t('calendar.nextWeek', '下一周')}
                                 </Text>
