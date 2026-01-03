@@ -25,7 +25,11 @@ const initI18n = (language = 'zh-CN') => {
     return i18next_1.default;
 };
 exports.initI18n = initI18n;
-const t = (key, defaultValueOrOptions) => {
+const t = (key, defaultValueOrOptions, options) => {
+    // 如果需要返回对象（数组等）
+    if (options?.returnObjects || (typeof defaultValueOrOptions === 'object' && defaultValueOrOptions?.returnObjects)) {
+        return i18next_1.default.t(key, { returnObjects: true });
+    }
     // 如果第二个参数是字符串，当作默认值处理
     if (typeof defaultValueOrOptions === 'string') {
         const result = i18next_1.default.t(key);

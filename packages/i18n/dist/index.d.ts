@@ -402,7 +402,9 @@ export declare const resources: {
     };
 };
 export declare const initI18n: (language?: Language) => import("i18next").i18n;
-export declare const t: (key: string, defaultValueOrOptions?: string | any) => string | object;
+export declare const t: (key: string, defaultValueOrOptions?: string | any, options?: {
+    returnObjects?: boolean;
+}) => string | object;
 export declare const changeLanguage: (language: Language) => Promise<import("i18next").TFunction<"translation", undefined>>;
 export declare const getCurrentLanguage: () => Language;
 export default i18next;

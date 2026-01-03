@@ -89,7 +89,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
     // 翻译函数 - 支持默认值或插值参数
     const t = useCallback(((key: string, defaultValueOrOptions?: string | any, options?: { returnObjects?: boolean }): any => {
-        const value = i18nT(key, defaultValueOrOptions);
+        // 传递 options 给底层 i18nT 函数
+        const value = i18nT(key, defaultValueOrOptions, options);
         if (typeof value === 'object' && !options?.returnObjects) {
             return String(value);
         }
