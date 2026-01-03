@@ -541,7 +541,7 @@ const HomeScreen = () => {
                 </View> */}
 
                 {/* 顶部操作栏 - 三个按钮同行 */}
-                <View style={[styles.topActionRow, { backgroundColor: colors.primarySurface }]}>
+                <View style={[styles.topActionRowCard, { backgroundColor: colors.primarySurface }]}>
                     {/* 左侧：视图切换 */}
                     {canGoBack ? (
                         <TouchableOpacity
@@ -585,19 +585,6 @@ const HomeScreen = () => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* 农历信息显示 - 只在简体中文时显示 */}
-                {currentLanguage === 'zh-CN' && lunarInfo && (
-                    <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
-                        <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
-                            {lunarInfo.yearInfo}
-                        </Text>
-                        <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
-                            {lunarInfo.monthInfo}
-                            {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
-                        </Text>
-                    </View>
-                )}
 
                 {viewMode === 'day' ? (
                     <View style={[styles.dayNavRow, { backgroundColor: colors.primarySurface }]}>
@@ -746,6 +733,19 @@ const HomeScreen = () => {
                             dayComponent={renderDay}
                             hideExtraDays={false}
                         />
+                    </View>
+                )}
+
+                {/* 农历信息显示 - 只在简体中文时显示 */}
+                {currentLanguage === 'zh-CN' && lunarInfo && (
+                    <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
+                        <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
+                            {lunarInfo.yearInfo}
+                        </Text>
+                        <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
+                            {lunarInfo.monthInfo}
+                            {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
+                        </Text>
                     </View>
                 )}
 
@@ -905,6 +905,7 @@ const styles = StyleSheet.create({
         marginTop: -2,
     },
     calendarCard: {
+        marginBottom: 10,
         marginHorizontal: 12,
         borderRadius: 16,
         paddingVertical: 8,
@@ -930,7 +931,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
         textAlign: 'center',
-        marginBottom: 8,
+        marginBottom: 10,
     },
     weekViewDayContent: {
         width: 44,
@@ -1008,7 +1009,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 16,
-        marginTop: 12,
+        // marginTop: 12,
     },
     eventHeaderRow: {
         flexDirection: 'row',
@@ -1117,7 +1118,7 @@ const styles = StyleSheet.create({
     // 农历信息卡片样式
     lunarInfoCard: {
         marginHorizontal: 12,
-        marginBottom: 12,
+        marginBottom: 10,
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
@@ -1200,13 +1201,13 @@ const styles = StyleSheet.create({
     },
 
     // 顶部操作栏样式
-    topActionRow: {
+    topActionRowCard: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginHorizontal: 12,
-        marginTop: 8,
-        marginBottom: 12,
+        // marginTop: 8,
+        marginBottom: 10,
         paddingVertical: 6,
         paddingHorizontal: 6,
         borderRadius: 12,
