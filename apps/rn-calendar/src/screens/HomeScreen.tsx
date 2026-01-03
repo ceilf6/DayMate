@@ -874,7 +874,7 @@ const HomeScreen = () => {
                                                         </Text>
                                                     ) : null}
                                                     {/* 完成状态标签 */}
-                                                    <View style={[
+                                                    {/* <View style={[
                                                         styles.statusBadge,
                                                         { backgroundColor: isCompleted ? colors.primary : colors.textDisabled }
                                                     ]}>
@@ -883,7 +883,7 @@ const HomeScreen = () => {
                                                                 ? t('event.completed', '已完成') as string
                                                                 : t('event.incomplete', '未完成') as string}
                                                         </Text>
-                                                    </View>
+                                                    </View> */}
                                                 </View>
                                                 <Text
                                                     style={[
