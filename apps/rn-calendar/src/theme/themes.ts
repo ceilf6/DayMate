@@ -72,9 +72,9 @@ const blueTheme: Theme = {
         primaryDark: '#1976D2',
 
         // 浅色模式三层透明度
-        primaryBackground: 'rgba(33, 150, 243, 0.08)',
-        primarySurface: 'rgba(33, 150, 243, 0.15)',
-        primaryContent: 'rgba(33, 150, 243, 0.22)',
+        primaryBackground: 'rgba(33, 150, 243, 0.18)',
+        primarySurface: 'rgba(33, 150, 243, 0.28)',
+        primaryContent: 'rgba(33, 150, 243, 0.38)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -101,9 +101,9 @@ const blueTheme: Theme = {
         primary: '#1565C0',
         primaryLight: 'rgba(21, 101, 192, 0.30)',
         primaryDark: '#0D47A1',
-        primaryBackground: 'rgba(21, 101, 192, 0.25)',
-        primarySurface: 'rgba(21, 101, 192, 0.35)',
-        primaryContent: 'rgba(21, 101, 192, 0.45)',
+        primaryBackground: 'rgba(21, 101, 192, 0.40)',
+        primarySurface: 'rgba(21, 101, 192, 0.50)',
+        primaryContent: 'rgba(21, 101, 192, 0.60)',
     },
 };
 
@@ -116,9 +116,9 @@ const greenTheme: Theme = {
         primaryLight: 'rgba(16, 185, 129, 0.20)',
         primaryDark: '#059669',
 
-        primaryBackground: 'rgba(16, 185, 129, 0.08)',
-        primarySurface: 'rgba(16, 185, 129, 0.15)',
-        primaryContent: 'rgba(16, 185, 129, 0.22)',
+        primaryBackground: 'rgba(16, 185, 129, 0.18)',
+        primarySurface: 'rgba(16, 185, 129, 0.28)',
+        primaryContent: 'rgba(16, 185, 129, 0.38)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -145,9 +145,9 @@ const greenTheme: Theme = {
         primary: '#047857',
         primaryLight: 'rgba(4, 120, 87, 0.30)',
         primaryDark: '#065F46',
-        primaryBackground: 'rgba(4, 120, 87, 0.25)',
-        primarySurface: 'rgba(4, 120, 87, 0.35)',
-        primaryContent: 'rgba(4, 120, 87, 0.45)',
+        primaryBackground: 'rgba(4, 120, 87, 0.40)',
+        primarySurface: 'rgba(4, 120, 87, 0.50)',
+        primaryContent: 'rgba(4, 120, 87, 0.60)',
     },
 };
 
@@ -160,9 +160,9 @@ const purpleTheme: Theme = {
         primaryLight: 'rgba(139, 92, 246, 0.20)',
         primaryDark: '#7C3AED',
 
-        primaryBackground: 'rgba(139, 92, 246, 0.08)',
-        primarySurface: 'rgba(139, 92, 246, 0.15)',
-        primaryContent: 'rgba(139, 92, 246, 0.22)',
+        primaryBackground: 'rgba(139, 92, 246, 0.18)',
+        primarySurface: 'rgba(139, 92, 246, 0.28)',
+        primaryContent: 'rgba(139, 92, 246, 0.38)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -189,9 +189,9 @@ const purpleTheme: Theme = {
         primary: '#6D28D9',
         primaryLight: 'rgba(109, 40, 217, 0.30)',
         primaryDark: '#5B21B6',
-        primaryBackground: 'rgba(109, 40, 217, 0.25)',
-        primarySurface: 'rgba(109, 40, 217, 0.35)',
-        primaryContent: 'rgba(109, 40, 217, 0.45)',
+        primaryBackground: 'rgba(109, 40, 217, 0.40)',
+        primarySurface: 'rgba(109, 40, 217, 0.50)',
+        primaryContent: 'rgba(109, 40, 217, 0.60)',
     },
 };
 
@@ -204,9 +204,9 @@ const orangeTheme: Theme = {
         primaryLight: 'rgba(249, 115, 22, 0.20)',
         primaryDark: '#EA580C',
 
-        primaryBackground: 'rgba(249, 115, 22, 0.08)',
-        primarySurface: 'rgba(249, 115, 22, 0.15)',
-        primaryContent: 'rgba(249, 115, 22, 0.22)',
+        primaryBackground: 'rgba(249, 115, 22, 0.18)',
+        primarySurface: 'rgba(249, 115, 22, 0.28)',
+        primaryContent: 'rgba(249, 115, 22, 0.38)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -233,9 +233,9 @@ const orangeTheme: Theme = {
         primary: '#C2410C',
         primaryLight: 'rgba(194, 65, 12, 0.30)',
         primaryDark: '#9A3412',
-        primaryBackground: 'rgba(194, 65, 12, 0.25)',
-        primarySurface: 'rgba(194, 65, 12, 0.35)',
-        primaryContent: 'rgba(194, 65, 12, 0.45)',
+        primaryBackground: 'rgba(194, 65, 12, 0.40)',
+        primarySurface: 'rgba(194, 65, 12, 0.50)',
+        primaryContent: 'rgba(194, 65, 12, 0.60)',
     },
 };
 
@@ -248,9 +248,9 @@ const pinkTheme: Theme = {
         primaryLight: 'rgba(236, 72, 153, 0.20)',
         primaryDark: '#DB2777',
 
-        primaryBackground: 'rgba(236, 72, 153, 0.08)',
-        primarySurface: 'rgba(236, 72, 153, 0.15)',
-        primaryContent: 'rgba(236, 72, 153, 0.22)',
+        primaryBackground: 'rgba(236, 72, 153, 0.18)',
+        primarySurface: 'rgba(236, 72, 153, 0.28)',
+        primaryContent: 'rgba(236, 72, 153, 0.38)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -277,9 +277,9 @@ const pinkTheme: Theme = {
         primary: '#BE185D',
         primaryLight: 'rgba(190, 24, 93, 0.30)',
         primaryDark: '#9D174D',
-        primaryBackground: 'rgba(190, 24, 93, 0.25)',
-        primarySurface: 'rgba(190, 24, 93, 0.35)',
-        primaryContent: 'rgba(190, 24, 93, 0.45)',
+        primaryBackground: 'rgba(190, 24, 93, 0.40)',
+        primarySurface: 'rgba(190, 24, 93, 0.50)',
+        primaryContent: 'rgba(190, 24, 93, 0.60)',
     },
 };
 
@@ -292,9 +292,9 @@ const grayTheme: Theme = {
         primaryLight: 'rgba(107, 114, 128, 0.20)',
         primaryDark: '#4B5563',
 
-        primaryBackground: 'rgba(107, 114, 128, 0.08)',
-        primarySurface: 'rgba(107, 114, 128, 0.15)',
-        primaryContent: 'rgba(107, 114, 128, 0.22)',
+        primaryBackground: 'rgba(107, 114, 128, 0.18)',
+        primarySurface: 'rgba(107, 114, 128, 0.28)',
+        primaryContent: 'rgba(107, 114, 128, 0.38)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -321,9 +321,9 @@ const grayTheme: Theme = {
         primary: '#374151',
         primaryLight: 'rgba(55, 65, 81, 0.30)',
         primaryDark: '#1F2937',
-        primaryBackground: 'rgba(55, 65, 81, 0.25)',
-        primarySurface: 'rgba(55, 65, 81, 0.35)',
-        primaryContent: 'rgba(55, 65, 81, 0.45)',
+        primaryBackground: 'rgba(55, 65, 81, 0.40)',
+        primarySurface: 'rgba(55, 65, 81, 0.50)',
+        primaryContent: 'rgba(55, 65, 81, 0.60)',
     },
 };
 

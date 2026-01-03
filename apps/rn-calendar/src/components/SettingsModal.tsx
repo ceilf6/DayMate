@@ -68,7 +68,7 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                                             key={lang.code}
                                             style={[
                                                 styles.optionItem,
-                                                { backgroundColor: colors.backgroundTertiary },
+                                                { backgroundColor: colors.primarySurface },
                                                 isSelected && {
                                                     backgroundColor: colors.primary,
                                                     borderColor: colors.primary,
@@ -109,7 +109,7 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
                                             key={theme.id}
                                             style={[
                                                 styles.themeItem,
-                                                { backgroundColor: colors.backgroundTertiary },
+                                                { backgroundColor: colors.primarySurface },
                                                 isSelected && {
                                                     borderColor: colors.primary,
                                                     borderWidth: 3,

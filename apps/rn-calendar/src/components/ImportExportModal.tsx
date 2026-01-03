@@ -11,7 +11,7 @@ import {
     Platform,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
-import { t } from '@daymate/i18n';
+import { useI18n } from '../contexts/I18nContext';
 
 interface ImportExportModalProps {
     visible: boolean;
@@ -31,6 +31,7 @@ const ImportExportModal = memo(({
     onImportFromText,
 }: ImportExportModalProps) => {
     const { colors, isDarkMode } = useTheme();
+    const { t } = useI18n();
 
     const [importContent, setImportContent] = useState('');
     const [error, setError] = useState('');
@@ -106,50 +107,50 @@ const ImportExportModal = memo(({
                     activeOpacity={1}
                     onPress={handleClose}
                 />
-                <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
+                <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         keyboardShouldPersistTaps="handled"
                     >
-                        <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
                             {t('importExport.title', '导入/导出')}
                         </Text>
 
                         {/* 导出区域 */}
-                        <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
+                        <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
                             {t('importExport.export', '导出日程')}
                         </Text>
                         <View style={styles.exportButtons}>
                             <TouchableOpacity
-                                style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
+                                style={[styles.exportButton, { backgroundColor: colors.primarySurface }]}
                                 onPress={handleExportShare}
                                 accessibilityRole="button"
                             >
-                                <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                <Text style={[styles.exportButtonText, { color: colors.textPrimary }]}>
                                     {t('importExport.share', '分享')}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.exportButton, isDarkMode && styles.exportButtonDark]}
+                                style={[styles.exportButton, { backgroundColor: colors.primarySurface }]}
                                 onPress={handleExportCopy}
                                 accessibilityRole="button"
                             >
-                                <Text style={[styles.exportButtonText, isDarkMode && styles.textPrimaryDark]}>
+                                <Text style={[styles.exportButtonText, { color: colors.textPrimary }]}>
                                     {t('importExport.copy', '复制')}
                                 </Text>
                             </TouchableOpacity>
                         </View>
 
                         {/* 导入区域 */}
-                        <Text style={[styles.sectionLabel, isDarkMode && styles.textSecondaryDark]}>
+                        <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
                             {t('importExport.import', '导入日程')}
                         </Text>
                         <TouchableOpacity
-                            style={[styles.importButton, isDarkMode && styles.importButtonDark]}
+                            style={[styles.importButton, { backgroundColor: colors.primarySurface }]}
                             onPress={handleImportFromClipboard}
                             accessibilityRole="button"
                         >
-                            <Text style={[styles.importButtonText, isDarkMode && styles.textPrimaryDark]}>
+                            <Text style={[styles.importButtonText, { color: colors.textPrimary }]}>
                                 {t('importExport.importFromClipboard', '从剪贴板导入')}
                             </Text>
                         </TouchableOpacity>
@@ -158,8 +159,8 @@ const ImportExportModal = memo(({
                             value={importContent}
                             onChangeText={setImportContent}
                             placeholder={t('placeholder.pasteICalendar', '粘贴 iCalendar 数据...')}
-                            placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                            style={[styles.input, styles.importTextInput, isDarkMode && styles.inputDark]}
+                            placeholderTextColor={colors.textTertiary}
+                            style={[styles.input, styles.importTextInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                             multiline
                         />
 
@@ -172,14 +173,14 @@ const ImportExportModal = memo(({
 
                         <View style={styles.modalActions}>
                             <TouchableOpacity
-                                style={[styles.actionButton, styles.cancelButton]}
+                                style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
                                 onPress={handleClose}
                                 accessibilityRole="button"
                             >
-                                <Text style={styles.cancelButtonText}>{t('common.close', '关闭')}</Text>
+                                <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.close', '关闭')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary }]}
+                                style={[styles.actionButton, { backgroundColor: colors.primary }]}
                                 onPress={handleImportFromText}
                                 accessibilityRole="button"
                             >
@@ -205,7 +206,6 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     modalCard: {
-        backgroundColor: '#ffffff',
         borderRadius: 16,
         padding: 16,
         maxHeight: '80%',
@@ -215,26 +215,15 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 10 },
         elevation: 3,
     },
-    modalCardDark: {
-        backgroundColor: '#141418',
-    },
     modalTitle: {
         fontSize: 18,
         lineHeight: 24,
         fontWeight: '700',
-        color: '#111827',
         marginBottom: 6,
-    },
-    textPrimaryDark: {
-        color: '#F4F4F5',
-    },
-    textSecondaryDark: {
-        color: '#A1A1AA',
     },
     sectionLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#374151',
         marginTop: 12,
         marginBottom: 8,
     },
@@ -247,31 +236,21 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 12,
         borderRadius: 8,
-        backgroundColor: '#F3F4F6',
         alignItems: 'center',
-    },
-    exportButtonDark: {
-        backgroundColor: '#1C1C1E',
     },
     exportButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#374151',
     },
     importButton: {
         paddingVertical: 12,
         borderRadius: 8,
-        backgroundColor: '#F3F4F6',
         alignItems: 'center',
         marginBottom: 10,
-    },
-    importButtonDark: {
-        backgroundColor: '#1C1C1E',
     },
     importButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#374151',
     },
     input: {
         borderWidth: 0,
@@ -280,13 +259,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         fontSize: 14,
         lineHeight: 20,
-        color: '#000000',
-        backgroundColor: '#F3F4F6',
         marginBottom: 10,
-    },
-    inputDark: {
-        color: '#F4F4F5',
-        backgroundColor: '#1C1C1E',
     },
     importTextInput: {
         minHeight: 100,
@@ -314,17 +287,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 8,
     },
-    cancelButton: {
-        backgroundColor: '#F3F4F6',
-    },
     cancelButtonText: {
-        color: '#111827',
         fontWeight: '600',
         fontSize: 14,
         lineHeight: 18,
-    },
-    saveButton: {
-        // backgroundColor applied dynamically via colors.primary
     },
     saveButtonText: {
         color: '#ffffff',

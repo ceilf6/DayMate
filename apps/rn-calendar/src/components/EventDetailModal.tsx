@@ -6,10 +6,11 @@ import {
     TouchableOpacity,
     StyleSheet,
     Alert,
-    useColorScheme,
 } from 'react-native';
 import type { CalendarEvent } from '@daymate/shared';
 import { getPriorityColors, getPriorityText } from '@daymate/shared';
+import { useTheme } from '../contexts/ThemeContext';
+import { useI18n } from '../contexts/I18nContext';
 
 interface EventDetailModalProps {
     visible: boolean;
@@ -24,7 +25,8 @@ const EventDetailModal = memo(({
     onClose,
     onDelete,
 }: EventDetailModalProps) => {
-    const isDarkMode = useColorScheme() === 'dark';
+    const { colors, isDarkMode } = useTheme();
+    const { t } = useI18n();
     const [error, setError] = useState('');
 
     const handleDelete = () => {
@@ -65,49 +67,49 @@ const EventDetailModal = memo(({
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalBackdrop} />
-                <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
-                    <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
-                        日程详情
+                <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
+                    <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
+                        {t('event.eventDetail', '日程详情')}
                     </Text>
 
-                    <Text style={[styles.modalSubtitle, isDarkMode && styles.textSecondaryDark]}>
-                        日期：{event.date}
+                    <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+                        {t('splash.date', '日期')}：{event.date}
                     </Text>
 
                     <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                            标题
+                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                            {t('event.title', '标题')}
                         </Text>
-                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
                             {event.title}
                         </Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                            时间
+                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                            {t('event.time', '时间')}
                         </Text>
-                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
                             {(event.startTime || event.endTime)
                                 ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                : '全天'}
+                                : t('calendar.allDay', '全天')}
                         </Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                            提醒
+                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                            {t('event.reminder', '提醒')}
                         </Text>
-                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
+                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
                             {event.reminderMinutes && event.reminderMinutes > 0
-                                ? `提前 ${event.reminderMinutes} 分钟`
-                                : '无'}
+                                ? t('reminder.minutesBefore', { minutes: event.reminderMinutes })
+                                : t('reminder.none', '无')}
                         </Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                            优先级
+                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                            {t('event.priority', '优先级')}
                         </Text>
                         <View style={styles.priorityDetailRow}>
                             <View
@@ -116,18 +118,18 @@ const EventDetailModal = memo(({
                                     { backgroundColor: priorityColors.background },
                                 ]}
                             />
-                            <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
+                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
                                 {getPriorityText(event.priority)}
                             </Text>
                         </View>
                     </View>
 
                     <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, isDarkMode && styles.textSecondaryDark]}>
-                            备注
+                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                            {t('event.notes', '备注')}
                         </Text>
-                        <Text style={[styles.detailValue, isDarkMode && styles.textPrimaryDark]}>
-                            {event.description?.trim() ? event.description : '无'}
+                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                            {event.description?.trim() ? event.description : t('reminder.none', '无')}
                         </Text>
                     </View>
 
@@ -135,18 +137,18 @@ const EventDetailModal = memo(({
 
                     <View style={styles.modalActions}>
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.cancelButton]}
+                            style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
                             onPress={handleClose}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.cancelButtonText}>关闭</Text>
+                            <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.close', '关闭')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.deleteButton]}
+                            style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
                             onPress={handleDelete}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.deleteButtonText}>删除</Text>
+                            <Text style={styles.deleteButtonText}>{t('common.delete', '删除')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -167,7 +169,6 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     modalCard: {
-        backgroundColor: '#ffffff',
         borderRadius: 16,
         padding: 16,
         shadowColor: '#000000',
@@ -176,27 +177,16 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 10 },
         elevation: 3,
     },
-    modalCardDark: {
-        backgroundColor: '#141418',
-    },
     modalTitle: {
         fontSize: 18,
         lineHeight: 24,
         fontWeight: '700',
-        color: '#111827',
         marginBottom: 6,
     },
     modalSubtitle: {
         fontSize: 13,
         lineHeight: 18,
-        color: '#6B7280',
         marginBottom: 12,
-    },
-    textPrimaryDark: {
-        color: '#F4F4F5',
-    },
-    textSecondaryDark: {
-        color: '#A1A1AA',
     },
     detailRow: {
         marginBottom: 10,
@@ -239,17 +229,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 8,
     },
-    cancelButton: {
-        backgroundColor: '#F3F4F6',
-    },
     cancelButtonText: {
-        color: '#111827',
         fontWeight: '600',
         fontSize: 14,
         lineHeight: 18,
-    },
-    deleteButton: {
-        backgroundColor: '#F3F4F6',
     },
     deleteButtonText: {
         color: '#FF3B30',

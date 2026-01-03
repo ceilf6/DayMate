@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { getPriorityColors } from '@daymate/shared';
 import { useTheme } from '../contexts/ThemeContext';
-import { t } from '@daymate/i18n';
+import { useI18n } from '../contexts/I18nContext';
 
 interface AddEventModalProps {
     visible: boolean;
@@ -32,6 +32,7 @@ const AddEventModal = memo(({
     onSave,
 }: AddEventModalProps) => {
     const { colors, isDarkMode } = useTheme();
+    const { t } = useI18n();
 
     const [title, setTitle] = useState('');
     const [startTime, setStartTime] = useState('');
@@ -84,11 +85,11 @@ const AddEventModal = memo(({
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalBackdrop} />
-                <View style={[styles.modalCard, isDarkMode && styles.modalCardDark]}>
-                    <Text style={[styles.modalTitle, isDarkMode && styles.textPrimaryDark]}>
+                <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
+                    <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
                         {t('event.addEvent', '添加日程')}
                     </Text>
-                    <Text style={[styles.modalSubtitle, isDarkMode && styles.textSecondaryDark]}>
+                    <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
                         {t('splash.date', '日期')}：{selectedDate}
                     </Text>
 
@@ -96,31 +97,31 @@ const AddEventModal = memo(({
                         value={title}
                         onChangeText={setTitle}
                         placeholder={t('placeholder.titleRequired', '标题（必填）')}
-                        placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                        style={[styles.input, isDarkMode && styles.inputDark]}
+                        placeholderTextColor={colors.textTertiary}
+                        style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                     />
                     <View style={styles.timeRow}>
                         <TextInput
                             value={startTime}
                             onChangeText={setStartTime}
                             placeholder={t('placeholder.startTimeHint', '开始 HH:mm')}
-                            placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                            style={[styles.input, styles.timeInput, isDarkMode && styles.inputDark]}
+                            placeholderTextColor={colors.textTertiary}
+                            style={[styles.input, styles.timeInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                         />
                         <TextInput
                             value={endTime}
                             onChangeText={setEndTime}
                             placeholder={t('placeholder.endTimeHint', '结束 HH:mm')}
-                            placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                            style={[styles.input, styles.timeInput, isDarkMode && styles.inputDark]}
+                            placeholderTextColor={colors.textTertiary}
+                            style={[styles.input, styles.timeInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                         />
                     </View>
                     <TextInput
                         value={notes}
                         onChangeText={setNotes}
                         placeholder={t('placeholder.notesOptional', '备注（可选）')}
-                        placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
-                        style={[styles.input, styles.notesInput, isDarkMode && styles.inputDark]}
+                        placeholderTextColor={colors.textTertiary}
+                        style={[styles.input, styles.notesInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                         multiline
                     />
 
@@ -128,13 +129,13 @@ const AddEventModal = memo(({
                         value={reminderMinutes}
                         onChangeText={setReminderMinutes}
                         placeholder={t('placeholder.reminderHint', '提醒（提前分钟，可选，如 10）')}
-                        placeholderTextColor={isDarkMode ? '#b6c1cd' : '#666666'}
+                        placeholderTextColor={colors.textTertiary}
                         keyboardType="number-pad"
-                        style={[styles.input, isDarkMode && styles.inputDark]}
+                        style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                     />
 
                     {/* 优先级选择器 */}
-                    <Text style={[styles.priorityLabel, isDarkMode && styles.textSecondaryDark]}>
+                    <Text style={[styles.priorityLabel, { color: colors.textSecondary }]}>
                         {t('event.priority', '优先级')}
                     </Text>
                     <View style={styles.prioritySelector}>
@@ -152,18 +153,18 @@ const AddEventModal = memo(({
                                     onPress={() => setPriority(option.value)}
                                     style={[
                                         styles.priorityOption,
+                                        { backgroundColor: colors.primarySurface, borderColor: colors.border },
                                         isSelected && {
                                             backgroundColor: priorityColors.background,
                                             borderColor: priorityColors.border,
                                         },
-                                        !isSelected && isDarkMode && styles.priorityOptionDark,
                                     ]}
                                 >
                                     <Text
                                         style={[
                                             styles.priorityOptionText,
+                                            { color: colors.textSecondary },
                                             isSelected && { color: priorityColors.text },
-                                            !isSelected && isDarkMode && styles.textSecondaryDark,
                                         ]}
                                     >
                                         {option.label}
@@ -179,14 +180,14 @@ const AddEventModal = memo(({
 
                     <View style={styles.modalActions}>
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.cancelButton]}
+                            style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
                             onPress={handleClose}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.cancelButtonText}>{t('common.cancel', '取消')}</Text>
+                            <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.cancel', '取消')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary }]}
+                            style={[styles.actionButton, { backgroundColor: colors.primary }]}
                             onPress={handleSave}
                             accessibilityRole="button"
                         >
@@ -211,7 +212,6 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     modalCard: {
-        backgroundColor: '#ffffff',
         borderRadius: 16,
         padding: 16,
         shadowColor: '#000000',
@@ -220,27 +220,16 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 10 },
         elevation: 3,
     },
-    modalCardDark: {
-        backgroundColor: '#141418',
-    },
     modalTitle: {
         fontSize: 18,
         lineHeight: 24,
         fontWeight: '700',
-        color: '#111827',
         marginBottom: 6,
     },
     modalSubtitle: {
         fontSize: 13,
         lineHeight: 18,
-        color: '#6B7280',
         marginBottom: 12,
-    },
-    textPrimaryDark: {
-        color: '#F4F4F5',
-    },
-    textSecondaryDark: {
-        color: '#A1A1AA',
     },
     input: {
         borderWidth: 0,
@@ -249,13 +238,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         fontSize: 14,
         lineHeight: 20,
-        color: '#000000',
-        backgroundColor: '#F3F4F6',
         marginBottom: 10,
-    },
-    inputDark: {
-        color: '#F4F4F5',
-        backgroundColor: '#1C1C1E',
     },
     timeRow: {
         flexDirection: 'row',
@@ -271,7 +254,6 @@ const styles = StyleSheet.create({
     priorityLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#6B7280',
         marginBottom: 8,
     },
     prioritySelector: {
@@ -285,18 +267,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
-        backgroundColor: '#F9FAFB',
         alignItems: 'center',
-    },
-    priorityOptionDark: {
-        backgroundColor: '#1C1C1E',
-        borderColor: '#3F3F46',
     },
     priorityOptionText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#374151',
         textAlign: 'center',
     },
     formErrorText: {
@@ -315,17 +290,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 8,
     },
-    cancelButton: {
-        backgroundColor: '#F3F4F6',
-    },
     cancelButtonText: {
-        color: '#111827',
         fontWeight: '600',
         fontSize: 14,
         lineHeight: 18,
-    },
-    saveButton: {
-        // backgroundColor applied dynamically via colors.primary
     },
     saveButtonText: {
         color: '#ffffff',
