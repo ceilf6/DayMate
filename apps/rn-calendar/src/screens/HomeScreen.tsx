@@ -970,6 +970,7 @@ const styles = StyleSheet.create({
         borderRadius: 2,
     },
     dayNavRow: {
+        position: 'relative',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -984,7 +985,6 @@ const styles = StyleSheet.create({
         shadowRadius: 14,
         shadowOffset: { width: 0, height: 8 },
         elevation: 2,
-        gap: 10,
     },
     dayNavButton: {
         paddingHorizontal: 12,
@@ -1138,10 +1138,14 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
 
-    // 日期导航标题容器
+    // 日期导航标题容器 - 绝对定位居中
     dayNavTitleContainer: {
-        flex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0,
         alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
     },
 
     // 自定义日期单元格样式
