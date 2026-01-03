@@ -547,9 +547,9 @@ const HomeScreen = () => {
                         <TouchableOpacity
                             onPress={goBack}
                             accessibilityRole="button"
-                            style={[styles.topActionButton, { backgroundColor: colors.backgroundTertiary }]}>
-                            <Text style={[styles.backButtonIcon, { color: colors.primary }]}>‹</Text>
-                            <Text style={[styles.topActionButtonText, { color: colors.primary }]}>
+                            style={[styles.topActionButton, { backgroundColor: colors.primary }]}>
+                            <Text style={[styles.backButtonIcon]}>‹</Text>
+                            <Text style={[styles.topActionButtonText]}>
                                 {viewMode === 'week' ? t('calendar.month', '月') : t('calendar.week', '周')}
                             </Text>
                         </TouchableOpacity>
@@ -899,6 +899,7 @@ const styles = StyleSheet.create({
     // 返回按钮图标样式
     backButtonIcon: {
         fontSize: 14,
+        color: '#ffffff',
         fontWeight: '300',
         marginRight: 2,
         marginTop: -2,
