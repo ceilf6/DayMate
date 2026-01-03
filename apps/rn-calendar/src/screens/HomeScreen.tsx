@@ -409,7 +409,7 @@ const HomeScreen = () => {
             const all = await EventStorage.getAllEventsByDate();
             setEventsByDate(all);
 
-            return { success: true, message: `成功导入 ${savedCount} 条日程！` };
+            return { success: true, message: t('success.importedCount', { count: savedCount }) };
         } catch {
             return { success: false, error: '导入失败，请检查数据格式' };
         }
@@ -823,7 +823,7 @@ const HomeScreen = () => {
                                                             { color: colors.textSecondary },
                                                         ]}
                                                         numberOfLines={1}>
-                                                        {t('event.reminder', '提醒')}: 提前 {event.reminderMinutes} 分钟
+                                                        {t('event.reminder', '提醒')}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes })}
                                                     </Text>
                                                 ) : null}
                                                 {event.description ? (
