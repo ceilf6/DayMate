@@ -18,8 +18,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useI18n } from '../contexts/I18nContext';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const SWIPE_THRESHOLD = -80; // 滑动超过这个值触发删除
-const DELETE_BUTTON_WIDTH = 80;
+const SWIPE_THRESHOLD = -120; // 滑动超过这个值触发删除
 
 type SwipeableEventItemProps = {
     event: CalendarEvent;
@@ -59,18 +58,20 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
             onPanResponderMove: (_, gestureState) => {
                 // 只允许向左滑动
                 if (gestureState.dx < 0) {
-                    translateX.setValue(Math.max(gestureState.dx, -DELETE_BUTTON_WIDTH));
+                    translateX.setValue(gestureState.dx);
                 }
             },
             onPanResponderRelease: (_, gestureState) => {
                 isSwipingRef.current = false;
                 if (gestureState.dx < SWIPE_THRESHOLD) {
-                    // 滑动超过阈值，显示删除按钮
-                    Animated.spring(translateX, {
-                        toValue: -DELETE_BUTTON_WIDTH,
+                    // 滑动超过阈值，直接删除
+                    Animated.timing(translateX, {
+                        toValue: -SCREEN_WIDTH,
+                        duration: 200,
                         useNativeDriver: true,
-                        friction: 8,
-                    }).start();
+                    }).start(() => {
+                        onDelete();
+                    });
                 } else {
                     // 否则恢复原位
                     Animated.spring(translateX, {
@@ -91,38 +92,10 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
         })
     ).current;
 
-    const handleDelete = () => {
-        // 先动画滑出屏幕
-        Animated.timing(translateX, {
-            toValue: -SCREEN_WIDTH,
-            duration: 200,
-            useNativeDriver: true,
-        }).start(() => {
-            onDelete();
-        });
-    };
-
-    const closeSwipe = () => {
-        Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true,
-            friction: 8,
-        }).start();
-    };
-
     return (
         <View style={styles.container}>
-            {/* 删除按钮背景 */}
-            <View style={[styles.deleteButtonContainer, { backgroundColor: '#EF4444' }]}>
-                <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={handleDelete}
-                    activeOpacity={0.8}>
-                    <Text style={styles.deleteButtonText}>
-                        {t('common.delete', '删除') as string}
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            {/* 删除背景指示 */}
+            {/* <View style={[styles.deleteBackground, { backgroundColor: '#EF4444' }]} /> */}
 
             {/* 可滑动的事件卡片 */}
             <Animated.View
@@ -228,27 +201,13 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         marginBottom: 0,
     },
-    deleteButtonContainer: {
+    deleteBackground: {
         position: 'absolute',
         right: 0,
+        left: 0,
         top: 0,
         bottom: 0,
-        width: DELETE_BUTTON_WIDTH,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderTopRightRadius: 14,
-        borderBottomRightRadius: 14,
-    },
-    deleteButton: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-    },
-    deleteButtonText: {
-        color: '#ffffff',
-        fontSize: 14,
-        fontWeight: '600',
+        borderRadius: 14,
     },
     eventItem: {
         flexDirection: 'row',
