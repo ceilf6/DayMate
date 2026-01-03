@@ -529,7 +529,7 @@ const HomeScreen = () => {
     }, [selectedDate, today, isDarkMode, eventsByDate, drillDown, colors, currentLanguage]);
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.primaryBackground }]}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
                 {/* <View style={styles.header}>
                     <Text style={[styles.title, isDarkMode && styles.textDark]}>
@@ -764,7 +764,7 @@ const HomeScreen = () => {
                         </View>
 
                         {selectedEvents.length === 0 ? (
-                            <View style={[styles.eventCard, { backgroundColor: colors.primarySurface }]}>
+                            <View style={[styles.eventCard, { backgroundColor: colors.primaryContent }]}>
                                 <Text style={[styles.eventText, { color: colors.textSecondary }]}>
                                     {t('event.noEvents', '暂无日程')}
                                 </Text>
@@ -779,7 +779,7 @@ const HomeScreen = () => {
                                     return (
                                         <TouchableOpacity
                                             key={event.id}
-                                            style={[styles.eventItem, { backgroundColor: colors.primarySurface }]}
+                                            style={[styles.eventItem, { backgroundColor: colors.primaryContent }]}
                                             onPress={() => openDetailModal(event)}
                                             accessibilityRole="button">
                                             {/* 优先级指示条 */}
@@ -910,7 +910,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         paddingVertical: 8,
         paddingHorizontal: 8,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor 由内联样式 colors.primarySurface 提供
         shadowColor: '#000000',
         shadowOpacity: 0.06,
         shadowRadius: 14,
@@ -981,7 +981,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         borderRadius: 16,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor 由内联样式 colors.primarySurface 提供
         shadowColor: '#000000',
         shadowOpacity: 0.06,
         shadowRadius: 14,
@@ -1036,7 +1036,7 @@ const styles = StyleSheet.create({
     eventCard: {
         padding: 16,
         borderRadius: 16,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor 由内联样式 colors.primaryContent 提供
         shadowColor: '#000000',
         shadowOpacity: 0.05,
         shadowRadius: 12,
@@ -1054,7 +1054,7 @@ const styles = StyleSheet.create({
     eventItem: {
         flexDirection: 'row',
         borderRadius: 14,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor 由内联样式 colors.primaryContent 提供
         shadowColor: '#000000',
         shadowOpacity: 0.05,
         shadowRadius: 10,
@@ -1122,7 +1122,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor 由内联样式 colors.primarySurface 提供
         shadowColor: '#000000',
         shadowOpacity: 0.04,
         shadowRadius: 8,

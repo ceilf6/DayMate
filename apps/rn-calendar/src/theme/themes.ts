@@ -7,7 +7,11 @@ export interface ThemeColors {
     primary: string;
     primaryLight: string;
     primaryDark: string;
-    primarySurface: string; // 主题色的极浅背景色，用于卡片等
+
+    // 主题色分层透明度系统（从淡到浓）
+    primaryBackground: string;  // 最淡 - 页面背景
+    primarySurface: string;     // 中等 - 卡片背景
+    primaryContent: string;     // 较浓 - 卡片内子区域
 
     // 背景色
     background: string;
@@ -49,7 +53,11 @@ const blueTheme: Theme = {
         primary: '#2196F3',
         primaryLight: 'rgba(33, 150, 243, 0.20)',
         primaryDark: '#1976D2',
-        primarySurface: 'rgba(33, 150, 243, 0.12)',
+
+        // 三层透明度系统
+        primaryBackground: 'rgba(33, 150, 243, 0.06)',  // 页面背景 - 最淡
+        primarySurface: 'rgba(33, 150, 243, 0.12)',     // 卡片背景 - 中等
+        primaryContent: 'rgba(33, 150, 243, 0.18)',     // 卡片内子区域 - 较浓
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -81,7 +89,10 @@ const darkBlueTheme: Theme = {
         primary: '#1976D2',
         primaryLight: 'rgba(25, 118, 210, 0.20)',
         primaryDark: '#0D47A1',
+
+        primaryBackground: 'rgba(25, 118, 210, 0.06)',
         primarySurface: 'rgba(25, 118, 210, 0.12)',
+        primaryContent: 'rgba(25, 118, 210, 0.18)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -113,7 +124,10 @@ const greenTheme: Theme = {
         primary: '#10B981',
         primaryLight: 'rgba(16, 185, 129, 0.20)',
         primaryDark: '#059669',
+
+        primaryBackground: 'rgba(16, 185, 129, 0.06)',
         primarySurface: 'rgba(16, 185, 129, 0.12)',
+        primaryContent: 'rgba(16, 185, 129, 0.18)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -145,7 +159,10 @@ const purpleTheme: Theme = {
         primary: '#8B5CF6',
         primaryLight: 'rgba(139, 92, 246, 0.20)',
         primaryDark: '#7C3AED',
+
+        primaryBackground: 'rgba(139, 92, 246, 0.06)',
         primarySurface: 'rgba(139, 92, 246, 0.12)',
+        primaryContent: 'rgba(139, 92, 246, 0.18)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -177,7 +194,10 @@ const orangeTheme: Theme = {
         primary: '#F97316',
         primaryLight: 'rgba(249, 115, 22, 0.20)',
         primaryDark: '#EA580C',
+
+        primaryBackground: 'rgba(249, 115, 22, 0.06)',
         primarySurface: 'rgba(249, 115, 22, 0.12)',
+        primaryContent: 'rgba(249, 115, 22, 0.18)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -209,7 +229,10 @@ const pinkTheme: Theme = {
         primary: '#EC4899',
         primaryLight: 'rgba(236, 72, 153, 0.20)',
         primaryDark: '#DB2777',
+
+        primaryBackground: 'rgba(236, 72, 153, 0.06)',
         primarySurface: 'rgba(236, 72, 153, 0.12)',
+        primaryContent: 'rgba(236, 72, 153, 0.18)',
 
         background: '#F2F2F7',
         backgroundSecondary: '#FFFFFF',
@@ -235,6 +258,11 @@ const pinkTheme: Theme = {
 
 // 深色模式下的颜色调整
 export const darkModeColors = {
+    // 深色模式三层透明度系统（使用白色透明度）
+    primaryBackground: 'rgba(255, 255, 255, 0.04)',  // 页面背景 - 最淡
+    primarySurface: 'rgba(255, 255, 255, 0.08)',     // 卡片背景 - 中等
+    primaryContent: 'rgba(255, 255, 255, 0.12)',    // 卡片内子区域 - 较浓
+
     background: '#0B0B0F',
     backgroundSecondary: '#141418',
     backgroundTertiary: '#1C1C1E',
