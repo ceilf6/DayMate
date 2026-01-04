@@ -94,7 +94,7 @@
         "markIncomplete": "标记未完成",
         "selectDate": "选择日期",
         "selectTime": "选择时间",
-        "clearTime": "清除时间（全天）"
+        "clearTime": "清除时间"
     },
     "priority": {
         "none": "无",

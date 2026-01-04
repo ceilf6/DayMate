@@ -94,7 +94,7 @@
         "markIncomplete": "Mark as Incomplete",
         "selectDate": "Select Date",
         "selectTime": "Select Time",
-        "clearTime": "Clear Time (All Day)"
+        "clearTime": "Clear Time"
     },
     "priority": {
         "none": "None",
