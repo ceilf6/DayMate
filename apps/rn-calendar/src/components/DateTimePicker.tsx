@@ -30,25 +30,40 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
     const { colors } = useTheme();
     const { t } = useI18n();
     const [show, setShow] = useState(false);
+    const [tempDate, setTempDate] = useState<Date | null>(null);
 
     const currentDate = value ? new Date(value) : new Date();
 
     const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
         if (Platform.OS === 'android') {
             setShow(false);
-        }
-        if (event.type === 'set' && selectedDate) {
-            const year = selectedDate.getFullYear();
-            const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-            const day = String(selectedDate.getDate()).padStart(2, '0');
-            onChange(`${year}-${month}-${day}`);
-        }
-        if (Platform.OS === 'ios' && event.type === 'dismissed') {
-            setShow(false);
+            if (event.type === 'set' && selectedDate) {
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                onChange(`${year}-${month}-${day}`);
+            }
+        } else {
+            // iOS: 暂存选择的日期
+            if (selectedDate) {
+                setTempDate(selectedDate);
+            }
         }
     };
 
     const handleConfirm = () => {
+        // iOS 确认时，使用暂存的日期或当前显示的日期
+        const dateToUse = tempDate || currentDate;
+        const year = dateToUse.getFullYear();
+        const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
+        const day = String(dateToUse.getDate()).padStart(2, '0');
+        onChange(`${year}-${month}-${day}`);
+        setTempDate(null);
+        setShow(false);
+    };
+
+    const handleCancel = () => {
+        setTempDate(null);
         setShow(false);
     };
 
@@ -72,12 +87,12 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
                     transparent
                     animationType="fade"
                     visible={show}
-                    onRequestClose={() => setShow(false)}
+                    onRequestClose={handleCancel}
                 >
                     <View style={styles.modalOverlay}>
                         <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
                             <View style={styles.modalHeader}>
-                                <TouchableOpacity onPress={() => setShow(false)}>
+                                <TouchableOpacity onPress={handleCancel}>
                                     <Text style={[styles.modalButton, { color: colors.textSecondary }]}>
                                         {t('common.cancel', '取消')}
                                     </Text>
@@ -92,7 +107,7 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
                                 </TouchableOpacity>
                             </View>
                             <DateTimePickerRN
-                                value={currentDate}
+                                value={tempDate || currentDate}
                                 mode="date"
                                 display="spinner"
                                 onChange={handleChange}
@@ -121,6 +136,7 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
     const { colors } = useTheme();
     const { t } = useI18n();
     const [show, setShow] = useState(false);
+    const [tempTime, setTempTime] = useState<Date | null>(null);
 
     // 解析 HH:mm 格式的时间
     const parseTime = (timeStr: string): Date => {
@@ -137,23 +153,37 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
     const handleChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
         if (Platform.OS === 'android') {
             setShow(false);
-        }
-        if (event.type === 'set' && selectedTime) {
-            const hours = String(selectedTime.getHours()).padStart(2, '0');
-            const minutes = String(selectedTime.getMinutes()).padStart(2, '0');
-            onChange(`${hours}:${minutes}`);
-        }
-        if (Platform.OS === 'ios' && event.type === 'dismissed') {
-            setShow(false);
+            if (event.type === 'set' && selectedTime) {
+                const hours = String(selectedTime.getHours()).padStart(2, '0');
+                const minutes = String(selectedTime.getMinutes()).padStart(2, '0');
+                onChange(`${hours}:${minutes}`);
+            }
+        } else {
+            // iOS: 暂存选择的时间
+            if (selectedTime) {
+                setTempTime(selectedTime);
+            }
         }
     };
 
     const handleConfirm = () => {
+        // iOS 确认时，使用暂存的时间或当前显示的时间
+        const timeToUse = tempTime || currentTime;
+        const hours = String(timeToUse.getHours()).padStart(2, '0');
+        const minutes = String(timeToUse.getMinutes()).padStart(2, '0');
+        onChange(`${hours}:${minutes}`);
+        setTempTime(null);
+        setShow(false);
+    };
+
+    const handleCancel = () => {
+        setTempTime(null);
         setShow(false);
     };
 
     const handleClear = () => {
         onChange('');
+        setTempTime(null);
         setShow(false);
     };
 
@@ -177,12 +207,12 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
                     transparent
                     animationType="fade"
                     visible={show}
-                    onRequestClose={() => setShow(false)}
+                    onRequestClose={handleCancel}
                 >
                     <View style={styles.modalOverlay}>
                         <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
                             <View style={styles.modalHeader}>
-                                <TouchableOpacity onPress={() => setShow(false)}>
+                                <TouchableOpacity onPress={handleCancel}>
                                     <Text style={[styles.modalButton, { color: colors.textSecondary }]}>
                                         {t('common.cancel', '取消')}
                                     </Text>
@@ -197,7 +227,7 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
                                 </TouchableOpacity>
                             </View>
                             <DateTimePickerRN
-                                value={currentTime}
+                                value={tempTime || currentTime}
                                 mode="time"
                                 display="spinner"
                                 onChange={handleChange}
