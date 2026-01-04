@@ -45,10 +45,12 @@ export {
 export {
     PRIORITY_RANGES,
     PRIORITY_COLORS,
+    PRIORITY_TEXT_KEYS,
     getPriorityLevel,
     getPriorityColors,
     getPriorityIndicator,
     getPriorityText,
+    getPriorityTextKey,
     isHighPriority,
     comparePriority
 } from './utils/PriorityUtils';
