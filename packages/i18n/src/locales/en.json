@@ -101,15 +101,17 @@
     },
     "placeholder": {
         "titleRequired": "Title (Required)",
+        "dateHint": "Date YYYY-MM-DD",
         "startTimeHint": "Start HH:mm",
         "endTimeHint": "End HH:mm",
-        "notesOptional": "Notes (Optional)",
-        "reminderHint": "Reminder (minutes before, e.g., 10)",
+        "notesOptional": "Notes (optional)",
+        "reminderHint": "Reminder (minutes before, optional, e.g. 10)",
         "pasteICalendar": "Paste iCalendar data..."
     },
     "validation": {
         "noDateSelected": "No date selected",
         "titleRequired": "Please enter a title",
+        "invalidDateFormat": "Date format should be YYYY-MM-DD",
         "invalidTimeFormat": "Time format should be HH:mm",
         "endTimeBeforeStart": "End time cannot be before start time",
         "invalidReminderMinutes": "Reminder minutes should be a non-negative integer",

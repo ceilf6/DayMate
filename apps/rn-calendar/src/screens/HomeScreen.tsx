@@ -330,10 +330,20 @@ const HomeScreen = () => {
         }
     }, [selectedDate, refreshIncompleteEvents]);
 
+    // 验证日期格式 YYYY-MM-DD
+    const isValidDate = (dateStr: string): boolean => {
+        if (!dateStr) return false;
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateStr)) return false;
+        const date = new Date(dateStr);
+        return !isNaN(date.getTime());
+    };
+
     const handleUpdateEvent = useCallback(async (
         event: CalendarEvent,
         data: {
             title: string;
+            date: string;
             startTime: string;
             endTime: string;
             notes: string;
@@ -343,6 +353,11 @@ const HomeScreen = () => {
     ): Promise<string | null> => {
         const title = data.title.trim();
         if (!title) return '请输入标题';
+
+        const newDate = data.date.trim();
+        if (!isValidDate(newDate)) {
+            return '日期格式应为 YYYY-MM-DD';
+        }
 
         if (!isValidTime(data.startTime) || !isValidTime(data.endTime)) {
             return '时间格式应为 HH:mm';
@@ -367,52 +382,102 @@ const HomeScreen = () => {
             reminderMinutes = parsed;
         }
 
+        const dateChanged = newDate !== event.date;
+
         try {
             // 如果之前有提醒，先取消旧的提醒
             if (event.notificationId) {
                 await ReminderService.cancelReminder(event.notificationId);
             }
 
-            // 更新事项
-            const updated = await EventStorage.updateEvent(event.date, event.id, {
-                title,
-                startTime: start,
-                endTime: end,
-                description: data.notes.trim(),
-                reminderMinutes,
-                priority: data.priority > 0 ? data.priority : undefined,
-            });
+            let finalEvent: CalendarEvent;
 
-            if (!updated) return '更新失败';
+            if (dateChanged) {
+                // 日期变更：删除旧事项，在新日期创建新事项
+                await EventStorage.deleteEvent(event.date, event.id);
 
-            let finalEvent = updated;
-
-            // 如果设置了新的提醒，创建新的提醒
-            if (updated.reminderMinutes && updated.reminderMinutes > 0) {
-                const notificationId = await ReminderService.scheduleReminder(updated);
-                if (!notificationId) {
-                    return '提醒创建失败（可能未授权或提醒时间已过）';
-                }
-
-                const updatedWithNotification = await EventStorage.updateEvent(updated.date, updated.id, {
-                    notificationId,
-                    reminderMinutes: updated.reminderMinutes,
+                const created = await EventStorage.addEvent({
+                    date: newDate,
+                    title,
+                    startTime: start,
+                    endTime: end,
+                    description: data.notes.trim(),
+                    reminderMinutes,
+                    priority: data.priority > 0 ? data.priority : undefined,
+                    completed: event.completed, // 保持完成状态
                 });
-                if (updatedWithNotification) finalEvent = updatedWithNotification;
-            }
 
-            // 更新本地状态
-            setEventsByDate(prev => {
-                const next = { ...prev };
-                const list = next[finalEvent.date] ?? [];
-                const index = list.findIndex(e => e.id === finalEvent.id);
-                if (index !== -1) {
-                    const newList = [...list];
-                    newList[index] = finalEvent;
-                    next[finalEvent.date] = newList;
+                finalEvent = created;
+
+                // 如果设置了新的提醒，创建新的提醒
+                if (finalEvent.reminderMinutes && finalEvent.reminderMinutes > 0) {
+                    const notificationId = await ReminderService.scheduleReminder(finalEvent);
+                    if (notificationId) {
+                        const updatedWithNotification = await EventStorage.updateEvent(finalEvent.date, finalEvent.id, {
+                            notificationId,
+                        });
+                        if (updatedWithNotification) finalEvent = updatedWithNotification;
+                    }
                 }
-                return next;
-            });
+
+                // 更新本地状态：从旧日期移除，添加到新日期
+                setEventsByDate(prev => {
+                    const next = { ...prev };
+                    // 从旧日期移除
+                    const oldList = next[event.date] ?? [];
+                    const filteredOldList = oldList.filter(e => e.id !== event.id);
+                    if (filteredOldList.length === 0) {
+                        delete next[event.date];
+                    } else {
+                        next[event.date] = filteredOldList;
+                    }
+                    // 添加到新日期
+                    const newList = next[newDate] ?? [];
+                    next[newDate] = [...newList, finalEvent];
+                    return next;
+                });
+            } else {
+                // 日期未变更：直接更新
+                const updated = await EventStorage.updateEvent(event.date, event.id, {
+                    title,
+                    startTime: start,
+                    endTime: end,
+                    description: data.notes.trim(),
+                    reminderMinutes,
+                    priority: data.priority > 0 ? data.priority : undefined,
+                });
+
+                if (!updated) return '更新失败';
+
+                finalEvent = updated;
+
+                // 如果设置了新的提醒，创建新的提醒
+                if (finalEvent.reminderMinutes && finalEvent.reminderMinutes > 0) {
+                    const notificationId = await ReminderService.scheduleReminder(finalEvent);
+                    if (!notificationId) {
+                        return '提醒创建失败（可能未授权或提醒时间已过）';
+                    }
+
+                    const updatedWithNotification = await EventStorage.updateEvent(finalEvent.date, finalEvent.id, {
+                        notificationId,
+                        reminderMinutes: finalEvent.reminderMinutes,
+                    });
+                    if (updatedWithNotification) finalEvent = updatedWithNotification;
+                }
+
+                // 更新本地状态
+                setEventsByDate(prev => {
+                    const next = { ...prev };
+                    const list = next[finalEvent.date] ?? [];
+                    const index = list.findIndex(e => e.id === finalEvent.id);
+                    if (index !== -1) {
+                        const newList = [...list];
+                        newList[index] = finalEvent;
+                        next[finalEvent.date] = newList;
+                    }
+                    return next;
+                });
+            }
 
             // 刷新未完成事项列表
             await refreshIncompleteEvents();

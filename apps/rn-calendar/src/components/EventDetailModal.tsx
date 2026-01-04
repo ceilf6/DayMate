@@ -20,6 +20,7 @@ interface EventDetailModalProps {
     onDelete: (event: CalendarEvent) => Promise<boolean>;
     onUpdate?: (event: CalendarEvent, data: {
         title: string;
+        date: string;
         startTime: string;
         endTime: string;
         notes: string;
@@ -42,6 +43,7 @@ const EventDetailModal = memo(({
 
     // 编辑模式的表单状态
     const [title, setTitle] = useState('');
+    const [date, setDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [notes, setNotes] = useState('');
@@ -52,6 +54,7 @@ const EventDetailModal = memo(({
     useEffect(() => {
         if (event) {
             setTitle(event.title || '');
+            setDate(event.date || '');
             setStartTime(event.startTime || '');
             setEndTime(event.endTime || '');
             setNotes(event.description || '');
@@ -69,6 +72,7 @@ const EventDetailModal = memo(({
         // 恢复原始值
         if (event) {
             setTitle(event.title || '');
+            setDate(event.date || '');
             setStartTime(event.startTime || '');
             setEndTime(event.endTime || '');
             setNotes(event.description || '');
@@ -84,6 +88,7 @@ const EventDetailModal = memo(({
 
         const errorMsg = await onUpdate(event, {
             title,
+            date,
             startTime,
             endTime,
             notes,
@@ -220,6 +225,14 @@ const EventDetailModal = memo(({
                                 value={title}
                                 onChangeText={setTitle}
                                 placeholder={t('placeholder.titleRequired', '标题（必填）')}
+                                placeholderTextColor={colors.textTertiary}
+                                style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
+                            />
+                            {/* 日期编辑 */}
+                            <TextInput
+                                value={date}
+                                onChangeText={setDate}
+                                placeholder={t('placeholder.dateHint', '日期 YYYY-MM-DD')}
                                 placeholderTextColor={colors.textTertiary}
                                 style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                             />

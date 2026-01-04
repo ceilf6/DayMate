@@ -63,6 +63,7 @@ export declare const resources: {
             };
             placeholder: {
                 titleRequired: string;
+                dateHint: string;
                 startTimeHint: string;
                 endTimeHint: string;
                 notesOptional: string;
@@ -72,6 +73,7 @@ export declare const resources: {
             validation: {
                 noDateSelected: string;
                 titleRequired: string;
+                invalidDateFormat: string;
                 invalidTimeFormat: string;
                 endTimeBeforeStart: string;
                 invalidReminderMinutes: string;
@@ -200,6 +202,7 @@ export declare const resources: {
             };
             placeholder: {
                 titleRequired: string;
+                dateHint: string;
                 startTimeHint: string;
                 endTimeHint: string;
                 notesOptional: string;
@@ -209,6 +212,7 @@ export declare const resources: {
             validation: {
                 noDateSelected: string;
                 titleRequired: string;
+                invalidDateFormat: string;
                 invalidTimeFormat: string;
                 endTimeBeforeStart: string;
                 invalidReminderMinutes: string;
@@ -337,6 +341,7 @@ export declare const resources: {
             };
             placeholder: {
                 titleRequired: string;
+                dateHint: string;
                 startTimeHint: string;
                 endTimeHint: string;
                 notesOptional: string;
@@ -346,6 +351,7 @@ export declare const resources: {
             validation: {
                 noDateSelected: string;
                 titleRequired: string;
+                invalidDateFormat: string;
                 invalidTimeFormat: string;
                 endTimeBeforeStart: string;
                 invalidReminderMinutes: string;

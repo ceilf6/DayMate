@@ -101,6 +101,7 @@
     },
     "placeholder": {
         "titleRequired": "标题（必填）",
+        "dateHint": "日期 YYYY-MM-DD",
         "startTimeHint": "开始 HH:mm",
         "endTimeHint": "结束 HH:mm",
         "notesOptional": "备注（可选）",
@@ -110,6 +111,7 @@
     "validation": {
         "noDateSelected": "未选择日期",
         "titleRequired": "请输入标题",
+        "invalidDateFormat": "日期格式应为 YYYY-MM-DD",
         "invalidTimeFormat": "时间格式应为 HH:mm",
         "endTimeBeforeStart": "结束时间不能早于开始时间",
         "invalidReminderMinutes": "提醒分钟应为非负整数",
