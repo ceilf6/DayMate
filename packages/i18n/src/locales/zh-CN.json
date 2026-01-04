@@ -7,7 +7,8 @@
         "close": "关闭",
         "confirm": "确定",
         "back": "返回",
-        "ok": "好的"
+        "ok": "好的",
+        "edit": "编辑"
     },
     "calendar": {
         "month": "月",
@@ -77,6 +78,7 @@
         "reminder": "提醒",
         "priority": "优先级",
         "addEvent": "添加日程",
+        "editEvent": "编辑日程",
         "eventDetail": "日程详情",
         "eventsOnDate": "{{date}} 的日程",
         "noEvents": "暂无日程",

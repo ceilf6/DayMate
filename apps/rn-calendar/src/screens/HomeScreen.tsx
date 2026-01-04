@@ -330,6 +330,100 @@ const HomeScreen = () => {
         }
     }, [selectedDate, refreshIncompleteEvents]);
 
+    const handleUpdateEvent = useCallback(async (
+        event: CalendarEvent,
+        data: {
+            title: string;
+            startTime: string;
+            endTime: string;
+            notes: string;
+            reminderMinutes: string;
+            priority: number;
+        }
+    ): Promise<string | null> => {
+        const title = data.title.trim();
+        if (!title) return '请输入标题';
+
+        if (!isValidTime(data.startTime) || !isValidTime(data.endTime)) {
+            return '时间格式应为 HH:mm';
+        }
+
+        const start = data.startTime.trim();
+        const end = data.endTime.trim();
+        if (start && end && end < start) {
+            return '结束时间不能早于开始时间';
+        }
+
+        const reminderRaw = data.reminderMinutes.trim();
+        let reminderMinutes: number | undefined;
+        if (reminderRaw) {
+            const parsed = Number(reminderRaw);
+            if (!Number.isFinite(parsed) || parsed < 0 || !Number.isInteger(parsed)) {
+                return '提醒分钟应为非负整数';
+            }
+            if (parsed > 0 && !start) {
+                return '设置提醒需要填写开始时间';
+            }
+            reminderMinutes = parsed;
+        }
+
+        try {
+            // 如果之前有提醒，先取消旧的提醒
+            if (event.notificationId) {
+                await ReminderService.cancelReminder(event.notificationId);
+            }
+
+            // 更新事项
+            const updated = await EventStorage.updateEvent(event.date, event.id, {
+                title,
+                startTime: start,
+                endTime: end,
+                description: data.notes.trim(),
+                reminderMinutes,
+                priority: data.priority > 0 ? data.priority : undefined,
+            });
+
+            if (!updated) return '更新失败';
+
+            let finalEvent = updated;
+
+            // 如果设置了新的提醒，创建新的提醒
+            if (updated.reminderMinutes && updated.reminderMinutes > 0) {
+                const notificationId = await ReminderService.scheduleReminder(updated);
+                if (!notificationId) {
+                    return '提醒创建失败（可能未授权或提醒时间已过）';
+                }
+
+                const updatedWithNotification = await EventStorage.updateEvent(updated.date, updated.id, {
+                    notificationId,
+                    reminderMinutes: updated.reminderMinutes,
+                });
+                if (updatedWithNotification) finalEvent = updatedWithNotification;
+            }
+
+            // 更新本地状态
+            setEventsByDate(prev => {
+                const next = { ...prev };
+                const list = next[finalEvent.date] ?? [];
+                const index = list.findIndex(e => e.id === finalEvent.id);
+                if (index !== -1) {
+                    const newList = [...list];
+                    newList[index] = finalEvent;
+                    next[finalEvent.date] = newList;
+                }
+                return next;
+            });
+
+            // 刷新未完成事项列表
+            await refreshIncompleteEvents();
+
+            return null; // 成功
+        } catch (error) {
+            console.error('更新事项失败:', error);
+            return '更新失败，请重试';
+        }
+    }, [refreshIncompleteEvents]);
+
     const handleDeleteEvent = useCallback(async (event: CalendarEvent): Promise<boolean> => {
         try {
             if (event.notificationId) {
@@ -902,6 +996,7 @@ const HomeScreen = () => {
                 event={detailEvent}
                 onClose={closeDetailModal}
                 onDelete={handleDeleteEvent}
+                onUpdate={handleUpdateEvent}
             />
 
             <ImportExportModal

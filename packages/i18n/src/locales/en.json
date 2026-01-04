@@ -7,7 +7,8 @@
         "close": "Close",
         "confirm": "Confirm",
         "back": "Back",
-        "ok": "OK"
+        "ok": "OK",
+        "edit": "Edit"
     },
     "calendar": {
         "month": "Month",
@@ -77,6 +78,7 @@
         "reminder": "Reminder",
         "priority": "Priority",
         "addEvent": "Add Event",
+        "editEvent": "Edit Event",
         "eventDetail": "Event Details",
         "eventsOnDate": "Events on {{date}}",
         "noEvents": "No events",

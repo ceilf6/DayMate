@@ -1,8 +1,9 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import {
     Modal,
     View,
     Text,
+    TextInput,
     TouchableOpacity,
     StyleSheet,
     Alert,
@@ -17,6 +18,14 @@ interface EventDetailModalProps {
     event: CalendarEvent | null;
     onClose: () => void;
     onDelete: (event: CalendarEvent) => Promise<boolean>;
+    onUpdate?: (event: CalendarEvent, data: {
+        title: string;
+        startTime: string;
+        endTime: string;
+        notes: string;
+        reminderMinutes: string;
+        priority: number;
+    }) => Promise<string | null>;
 }
 
 const EventDetailModal = memo(({
@@ -24,10 +33,72 @@ const EventDetailModal = memo(({
     event,
     onClose,
     onDelete,
+    onUpdate,
 }: EventDetailModalProps) => {
     const { colors, isDarkMode } = useTheme();
     const { t } = useI18n();
     const [error, setError] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+
+    // 编辑模式的表单状态
+    const [title, setTitle] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [notes, setNotes] = useState('');
+    const [reminderMinutes, setReminderMinutes] = useState('');
+    const [priority, setPriority] = useState(0);
+
+    // 当事项改变时，重置表单状态
+    useEffect(() => {
+        if (event) {
+            setTitle(event.title || '');
+            setStartTime(event.startTime || '');
+            setEndTime(event.endTime || '');
+            setNotes(event.description || '');
+            setReminderMinutes(event.reminderMinutes ? String(event.reminderMinutes) : '');
+            setPriority(event.priority || 0);
+            setIsEditing(false);
+        }
+    }, [event]);
+
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleCancelEdit = () => {
+        // 恢复原始值
+        if (event) {
+            setTitle(event.title || '');
+            setStartTime(event.startTime || '');
+            setEndTime(event.endTime || '');
+            setNotes(event.description || '');
+            setReminderMinutes(event.reminderMinutes ? String(event.reminderMinutes) : '');
+            setPriority(event.priority || 0);
+        }
+        setIsEditing(false);
+        setError('');
+    };
+
+    const handleSaveEdit = async () => {
+        if (!event || !onUpdate) return;
+
+        const errorMsg = await onUpdate(event, {
+            title,
+            startTime,
+            endTime,
+            notes,
+            reminderMinutes,
+            priority,
+        });
+
+        if (errorMsg) {
+            setError(errorMsg);
+        } else {
+            setIsEditing(false);
+            setError('');
+            onClose();
+        }
+    };
 
     const handleDelete = () => {
         if (!event) return;
@@ -51,6 +122,7 @@ const EventDetailModal = memo(({
 
     const handleClose = () => {
         setError('');
+        setIsEditing(false);
         onClose();
     };
 
@@ -69,92 +141,211 @@ const EventDetailModal = memo(({
                 <View style={styles.modalBackdrop} />
                 <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
                     <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
-                        {t('event.eventDetail', '日程详情')}
+                        {isEditing ? t('event.editEvent', '编辑日程') : t('event.eventDetail', '日程详情')}
                     </Text>
 
                     <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
                         {t('splash.date', '日期')}：{event.date}
                     </Text>
 
-                    {/* 第一行：标题（单列） */}
-                    <View style={styles.detailRow}>
-                        <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                            {t('event.title', '标题')}
-                        </Text>
-                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                            {event.title}
-                        </Text>
-                    </View>
-
-                    {/* 第二行：时间 + 提醒（双列） */}
-                    <View style={styles.detailTwoColumns}>
-                        <View style={styles.detailColumn}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                                {t('event.time', '时间')}
-                            </Text>
-                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                                {(event.startTime || event.endTime)
-                                    ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                    : t('calendar.allDay', '全天')}
-                            </Text>
-                        </View>
-
-                        <View style={styles.detailColumn}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                                {t('event.reminder', '提醒')}
-                            </Text>
-                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                                {event.reminderMinutes && event.reminderMinutes > 0
-                                    ? t('reminder.minutesBefore', { minutes: event.reminderMinutes })
-                                    : t('reminder.none', '无')}
-                            </Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.detailTwoColumns}>
-                        <View style={styles.detailColumn}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                                {t('event.priority', '优先级')}
-                            </Text>
-                            <View style={styles.priorityDetailRow}>
-                                <View
-                                    style={[
-                                        styles.priorityDot,
-                                        { backgroundColor: priorityColors.background },
-                                    ]}
-                                />
+                    {!isEditing ? (
+                        // 查看模式
+                        <>
+                            {/* 第一行：标题（单列） */}
+                            <View style={styles.detailRow}>
+                                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                    {t('event.title', '标题')}
+                                </Text>
                                 <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                                    {getPriorityText(event.priority)}
+                                    {event.title}
                                 </Text>
                             </View>
-                        </View>
-                        <View style={styles.detailColumn}>
-                            <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
-                                {t('event.notes', '备注')}
+
+                            {/* 第二行：时间 + 提醒（双列） */}
+                            <View style={styles.detailTwoColumns}>
+                                <View style={styles.detailColumn}>
+                                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                        {t('event.time', '时间')}
+                                    </Text>
+                                    <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                        {(event.startTime || event.endTime)
+                                            ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
+                                            : t('calendar.allDay', '全天')}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.detailColumn}>
+                                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                        {t('event.reminder', '提醒')}
+                                    </Text>
+                                    <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                        {event.reminderMinutes && event.reminderMinutes > 0
+                                            ? t('reminder.minutesBefore', { minutes: event.reminderMinutes })
+                                            : t('reminder.none', '无')}
+                                    </Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.detailTwoColumns}>
+                                <View style={styles.detailColumn}>
+                                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                        {t('event.priority', '优先级')}
+                                    </Text>
+                                    <View style={styles.priorityDetailRow}>
+                                        <View
+                                            style={[
+                                                styles.priorityDot,
+                                                { backgroundColor: priorityColors.background },
+                                            ]}
+                                        />
+                                        <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                            {getPriorityText(event.priority)}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.detailColumn}>
+                                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                                        {t('event.notes', '备注')}
+                                    </Text>
+                                    <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
+                                        {event.description?.trim() ? event.description : t('reminder.none', '无')}
+                                    </Text>
+                                </View>
+                            </View>
+                        </>
+                    ) : (
+                        // 编辑模式
+                        <>
+                            <TextInput
+                                value={title}
+                                onChangeText={setTitle}
+                                placeholder={t('placeholder.titleRequired', '标题（必填）')}
+                                placeholderTextColor={colors.textTertiary}
+                                style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
+                            />
+                            <View style={styles.timeRow}>
+                                <TextInput
+                                    value={startTime}
+                                    onChangeText={setStartTime}
+                                    placeholder={t('placeholder.startTimeHint', '开始 HH:mm')}
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[styles.input, styles.timeInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
+                                />
+                                <TextInput
+                                    value={endTime}
+                                    onChangeText={setEndTime}
+                                    placeholder={t('placeholder.endTimeHint', '结束 HH:mm')}
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[styles.input, styles.timeInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
+                                />
+                            </View>
+                            <TextInput
+                                value={notes}
+                                onChangeText={setNotes}
+                                placeholder={t('placeholder.notesOptional', '备注（可选）')}
+                                placeholderTextColor={colors.textTertiary}
+                                style={[styles.input, styles.notesInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
+                                multiline
+                            />
+
+                            <TextInput
+                                value={reminderMinutes}
+                                onChangeText={setReminderMinutes}
+                                placeholder={t('placeholder.reminderHint', '提醒（提前分钟，可选，如 10）')}
+                                placeholderTextColor={colors.textTertiary}
+                                keyboardType="number-pad"
+                                style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
+                            />
+
+                            {/* 优先级选择器 */}
+                            <Text style={[styles.priorityLabel, { color: colors.textSecondary }]}>
+                                {t('event.priority', '优先级')}
                             </Text>
-                            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                                {event.description?.trim() ? event.description : t('reminder.none', '无')}
-                            </Text>
-                        </View>
-                    </View>
+                            <View style={styles.prioritySelector}>
+                                {[
+                                    { value: 0, label: t('priority.none', '无') },
+                                    { value: 2, label: t('priority.high', '高') },
+                                    { value: 5, label: t('priority.medium', '中') },
+                                    { value: 8, label: t('priority.low', '低') },
+                                ].map(option => {
+                                    const priorityColors = getPriorityColors(option.value);
+                                    const isSelected = priority === option.value;
+                                    return (
+                                        <TouchableOpacity
+                                            key={option.value}
+                                            onPress={() => setPriority(option.value)}
+                                            style={[
+                                                styles.priorityOption,
+                                                { backgroundColor: colors.primarySurface, borderColor: colors.border },
+                                                isSelected && {
+                                                    backgroundColor: priorityColors.background,
+                                                    borderColor: priorityColors.border,
+                                                },
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    styles.priorityOptionText,
+                                                    { color: colors.textSecondary },
+                                                    isSelected && { color: priorityColors.text },
+                                                ]}
+                                            >
+                                                {option.label}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </>
+                    )}
 
                     {error ? <Text style={styles.formErrorText}>{error}</Text> : null}
 
                     <View style={styles.modalActions}>
-                        <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
-                            onPress={handleClose}
-                            accessibilityRole="button"
-                        >
-                            <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.close', '关闭')}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
-                            onPress={handleDelete}
-                            accessibilityRole="button"
-                        >
-                            <Text style={styles.deleteButtonText}>{t('common.delete', '删除')}</Text>
-                        </TouchableOpacity>
+                        {!isEditing ? (
+                            <>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                                    onPress={handleClose}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.close', '关闭')}</Text>
+                                </TouchableOpacity>
+                                {onUpdate && (
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                                        onPress={handleEdit}
+                                        accessibilityRole="button"
+                                    >
+                                        <Text style={styles.saveButtonText}>{t('common.edit', '编辑')}</Text>
+                                    </TouchableOpacity>
+                                )}
+                                <TouchableOpacity
+                                    style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                                    onPress={handleDelete}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.deleteButtonText}>{t('common.delete', '删除')}</Text>
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                                    onPress={handleCancelEdit}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.cancel', '取消')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                                    onPress={handleSaveEdit}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.saveButtonText}>{t('common.save', '保存')}</Text>
+                                </TouchableOpacity>
+                            </>
+                        )}
                     </View>
                 </View>
             </View>
@@ -225,6 +416,49 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginRight: 8,
     },
+    input: {
+        borderWidth: 0,
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        fontSize: 14,
+        lineHeight: 20,
+        marginBottom: 10,
+    },
+    timeRow: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    timeInput: {
+        flex: 1,
+    },
+    notesInput: {
+        minHeight: 80,
+        textAlignVertical: 'top',
+    },
+    priorityLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 8,
+    },
+    prioritySelector: {
+        flexDirection: 'row',
+        gap: 8,
+        marginBottom: 12,
+    },
+    priorityOption: {
+        flex: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 8,
+        borderRadius: 8,
+        borderWidth: 1,
+        alignItems: 'center',
+    },
+    priorityOptionText: {
+        fontSize: 12,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
     formErrorText: {
         color: '#EF4444',
         marginBottom: 10,
@@ -248,6 +482,12 @@ const styles = StyleSheet.create({
     },
     deleteButtonText: {
         color: '#FF3B30',
+        fontWeight: '700',
+        fontSize: 14,
+        lineHeight: 18,
+    },
+    saveButtonText: {
+        color: '#ffffff',
         fontWeight: '700',
         fontSize: 14,
         lineHeight: 18,

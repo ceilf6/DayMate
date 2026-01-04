@@ -12,6 +12,7 @@ export declare const resources: {
                 confirm: string;
                 back: string;
                 ok: string;
+                edit: string;
             };
             calendar: {
                 month: string;
@@ -39,6 +40,7 @@ export declare const resources: {
                 reminder: string;
                 priority: string;
                 addEvent: string;
+                editEvent: string;
                 eventDetail: string;
                 eventsOnDate: string;
                 noEvents: string;
@@ -147,6 +149,7 @@ export declare const resources: {
                 confirm: string;
                 back: string;
                 ok: string;
+                edit: string;
             };
             calendar: {
                 month: string;
@@ -174,6 +177,7 @@ export declare const resources: {
                 reminder: string;
                 priority: string;
                 addEvent: string;
+                editEvent: string;
                 eventDetail: string;
                 eventsOnDate: string;
                 noEvents: string;
@@ -282,6 +286,7 @@ export declare const resources: {
                 confirm: string;
                 back: string;
                 ok: string;
+                edit: string;
             };
             calendar: {
                 month: string;
@@ -309,6 +314,7 @@ export declare const resources: {
                 reminder: string;
                 priority: string;
                 addEvent: string;
+                editEvent: string;
                 eventDetail: string;
                 eventsOnDate: string;
                 noEvents: string;
