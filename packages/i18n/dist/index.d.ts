@@ -59,6 +59,7 @@ export declare const resources: {
                 clearTime: string;
                 quickAdd: string;
                 quickAddTask: string;
+                noDate: string;
             };
             priority: {
                 none: string;
@@ -204,6 +205,7 @@ export declare const resources: {
                 clearTime: string;
                 quickAdd: string;
                 quickAddTask: string;
+                noDate: string;
             };
             priority: {
                 none: string;
@@ -349,6 +351,7 @@ export declare const resources: {
                 clearTime: string;
                 quickAdd: string;
                 quickAddTask: string;
+                noDate: string;
             };
             priority: {
                 none: string;

@@ -555,9 +555,10 @@ const HomeScreen = () => {
     // 快速添加事项处理
     const handleQuickAddTask = useCallback(async (title: string): Promise<string | null> => {
         try {
-            // 使用今天的日期作为事项日期
+            // 使用特殊日期键表示无日期的事项
+            const NO_DATE_KEY = 'NO_DATE';
             const created = await EventStorage.addEvent({
-                date: today,
+                date: NO_DATE_KEY,
                 title,
                 // 不设置时间、提醒等其他属性
             });
@@ -565,10 +566,10 @@ const HomeScreen = () => {
             // 更新本地状态
             setEventsByDate(prev => {
                 const next = { ...prev };
-                const existingEvents = next[today] ?? [];
+                const existingEvents = next[NO_DATE_KEY] ?? [];
                 const isDuplicate = existingEvents.some(e => e.id === created.id);
                 if (!isDuplicate) {
-                    next[today] = [...existingEvents, created];
+                    next[NO_DATE_KEY] = [...existingEvents, created];
                 }
                 return next;
             });
@@ -580,7 +581,7 @@ const HomeScreen = () => {
         } catch {
             return '保存失败，请重试';
         }
-    }, [today, refreshIncompleteEvents]);
+    }, [refreshIncompleteEvents]);
 
     const handleExportShare = useCallback(async () => {
         const events = getAllEvents();

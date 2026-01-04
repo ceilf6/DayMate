@@ -96,7 +96,8 @@
         "selectTime": "选择时间",
         "clearTime": "清除时间",
         "quickAdd": "快速添加",
-        "quickAddTask": "快速添加事项"
+        "quickAddTask": "快速添加事项",
+        "noDate": "无日期"
     },
     "priority": {
         "none": "无",

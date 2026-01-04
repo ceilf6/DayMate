@@ -151,7 +151,7 @@ const EventDetailModal = memo(({
                     </Text>
 
                     <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
-                        {t('splash.date', '日期')}：{event.date}
+                        {t('splash.date', '日期')}：{event.date === 'NO_DATE' ? (t('event.noDate', '无日期') as string) : event.date}
                     </Text>
 
                     {!isEditing ? (

@@ -156,7 +156,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                         numberOfLines={1}>
                         {showDate ? (
                             <>
-                                {event.date}
+                                {event.date === 'NO_DATE' ? (t('event.noDate', '无日期') as string) : event.date}
                                 {(event.startTime || event.endTime) && ` · ${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
                             </>
                         ) : (

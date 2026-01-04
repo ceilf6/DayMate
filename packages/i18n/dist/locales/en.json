@@ -96,7 +96,8 @@
         "selectTime": "Select Time",
         "clearTime": "Clear Time",
         "quickAdd": "Quick Add",
-        "quickAddTask": "Quick Add Task"
+        "quickAddTask": "Quick Add Task",
+        "noDate": "No Date"
     },
     "priority": {
         "none": "None",

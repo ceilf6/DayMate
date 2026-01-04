@@ -3,6 +3,9 @@ import { CalendarEvent, CreateCalendarEventInput, generateId } from '@daymate/sh
 
 const STORAGE_KEY = 'daymate.events.v1';
 
+// 用于表示无日期的事项的特殊日期键
+export const NO_DATE_KEY = 'NO_DATE';
+
 type EventsByDate = Record<string, CalendarEvent[]>;
 
 // 内存缓存，避免重复读取 AsyncStorage
