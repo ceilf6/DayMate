@@ -431,9 +431,15 @@ const HomeScreen = () => {
                     } else {
                         next[event.date] = filteredOldList;
                     }
-                    // 添加到新日期
+                    // 添加到新日期（检查是否已存在，避免重复）
                     const newList = next[newDate] ?? [];
-                    next[newDate] = [...newList, finalEvent];
+                    const existsInNewDate = newList.some(e => e.id === finalEvent.id);
+                    if (!existsInNewDate) {
+                        next[newDate] = [...newList, finalEvent];
+                    } else {
+                        // 如果已存在，更新它
+                        next[newDate] = newList.map(e => e.id === finalEvent.id ? finalEvent : e);
+                    }
                     return next;
                 });
             } else {
