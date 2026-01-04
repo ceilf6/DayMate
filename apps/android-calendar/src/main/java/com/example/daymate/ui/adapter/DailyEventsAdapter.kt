@@ -98,16 +98,10 @@ class DailyEventsAdapter(
                 ContextCompat.getColor(binding.root.context, statusColor)
             )
 
-            // 为高优先级事件设置特殊样式
-            if (event.priority in 1..3) {
-                binding.tvEventTitle.setTextColor(
-                    ContextCompat.getColor(binding.root.context, R.color.priority_high)
-                )
-            } else {
-                binding.tvEventTitle.setTextColor(
-                    ContextCompat.getColor(binding.root.context, R.color.primary_text)
-                )
-            }
+            // 所有优先级使用相同的文本颜色（左侧指示条和右侧感叹号已有颜色区分）
+            binding.tvEventTitle.setTextColor(
+                ContextCompat.getColor(binding.root.context, R.color.primary_text)
+            )
         }
     }
 }

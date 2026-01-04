@@ -12,7 +12,6 @@ import type { CalendarEvent } from '@daymate/shared';
 import {
     getPriorityColors,
     getPriorityIndicator,
-    isHighPriority,
 } from '@daymate/shared';
 import { useTheme } from '../contexts/ThemeContext';
 import { useI18n } from '../contexts/I18nContext';
@@ -42,7 +41,6 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
 
     const priorityColors = getPriorityColors(event.priority);
     const priorityIndicator = getPriorityIndicator(event.priority);
-    const highPriority = isHighPriority(event.priority);
     const isCompleted = event.completed === true;
 
     const panResponder = useRef(
@@ -138,7 +136,6 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                             style={[
                                 styles.eventItemTitle,
                                 { color: colors.textPrimary },
-                                highPriority && { color: priorityColors.background },
                                 isCompleted && styles.completedText,
                             ]}
                             numberOfLines={1}>

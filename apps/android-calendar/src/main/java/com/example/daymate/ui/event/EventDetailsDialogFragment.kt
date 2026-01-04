@@ -161,10 +161,7 @@ class EventDetailsDialogFragment : DialogFragment() {
             binding.tvPrioritySymbol.visibility = View.GONE
         }
         
-        // 为高优先级事件的标题添加强调色
-        if (event.priority in 1..3) {
-            binding.tvEventTitle.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.priority_high))
-        }
+        // 高优先级事件标题使用普通文本颜色（左侧指示条和右侧感叹号已有颜色区分）
         
         // 状态
         val statusText = when (event.status) {

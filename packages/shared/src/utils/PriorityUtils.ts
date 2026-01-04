@@ -23,8 +23,8 @@ export const PRIORITY_RANGES = {
  */
 export const PRIORITY_COLORS = {
     high: {
-        background: '#212121',
-        border: '#000000',
+        background: '#FF5252',
+        border: '#D32F2F',
         text: '#FFFFFF',
     },
     medium: {
@@ -33,9 +33,9 @@ export const PRIORITY_COLORS = {
         text: '#FFFFFF',
     },
     low: {
-        background: '#4CAF50',
-        border: '#388E3C',
-        text: '#FFFFFF',
+        background: '#E3F2FD',
+        border: '#1976D2',
+        text: '#1976D2',
     },
     none: {
         background: '#F5F5F5',
