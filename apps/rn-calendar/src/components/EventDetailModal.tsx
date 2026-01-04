@@ -206,7 +206,7 @@ const EventDetailModal = memo(({
                                             ]}
                                         />
                                         <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
-                                            {getPriorityText(event.priority)}
+                                            {getPriorityText(event.priority, t)}
                                         </Text>
                                     </View>
                                 </View>

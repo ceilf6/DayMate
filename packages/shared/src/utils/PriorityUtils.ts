@@ -87,22 +87,48 @@ export function getPriorityIndicator(priority: number | undefined): string {
 }
 
 /**
+ * 优先级文本的 i18n key 映射
+ */
+export const PRIORITY_TEXT_KEYS = {
+    high: 'priority.high',
+    medium: 'priority.medium',
+    low: 'priority.low',
+    none: 'priority.none',
+} as const;
+
+/**
+ * 根据优先级获取文本描述的 i18n key
+ * @param priority 优先级数值
+ * @returns 优先级文本的 i18n key
+ */
+export function getPriorityTextKey(priority: number | undefined): string {
+    const level = getPriorityLevel(priority);
+    return PRIORITY_TEXT_KEYS[level];
+}
+
+/**
  * 根据优先级获取文本描述
  * @param priority 优先级数值
+ * @param t 可选的翻译函数，如果不提供则返回默认中文
  * @returns 优先级文本
  */
-export function getPriorityText(priority: number | undefined): string {
+export function getPriorityText(
+    priority: number | undefined,
+    t?: (key: string, fallback?: string) => string
+): string {
     const level = getPriorityLevel(priority);
-    switch (level) {
-        case 'high':
-            return '高';
-        case 'medium':
-            return '中';
-        case 'low':
-            return '低';
-        default:
-            return '未设置';
+    const key = PRIORITY_TEXT_KEYS[level];
+    const fallbacks: Record<string, string> = {
+        'priority.high': '高',
+        'priority.medium': '中',
+        'priority.low': '低',
+        'priority.none': '未设置',
+    };
+
+    if (t) {
+        return t(key, fallbacks[key]);
     }
+    return fallbacks[key];
 }
 
 /**

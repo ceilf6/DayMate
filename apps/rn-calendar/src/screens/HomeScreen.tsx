@@ -27,7 +27,6 @@ import {
     // Priority Utils
     getPriorityColors,
     getPriorityIndicator,
-    getPriorityText,
     isHighPriority,
     comparePriority,
 } from '@daymate/shared';
