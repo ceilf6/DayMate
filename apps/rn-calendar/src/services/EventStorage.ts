@@ -69,10 +69,37 @@ export class EventStorage {
         memoryCache = data;
     }
 
+    /**
+     * 检查事项 ID 是否已存在（跨所有日期）
+     */
+    private static eventIdExists(all: EventsByDate, eventId: string): boolean {
+        for (const dateEvents of Object.values(all)) {
+            if (dateEvents.some(e => e.id === eventId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static async addEvent(input: CreateCalendarEventInput): Promise<CalendarEvent> {
         const now = new Date().toISOString();
+        let eventId = generateId();
+
+        const all = await EventStorage.getAllEventsByDate();
+
+        // 确保生成唯一的 ID（理论上 generateId 应该已经唯一，但做双重保险）
+        let attempts = 0;
+        while (EventStorage.eventIdExists(all, eventId) && attempts < 10) {
+            eventId = generateId();
+            attempts++;
+        }
+
+        if (attempts >= 10) {
+            console.warn('EventStorage: 多次尝试生成唯一 ID 失败');
+        }
+
         const event: CalendarEvent = {
-            id: generateId(),
+            id: eventId,
             date: input.date,
             title: input.title.trim(),
             description: input.description?.trim(),
@@ -87,8 +114,14 @@ export class EventStorage {
             updatedAt: now,
         };
 
-        const all = await EventStorage.getAllEventsByDate();
-        const nextForDate = [...(all[input.date] ?? []), event];
+        // 检查同一日期下是否已存在相同 ID（防御性编程）
+        const dateList = all[input.date] ?? [];
+        if (dateList.some(e => e.id === event.id)) {
+            console.warn(`EventStorage: 事项 ID ${event.id} 已存在于日期 ${input.date}，跳过添加`);
+            return dateList.find(e => e.id === event.id)!;
+        }
+
+        const nextForDate = [...dateList, event];
         all[input.date] = nextForDate;
 
         await EventStorage.persistAndUpdateCache(all);
