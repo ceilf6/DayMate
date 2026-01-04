@@ -55,7 +55,8 @@ const EventDetailModal = memo(({
     useEffect(() => {
         if (event) {
             setTitle(event.title || '');
-            setDate(event.date || '');
+            // 如果是无日期事项，编辑时显示空（让用户看到 placeholder）
+            setDate(event.date === 'NO_DATE' ? '' : (event.date || ''));
             setStartTime(event.startTime || '');
             setEndTime(event.endTime || '');
             setNotes(event.description || '');
@@ -73,7 +74,7 @@ const EventDetailModal = memo(({
         // 恢复原始值
         if (event) {
             setTitle(event.title || '');
-            setDate(event.date || '');
+            setDate(event.date === 'NO_DATE' ? '' : (event.date || ''));
             setStartTime(event.startTime || '');
             setEndTime(event.endTime || '');
             setNotes(event.description || '');

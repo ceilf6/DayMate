@@ -108,7 +108,7 @@
     "placeholder": {
         "titleRequired": "Title (Required)",
         "taskTitle": "Enter task title...",
-        "dateHint": "Date YYYY-MM-DD",
+        "dateHint": "Date",
         "startTimeHint": "Start Time",
         "endTimeHint": "End Time",
         "notesOptional": "Notes (optional)",

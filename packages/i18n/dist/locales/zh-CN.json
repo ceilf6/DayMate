@@ -108,7 +108,7 @@
     "placeholder": {
         "titleRequired": "标题（必填）",
         "taskTitle": "输入事项标题...",
-        "dateHint": "日期 YYYY-MM-DD",
+        "dateHint": "日期",
         "startTimeHint": "开始时间",
         "endTimeHint": "结束时间",
         "notesOptional": "备注（可选）",

@@ -356,8 +356,10 @@ const HomeScreen = () => {
         const title = data.title.trim();
         if (!title) return '请输入标题';
 
-        const newDate = data.date.trim();
-        if (!isValidDate(newDate)) {
+        // 如果日期为空，使用 NO_DATE；否则验证日期格式
+        const inputDate = data.date.trim();
+        const newDate = inputDate === '' ? 'NO_DATE' : inputDate;
+        if (newDate !== 'NO_DATE' && !isValidDate(newDate)) {
             return '日期格式应为 YYYY-MM-DD';
         }
 

@@ -147,24 +147,26 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                             </Text>
                         ) : null}
                     </View>
-                    <Text
-                        style={[
-                            styles.eventItemMeta,
-                            { color: colors.textSecondary },
-                            isCompleted && styles.completedText,
-                        ]}
-                        numberOfLines={1}>
-                        {showDate ? (
-                            <>
-                                {event.date === 'NO_DATE' ? (t('event.noDate', '无日期') as string) : event.date}
-                                {(event.startTime || event.endTime) && ` · ${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
-                            </>
-                        ) : (
-                            (event.startTime || event.endTime)
-                                ? `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                                : t('calendar.allDay', '全天') as string
-                        )}
-                    </Text>
+                    {/* 只有当有时间或有效日期时才显示元信息 */}
+                    {(event.startTime || event.endTime || (showDate && event.date !== 'NO_DATE')) ? (
+                        <Text
+                            style={[
+                                styles.eventItemMeta,
+                                { color: colors.textSecondary },
+                                isCompleted && styles.completedText,
+                            ]}
+                            numberOfLines={1}>
+                            {showDate ? (
+                                <>
+                                    {event.date !== 'NO_DATE' && event.date}
+                                    {event.date !== 'NO_DATE' && (event.startTime || event.endTime) && ' · '}
+                                    {(event.startTime || event.endTime) && `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
+                                </>
+                            ) : (
+                                `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
+                            )}
+                        </Text>
+                    ) : null}
                     {!showDate && event.reminderMinutes && event.reminderMinutes > 0 ? (
                         <Text
                             style={[
