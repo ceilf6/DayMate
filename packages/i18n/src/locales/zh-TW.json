@@ -94,7 +94,9 @@
         "markIncomplete": "標記未完成",
         "selectDate": "選擇日期",
         "selectTime": "選擇時間",
-        "clearTime": "清除時間"
+        "clearTime": "清除時間",
+        "quickAdd": "快速新增",
+        "quickAddTask": "快速新增事項"
     },
     "priority": {
         "none": "無",
@@ -104,6 +106,7 @@
     },
     "placeholder": {
         "titleRequired": "標題（必填）",
+        "taskTitle": "輸入事項標題...",
         "dateHint": "日期 YYYY-MM-DD",
         "startTimeHint": "開始時間",
         "endTimeHint": "結束時間",

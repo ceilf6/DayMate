@@ -57,6 +57,8 @@ export declare const resources: {
                 selectDate: string;
                 selectTime: string;
                 clearTime: string;
+                quickAdd: string;
+                quickAddTask: string;
             };
             priority: {
                 none: string;
@@ -66,6 +68,7 @@ export declare const resources: {
             };
             placeholder: {
                 titleRequired: string;
+                taskTitle: string;
                 dateHint: string;
                 startTimeHint: string;
                 endTimeHint: string;
@@ -199,6 +202,8 @@ export declare const resources: {
                 selectDate: string;
                 selectTime: string;
                 clearTime: string;
+                quickAdd: string;
+                quickAddTask: string;
             };
             priority: {
                 none: string;
@@ -208,6 +213,7 @@ export declare const resources: {
             };
             placeholder: {
                 titleRequired: string;
+                taskTitle: string;
                 dateHint: string;
                 startTimeHint: string;
                 endTimeHint: string;
@@ -341,6 +347,8 @@ export declare const resources: {
                 selectDate: string;
                 selectTime: string;
                 clearTime: string;
+                quickAdd: string;
+                quickAddTask: string;
             };
             priority: {
                 none: string;
@@ -350,6 +358,7 @@ export declare const resources: {
             };
             placeholder: {
                 titleRequired: string;
+                taskTitle: string;
                 dateHint: string;
                 startTimeHint: string;
                 endTimeHint: string;

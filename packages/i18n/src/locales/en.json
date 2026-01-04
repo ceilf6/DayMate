@@ -94,7 +94,9 @@
         "markIncomplete": "Mark as Incomplete",
         "selectDate": "Select Date",
         "selectTime": "Select Time",
-        "clearTime": "Clear Time"
+        "clearTime": "Clear Time",
+        "quickAdd": "Quick Add",
+        "quickAddTask": "Quick Add Task"
     },
     "priority": {
         "none": "None",
@@ -104,6 +106,7 @@
     },
     "placeholder": {
         "titleRequired": "Title (Required)",
+        "taskTitle": "Enter task title...",
         "dateHint": "Date YYYY-MM-DD",
         "startTimeHint": "Start Time",
         "endTimeHint": "End Time",

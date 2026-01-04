@@ -41,6 +41,7 @@ import EventDetailModal from '../components/EventDetailModal';
 import ImportExportModal from '../components/ImportExportModal';
 import SettingsModal from '../components/SettingsModal';
 import SwipeableEventItem from '../components/SwipeableEventItem';
+import QuickAddTaskModal from '../components/QuickAddTaskModal';
 import { useI18n } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useBackground } from '../contexts/BackgroundContext';
@@ -95,6 +96,7 @@ const HomeScreen = () => {
     const [detailEvent, setDetailEvent] = useState<CalendarEvent | null>(null);
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
     const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+    const [isQuickAddVisible, setIsQuickAddVisible] = useState(false);
 
     // 展开/收起状态
     const [isScheduleExpanded, setIsScheduleExpanded] = useState(true);
@@ -549,6 +551,36 @@ const HomeScreen = () => {
             return false;
         }
     }, [refreshIncompleteEvents]);
+
+    // 快速添加事项处理
+    const handleQuickAddTask = useCallback(async (title: string): Promise<string | null> => {
+        try {
+            // 使用今天的日期作为事项日期
+            const created = await EventStorage.addEvent({
+                date: today,
+                title,
+                // 不设置时间、提醒等其他属性
+            });
+
+            // 更新本地状态
+            setEventsByDate(prev => {
+                const next = { ...prev };
+                const existingEvents = next[today] ?? [];
+                const isDuplicate = existingEvents.some(e => e.id === created.id);
+                if (!isDuplicate) {
+                    next[today] = [...existingEvents, created];
+                }
+                return next;
+            });
+
+            // 刷新未完成事项列表
+            await refreshIncompleteEvents();
+
+            return null; // 成功
+        } catch {
+            return '保存失败，请重试';
+        }
+    }, [today, refreshIncompleteEvents]);
 
     const handleExportShare = useCallback(async () => {
         const events = getAllEvents();
@@ -1028,6 +1060,12 @@ const HomeScreen = () => {
                             ({incompleteEvents.length})
                         </Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.addButton, { backgroundColor: colors.primary }]}
+                        onPress={() => setIsQuickAddVisible(true)}
+                        accessibilityRole="button">
+                        <Text style={styles.addButtonText}>{t('event.quickAdd', '快速添加') as string}</Text>
+                    </TouchableOpacity>
                 </View>
 
                 {isIncompleteExpanded && (
@@ -1082,6 +1120,12 @@ const HomeScreen = () => {
             <SettingsModal
                 visible={isSettingsModalVisible}
                 onClose={() => setIsSettingsModalVisible(false)}
+            />
+
+            <QuickAddTaskModal
+                visible={isQuickAddVisible}
+                onClose={() => setIsQuickAddVisible(false)}
+                onSave={handleQuickAddTask}
             />
         </ScrollView>
     );
