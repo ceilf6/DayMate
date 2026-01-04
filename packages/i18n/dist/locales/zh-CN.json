@@ -91,7 +91,10 @@
         "completed": "已完成",
         "incomplete": "未完成",
         "markComplete": "标记完成",
-        "markIncomplete": "标记未完成"
+        "markIncomplete": "标记未完成",
+        "selectDate": "选择日期",
+        "selectTime": "选择时间",
+        "clearTime": "清除时间（全天）"
     },
     "priority": {
         "none": "无",
@@ -102,8 +105,8 @@
     "placeholder": {
         "titleRequired": "标题（必填）",
         "dateHint": "日期 YYYY-MM-DD",
-        "startTimeHint": "开始 HH:mm",
-        "endTimeHint": "结束 HH:mm",
+        "startTimeHint": "开始时间",
+        "endTimeHint": "结束时间",
         "notesOptional": "备注（可选）",
         "reminderHint": "提醒（提前分钟，可选，如 10）",
         "pasteICalendar": "粘贴 iCalendar 数据..."

@@ -10,6 +10,7 @@ import {
 import { getPriorityColors } from '@daymate/shared';
 import { useTheme } from '../contexts/ThemeContext';
 import { useI18n } from '../contexts/I18nContext';
+import { TimePicker } from './DateTimePicker';
 
 interface AddEventModalProps {
     visible: boolean;
@@ -101,20 +102,22 @@ const AddEventModal = memo(({
                         style={[styles.input, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
                     />
                     <View style={styles.timeRow}>
-                        <TextInput
-                            value={startTime}
-                            onChangeText={setStartTime}
-                            placeholder={t('placeholder.startTimeHint', '开始 HH:mm')}
-                            placeholderTextColor={colors.textTertiary}
-                            style={[styles.input, styles.timeInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
-                        />
-                        <TextInput
-                            value={endTime}
-                            onChangeText={setEndTime}
-                            placeholder={t('placeholder.endTimeHint', '结束 HH:mm')}
-                            placeholderTextColor={colors.textTertiary}
-                            style={[styles.input, styles.timeInput, { backgroundColor: colors.primarySurface, color: colors.textPrimary }]}
-                        />
+                        <View style={styles.timePickerWrapper}>
+                            <TimePicker
+                                label=""
+                                value={startTime}
+                                onChange={setStartTime}
+                                placeholder={t('placeholder.startTimeHint', '开始 HH:mm') as string}
+                            />
+                        </View>
+                        <View style={styles.timePickerWrapper}>
+                            <TimePicker
+                                label=""
+                                value={endTime}
+                                onChange={setEndTime}
+                                placeholder={t('placeholder.endTimeHint', '结束 HH:mm') as string}
+                            />
+                        </View>
                     </View>
                     <TextInput
                         value={notes}
@@ -245,6 +248,9 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     timeInput: {
+        flex: 1,
+    },
+    timePickerWrapper: {
         flex: 1,
     },
     notesInput: {

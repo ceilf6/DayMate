@@ -91,7 +91,10 @@
         "completed": "Completed",
         "incomplete": "Incomplete",
         "markComplete": "Mark as Complete",
-        "markIncomplete": "Mark as Incomplete"
+        "markIncomplete": "Mark as Incomplete",
+        "selectDate": "Select Date",
+        "selectTime": "Select Time",
+        "clearTime": "Clear Time (All Day)"
     },
     "priority": {
         "none": "None",
@@ -102,8 +105,8 @@
     "placeholder": {
         "titleRequired": "Title (Required)",
         "dateHint": "Date YYYY-MM-DD",
-        "startTimeHint": "Start HH:mm",
-        "endTimeHint": "End HH:mm",
+        "startTimeHint": "Start Time",
+        "endTimeHint": "End Time",
         "notesOptional": "Notes (optional)",
         "reminderHint": "Reminder (minutes before, optional, e.g. 10)",
         "pasteICalendar": "Paste iCalendar data..."

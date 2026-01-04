@@ -54,6 +54,9 @@ export declare const resources: {
                 incomplete: string;
                 markComplete: string;
                 markIncomplete: string;
+                selectDate: string;
+                selectTime: string;
+                clearTime: string;
             };
             priority: {
                 none: string;
@@ -193,6 +196,9 @@ export declare const resources: {
                 incomplete: string;
                 markComplete: string;
                 markIncomplete: string;
+                selectDate: string;
+                selectTime: string;
+                clearTime: string;
             };
             priority: {
                 none: string;
@@ -332,6 +338,9 @@ export declare const resources: {
                 incomplete: string;
                 markComplete: string;
                 markIncomplete: string;
+                selectDate: string;
+                selectTime: string;
+                clearTime: string;
             };
             priority: {
                 none: string;

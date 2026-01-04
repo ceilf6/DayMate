@@ -18,6 +18,7 @@
         "@notifee/react-native": "^9.1.8",
         "@react-native-async-storage/async-storage": "^1.19.5",
         "@react-native-clipboard/clipboard": "^1.16.3",
+        "@react-native-community/datetimepicker": "^8.5.1",
         "@react-navigation/native": "^6.1.9",
         "@react-navigation/native-stack": "^6.9.17",
         "i18next": "^23.7.16",
