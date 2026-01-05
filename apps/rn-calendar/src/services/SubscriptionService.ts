@@ -91,28 +91,57 @@ export class SubscriptionService {
     }
 
     /**
+     * 将 webcal:// 协议转换为 https://
+     */
+    static normalizeUrl(url: string): string {
+        let normalized = url.trim();
+        if (normalized.startsWith('webcal://')) {
+            normalized = normalized.replace('webcal://', 'https://');
+        } else if (normalized.startsWith('webcals://')) {
+            normalized = normalized.replace('webcals://', 'https://');
+        }
+        return normalized;
+    }
+
+    /**
      * 从 URL 获取 iCalendar 数据
      */
     static async fetchICalendarFromUrl(url: string): Promise<string> {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'text/calendar, application/calendar+json, */*',
-                'User-Agent': 'DayMate Calendar App',
-            },
-        });
+        const normalizedUrl = this.normalizeUrl(url);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+        
+        try {
+            const response = await fetch(normalizedUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'text/calendar, application/calendar+json, */*',
+                    'User-Agent': 'DayMate Calendar App',
+                },
+                signal: controller.signal,
+            });
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const text = await response.text();
+
+            if (!text.includes('BEGIN:VCALENDAR')) {
+                throw new Error('返回的数据不是有效的 iCalendar 格式');
+            }
+
+            return text;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error instanceof Error && error.name === 'AbortError') {
+                throw new Error('请求超时，请检查网络连接');
+            }
+            throw error;
         }
-
-        const text = await response.text();
-
-        if (!text.includes('BEGIN:VCALENDAR')) {
-            throw new Error('返回的数据不是有效的 iCalendar 格式');
-        }
-
-        return text;
     }
 
     /**
@@ -167,9 +196,12 @@ export class SubscriptionService {
                 return { valid: false, error: '请输入订阅地址' };
             }
 
+            // 规范化 URL 后再验证
+            const normalizedUrl = this.normalizeUrl(url);
+
             // 尝试解析 URL
             try {
-                new URL(url);
+                new URL(normalizedUrl);
             } catch {
                 return { valid: false, error: '无效的 URL 格式' };
             }
