@@ -27,7 +27,7 @@ interface TimePickerProps {
 
 // 日期选择器
 export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePickerProps) => {
-    const { colors } = useTheme();
+    const { colors, isDarkMode } = useTheme();
     const { t } = useI18n();
     const [show, setShow] = useState(false);
     const [tempDate, setTempDate] = useState<Date | null>(null);
@@ -112,6 +112,7 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
                                 onChange={handleChange}
                                 locale="zh-CN"
                                 style={styles.iosPicker}
+                                themeVariant={isDarkMode ? 'dark' : 'light'}
                             />
                         </View>
                     </View>
@@ -124,6 +125,7 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
                     mode="date"
                     display="default"
                     onChange={handleChange}
+                    themeVariant={isDarkMode ? 'dark' : 'light'}
                 />
             )}
         </View>
@@ -132,7 +134,7 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
 
 // 时间选择器
 export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePickerProps) => {
-    const { colors } = useTheme();
+    const { colors, isDarkMode } = useTheme();
     const { t } = useI18n();
     const [show, setShow] = useState(false);
     const [tempTime, setTempTime] = useState<Date | null>(null);
@@ -231,6 +233,7 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
                                 onChange={handleChange}
                                 locale="zh-CN"
                                 style={styles.iosPicker}
+                                themeVariant={isDarkMode ? 'dark' : 'light'}
                             />
                             <TouchableOpacity
                                 style={[styles.clearButton, { borderColor: colors.border }]}
@@ -252,6 +255,7 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
                     display="default"
                     is24Hour={true}
                     onChange={handleChange}
+                    themeVariant={isDarkMode ? 'dark' : 'light'}
                 />
             )}
         </View>
