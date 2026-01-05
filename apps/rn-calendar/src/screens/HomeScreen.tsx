@@ -937,16 +937,6 @@ const HomeScreen = () => {
                     </Text>
                 </TouchableOpacity>
 
-                {/* 垃圾桶 */}
-                <TouchableOpacity
-                    onPress={() => setIsTrashModalVisible(true)}
-                    style={[styles.topActionButton, { backgroundColor: colors.primary }]}
-                    accessibilityRole="button">
-                    <Text style={[styles.topActionButtonText]}>
-                        {t('trash.title', '垃圾桶') as string}
-                    </Text>
-                </TouchableOpacity>
-
                 {/* 导入/导出 */}
                 <TouchableOpacity
                     onPress={openImportExportModal}
@@ -1204,12 +1194,20 @@ const HomeScreen = () => {
                             ({incompleteEvents.length})
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.addButton, { backgroundColor: colors.primary }]}
-                        onPress={() => setIsQuickAddVisible(true)}
-                        accessibilityRole="button">
-                        <Text style={styles.addButtonText}>{t('event.quickAdd', '快速添加') as string}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.actionButtonsRow}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                            onPress={() => setIsTrashModalVisible(true)}
+                            accessibilityRole="button">
+                            <Text style={styles.addButtonText}>{t('trash.title', '垃圾桶') as string}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                            onPress={() => setIsQuickAddVisible(true)}
+                            accessibilityRole="button">
+                            <Text style={styles.addButtonText}>{t('event.quickAdd', '快速添加') as string}</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {isIncompleteExpanded && (
@@ -1475,6 +1473,19 @@ const styles = StyleSheet.create({
         fontSize: 17,
         lineHeight: 22,
         fontWeight: '700',
+    },
+    actionButtonsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    actionButton: {
+        width: 80,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     addButton: {
         paddingHorizontal: 12,
