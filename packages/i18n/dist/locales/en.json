@@ -14,7 +14,7 @@
         "month": "Month",
         "week": "Week",
         "day": "Day",
-        "monthView": "Month View",
+        "monthView": "Month",
         "weekView": "Week View",
         "dayView": "Day View",
         "today": "Today",
@@ -131,7 +131,7 @@
         "importedCount": "Successfully imported {{count}} events!"
     },
     "importExport": {
-        "title": "Import/Export",
+        "title": "Import",
         "export": "Export Events",
         "import": "Import Events",
         "share": "Share",
