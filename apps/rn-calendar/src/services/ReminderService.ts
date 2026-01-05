@@ -40,6 +40,9 @@ export class ReminderService {
     }
 
     static async scheduleReminder(event: CalendarEvent): Promise<string | null> {
+        // 已完成的事项不设置提醒
+        if (event.completed) return null;
+
         const reminderMinutes = event.reminderMinutes;
         const startTime = event.startTime;
         if (!reminderMinutes || reminderMinutes <= 0) return null;

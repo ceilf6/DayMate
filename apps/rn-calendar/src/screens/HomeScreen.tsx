@@ -529,6 +529,22 @@ const HomeScreen = () => {
             const updated = await EventStorage.toggleEventComplete(event.date, event.id);
             if (!updated) return false;
 
+            // 处理提醒：完成时取消，未完成时重新设置
+            if (updated.completed) {
+                // 已完成，取消提醒
+                if (updated.notificationId) {
+                    await ReminderService.cancelReminder(updated.notificationId);
+                }
+            } else {
+                // 未完成，重新设置提醒
+                if (updated.reminderMinutes && updated.reminderMinutes > 0) {
+                    const notificationId = await ReminderService.scheduleReminder(updated);
+                    if (notificationId && notificationId !== updated.notificationId) {
+                        await EventStorage.updateEvent(updated.date, updated.id, { notificationId });
+                    }
+                }
+            }
+
             // 更新本地状态
             setEventsByDate(prev => {
                 const next = { ...prev };
