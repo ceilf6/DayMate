@@ -208,10 +208,14 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
                                                 {item.title}
                                             </Text>
                                             <View style={styles.itemMeta}>
-                                                <Text style={[styles.itemDate, { color: colors.textSecondary }]}>
-                                                    {item.originalDate}
-                                                </Text>
-                                                <Text style={[styles.itemDot, { color: colors.textDisabled }]}>•</Text>
+                                                {item.originalDate && item.originalDate !== 'NO_DATE' && (
+                                                    <>
+                                                        <Text style={[styles.itemDate, { color: colors.textSecondary }]}>
+                                                            {item.originalDate}
+                                                        </Text>
+                                                        <Text style={[styles.itemDot, { color: colors.textDisabled }]}>•</Text>
+                                                    </>
+                                                )}
                                                 <Text style={[styles.itemDeletedAt, { color: colors.textSecondary }]}>
                                                     {t('trash.deletedAt', '删除于') as string} {formatDeletedAt(item.deletedAt)}
                                                 </Text>
@@ -233,7 +237,7 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
                                                         </Text>
                                                     </TouchableOpacity>
                                                     <TouchableOpacity
-                                                        style={[styles.actionButton, styles.deleteButton]}
+                                                        style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.primaryBackground }]}
                                                         onPress={() => handlePermanentDelete(item)}>
                                                         <Text style={[styles.deleteButtonText]}>
                                                             {t('common.delete', '删除') as string}
@@ -370,7 +374,9 @@ const styles = StyleSheet.create({
     },
     restoreButton: {},
     deleteButton: {
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        backgroundColor: 'transparent',
+        borderWidth: 1,
+        // borderColor: '#EF4444',
     },
     actionButtonText: {
         color: '#ffffff',
