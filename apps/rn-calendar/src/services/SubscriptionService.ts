@@ -256,16 +256,16 @@ export class SubscriptionService {
     static async saveSubscriptionEvents(events: SubscriptionEvent[]): Promise<void> {
         // 获取现有的订阅事件
         const existing = await this.getAllSubscriptionEvents();
-        
+
         // 获取新事件涉及的订阅ID
         const newSubscriptionIds = new Set(events.map(e => e.subscriptionId));
-        
+
         // 过滤掉这些订阅的旧事件，保留其他订阅的事件
         const filtered = existing.filter(e => !newSubscriptionIds.has(e.subscriptionId));
-        
+
         // 合并新事件
         const merged = [...filtered, ...events];
-        
+
         await AsyncStorage.setItem(SUBSCRIPTION_EVENTS_KEY, JSON.stringify(merged));
     }
 
@@ -297,14 +297,14 @@ export class SubscriptionService {
     static async getSubscriptionEventsByDate(): Promise<Record<string, SubscriptionEvent[]>> {
         const all = await this.getAllSubscriptionEvents();
         const byDate: Record<string, SubscriptionEvent[]> = {};
-        
+
         for (const event of all) {
             if (!byDate[event.date]) {
                 byDate[event.date] = [];
             }
             byDate[event.date].push(event);
         }
-        
+
         return byDate;
     }
 
