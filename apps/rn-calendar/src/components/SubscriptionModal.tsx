@@ -271,11 +271,11 @@ const SubscriptionModal = memo(({
 
                                         <View style={styles.subscriptionActions}>
                                             <TouchableOpacity
-                                                style={[styles.syncButton, { backgroundColor: colors.primaryLight }]}
+                                                style={[styles.syncButton, { backgroundColor: colors.primary }]}
                                                 onPress={() => handleSyncOne(sub)}
                                                 disabled={isSyncing}
                                             >
-                                                <Text style={[styles.syncButtonText, { color: colors.primary }]}>
+                                                <Text style={styles.syncButtonText}>
                                                     {t('subscription.sync', '同步')}
                                                 </Text>
                                             </TouchableOpacity>
@@ -489,13 +489,19 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     syncButton: {
-        paddingHorizontal: 10,
-        paddingVertical: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
         borderRadius: 6,
+        shadowColor: '#000000',
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        shadowOffset: { width: 0, height: 1 },
+        elevation: 2,
     },
     syncButtonText: {
         fontSize: 12,
         fontWeight: '600',
+        color: '#ffffff',
     },
     deleteButton: {
         width: 28,

@@ -914,8 +914,8 @@ const HomeScreen = () => {
                     <TouchableOpacity
                         onPress={() => shiftSelectedDate(-1)}
                         accessibilityRole="button"
-                        style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
-                        <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
+                        style={[styles.dayNavButton, { backgroundColor: colors.primary }]}>
+                        <Text style={styles.dayNavButtonText}>
                             {t('calendar.previousDay', '上一天') as string}
                         </Text>
                     </TouchableOpacity>
@@ -927,8 +927,8 @@ const HomeScreen = () => {
                     <TouchableOpacity
                         onPress={() => shiftSelectedDate(1)}
                         accessibilityRole="button"
-                        style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
-                        <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
+                        style={[styles.dayNavButton, { backgroundColor: colors.primary }]}>
+                        <Text style={styles.dayNavButtonText}>
                             {t('calendar.nextDay', '下一天') as string}
                         </Text>
                     </TouchableOpacity>
@@ -940,8 +940,8 @@ const HomeScreen = () => {
                         <TouchableOpacity
                             onPress={() => shiftWeek('prev')}
                             accessibilityRole="button"
-                            style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
-                            <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
+                            style={[styles.dayNavButton, { backgroundColor: colors.primary }]}>
+                            <Text style={styles.dayNavButtonText}>
                                 {t('calendar.previousWeek', '上一周') as string}
                             </Text>
                         </TouchableOpacity>
@@ -953,8 +953,8 @@ const HomeScreen = () => {
                         <TouchableOpacity
                             onPress={() => shiftWeek('next')}
                             accessibilityRole="button"
-                            style={[styles.dayNavButton, { backgroundColor: colors.primaryLight }]}>
-                            <Text style={[styles.dayNavButtonText, { color: colors.primary }]}>
+                            style={[styles.dayNavButton, { backgroundColor: colors.primary }]}>
+                            <Text style={styles.dayNavButtonText}>
                                 {t('calendar.nextWeek', '下一周') as string}
                             </Text>
                         </TouchableOpacity>
@@ -1361,14 +1361,20 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     dayNavButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
         borderRadius: 8,
+        shadowColor: '#000000',
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 2,
     },
     dayNavButtonText: {
         fontSize: 13,
         lineHeight: 18,
         fontWeight: '600',
+        color: '#ffffff',
     },
     dayNavTitle: {
         textAlign: 'center',
