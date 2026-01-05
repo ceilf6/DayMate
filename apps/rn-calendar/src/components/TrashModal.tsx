@@ -216,7 +216,7 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
                                                     {t('trash.deletedAt', '删除于') as string} {formatDeletedAt(item.deletedAt)}
                                                 </Text>
                                             </View>
-                                            <Text style={[styles.daysLeft, { color: daysLeft <= 7 ? '#EF4444' : colors.textDisabled }]}>
+                                            <Text style={[styles.daysLeft, { color: daysLeft <= 7 ? '#EF4444' : colors.textTertiary }]}>
                                                 {(t('trash.daysLeft') as string).replace('{{days}}', String(daysLeft))}
                                             </Text>
                                         </View>
