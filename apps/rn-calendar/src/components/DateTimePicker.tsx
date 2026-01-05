@@ -79,7 +79,6 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
                 <Text style={[styles.pickerText, { color: value ? colors.textPrimary : colors.textTertiary }]}>
                     {value || placeholder || t('placeholder.dateHint', '日期 YYYY-MM-DD')}
                 </Text>
-                {/* <Text style={[styles.pickerIcon, { color: colors.textSecondary }]}>📅</Text> */}
             </TouchableOpacity>
 
             {show && Platform.OS === 'ios' && (
@@ -199,7 +198,6 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
                 <Text style={[styles.pickerText, { color: value ? colors.textPrimary : colors.textTertiary }]}>
                     {value || placeholder || t('placeholder.timeHint', '时间 HH:mm')}
                 </Text>
-                {/* <Text style={[styles.pickerIcon, { color: colors.textSecondary }]}>🕐</Text> */}
             </TouchableOpacity>
 
             {show && Platform.OS === 'ios' && (
