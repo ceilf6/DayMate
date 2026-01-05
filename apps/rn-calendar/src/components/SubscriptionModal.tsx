@@ -85,9 +85,16 @@ const SubscriptionModal = memo(({
             }
 
             // 添加订阅
-            await SubscriptionService.addSubscription(newName, newUrl);
+            const newSub = await SubscriptionService.addSubscription(newName, newUrl);
+            
+            // 自动同步该订阅的事件
+            const result = await SubscriptionService.syncSubscription(newSub);
+            if (result.success && result.events.length > 0) {
+                await onSubscriptionSync(result.events);
+            }
+            
             setSuccess(t('subscription.addSuccess', '订阅添加成功！') +
-                (validation.eventCount ? ` (${validation.eventCount} ${t('subscription.eventsFound', '个事件')})` : ''));
+                (result.events.length ? ` (${result.events.length} ${t('subscription.eventsFound', '个事件')})` : ''));
 
             setNewName('');
             setNewUrl('');
@@ -98,7 +105,7 @@ const SubscriptionModal = memo(({
         } finally {
             setIsLoading(false);
         }
-    }, [newName, newUrl, t, loadSubscriptions]);
+    }, [newName, newUrl, t, loadSubscriptions, onSubscriptionSync]);
 
     const handleDeleteSubscription = useCallback(async (sub: CalendarSubscription) => {
         Alert.alert(
@@ -110,13 +117,19 @@ const SubscriptionModal = memo(({
                     text: t('common.delete', '删除'),
                     style: 'destructive',
                     onPress: async () => {
+                        // 删除订阅
                         await SubscriptionService.deleteSubscription(sub.id);
+                        // 同时删除该订阅的所有事件
+                        await SubscriptionService.deleteSubscriptionEvents(sub.id);
+                        // 刷新订阅列表
                         await loadSubscriptions();
+                        // 通知父组件刷新事件显示（传空数组触发刷新）
+                        await onSubscriptionSync([]);
                     },
                 },
             ]
         );
-    }, [t, loadSubscriptions]);
+    }, [t, loadSubscriptions, onSubscriptionSync]);
 
     const handleToggleSubscription = useCallback(async (sub: CalendarSubscription) => {
         await SubscriptionService.updateSubscription(sub.id, { enabled: !sub.enabled });

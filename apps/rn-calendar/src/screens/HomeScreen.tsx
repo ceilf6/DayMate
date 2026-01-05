@@ -276,20 +276,15 @@ const HomeScreen = () => {
 
     // 处理订阅同步的事件 - 保存到单独的存储，不添加到普通事件中
     const handleSubscriptionSync = useCallback(async (events: SubscriptionEvent[]) => {
-        console.log('[Subscription] Received events to sync:', events.length);
-        console.log('[Subscription] Sample events:', events.slice(0, 3).map(e => ({ date: e.date, title: e.title })));
+        // 如果有新事件，保存到存储
+        if (events.length > 0) {
+            await SubscriptionService.saveSubscriptionEvents(events);
+        }
 
-        // 保存订阅事件到单独的存储
-        await SubscriptionService.saveSubscriptionEvents(events);
-
-        // 刷新订阅事件显示
+        // 刷新订阅事件显示（无论是添加还是删除都需要刷新）
         const subEvents = await SubscriptionService.getSubscriptionEventsByDate();
-        console.log('[Subscription] Loaded events by date:', Object.keys(subEvents).length, 'dates');
-        console.log('[Subscription] Current selectedDate:', selectedDate);
-        console.log('[Subscription] Events for selectedDate:', subEvents[selectedDate]?.length || 0);
-
         setSubscriptionEventsByDate(subEvents);
-    }, [selectedDate]);
+    }, []);
 
     // Event handlers for modals
     const getAllEvents = useCallback((): CalendarEvent[] => {
