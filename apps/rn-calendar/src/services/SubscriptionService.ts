@@ -108,10 +108,10 @@ export class SubscriptionService {
      */
     static async fetchICalendarFromUrl(url: string): Promise<string> {
         const normalizedUrl = this.normalizeUrl(url);
-        
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
-        
+
         try {
             const response = await fetch(normalizedUrl, {
                 method: 'GET',
