@@ -7,7 +7,6 @@ import {
     Text,
     View,
     TouchableOpacity,
-    useColorScheme,
     ImageBackground,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
@@ -46,9 +45,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useBackground } from '../contexts/BackgroundContext';
 
 const HomeScreen = () => {
-    const isDarkMode = useColorScheme() === 'dark';
     const { t, currentLanguage } = useI18n();
-    const { colors } = useTheme();
+    const { colors, isDarkMode } = useTheme();
     const { backgroundImage } = useBackground();
 
     type ViewMode = 'month' | 'week' | 'day';
@@ -970,7 +968,7 @@ const HomeScreen = () => {
             ) : (
                 <View style={[styles.calendarCard, { backgroundColor: colors.primarySurface }]}>
                     <Calendar
-                        key={`month-${currentLanguage}`}
+                        key={`month-${currentLanguage}-${isDarkMode}`}
                         current={selectedDate}
                         onDayPress={onDayPress}
                         onMonthChange={onMonthChange}
