@@ -205,12 +205,25 @@ const HomeScreen = () => {
     const markedDates = useMemo(() => {
         const marks: Record<string, any> = {};
 
+        // 标记普通事件日期（蓝色点）
         for (const date of Object.keys(eventsByDate)) {
             if ((eventsByDate[date] ?? []).length > 0) {
                 marks[date] = {
                     marked: true,
                     dotColor: '#2196F3',
                 };
+            }
+        }
+
+        // 标记订阅事件日期（橙色点）- 如果没有普通事件则显示橙色点
+        for (const date of Object.keys(subscriptionEventsByDate)) {
+            if ((subscriptionEventsByDate[date] ?? []).length > 0) {
+                if (!marks[date]) {
+                    marks[date] = {
+                        marked: true,
+                        dotColor: '#F59E0B', // 橙色，表示订阅事件
+                    };
+                }
             }
         }
 
@@ -223,7 +236,7 @@ const HomeScreen = () => {
         }
 
         return marks;
-    }, [eventsByDate, selectedDate]);
+    }, [eventsByDate, subscriptionEventsByDate, selectedDate]);
 
     // Modal handlers
     const openAddModal = useCallback(() => {
@@ -263,11 +276,20 @@ const HomeScreen = () => {
 
     // 处理订阅同步的事件 - 保存到单独的存储，不添加到普通事件中
     const handleSubscriptionSync = useCallback(async (events: SubscriptionEvent[]) => {
+        console.log('[Subscription] Received events to sync:', events.length);
+        console.log('[Subscription] Sample events:', events.slice(0, 3).map(e => ({ date: e.date, title: e.title })));
+
         // 保存订阅事件到单独的存储
         await SubscriptionService.saveSubscriptionEvents(events);
+
         // 刷新订阅事件显示
-        await refreshSubscriptionEvents();
-    }, [refreshSubscriptionEvents]);
+        const subEvents = await SubscriptionService.getSubscriptionEventsByDate();
+        console.log('[Subscription] Loaded events by date:', Object.keys(subEvents).length, 'dates');
+        console.log('[Subscription] Current selectedDate:', selectedDate);
+        console.log('[Subscription] Events for selectedDate:', subEvents[selectedDate]?.length || 0);
+
+        setSubscriptionEventsByDate(subEvents);
+    }, [selectedDate]);
 
     // Event handlers for modals
     const getAllEvents = useCallback((): CalendarEvent[] => {
@@ -1042,42 +1064,34 @@ const HomeScreen = () => {
                 </View>
             )}
 
-            {/* 农历信息显示 - 只在简体中文时显示 */}
-            {currentLanguage === 'zh-CN' && lunarInfo && (
+            {/* 农历信息和订阅日历 - 合并显示 */}
+            {(currentLanguage === 'zh-CN' && lunarInfo) || selectedSubscriptionEvents.length > 0 ? (
                 <View style={[styles.lunarInfoCard, { backgroundColor: colors.primarySurface }]}>
-                    <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
-                        {lunarInfo.yearInfo}
-                    </Text>
-                    <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
-                        {lunarInfo.monthInfo}
-                        {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
-                    </Text>
+                    {/* 农历信息 - 只在简体中文时显示 */}
+                    {currentLanguage === 'zh-CN' && lunarInfo && (
+                        <View style={styles.infoRow}>
+                            <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
+                                {lunarInfo.yearInfo}
+                            </Text>
+                            <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
+                                {lunarInfo.monthInfo}
+                                {lunarInfo.holidays.length > 0 && ` · ${lunarInfo.holidays.join(' ')}`}
+                            </Text>
+                        </View>
+                    )}
+                    {/* 订阅日历事件 */}
+                    {selectedSubscriptionEvents.map((event, index) => (
+                        <View key={event.id || index} style={styles.infoRow}>
+                            <Text style={[styles.lunarInfoYear, { color: colors.textPrimary }]}>
+                                {event.subscriptionName || t('subscription.title', '订阅')}
+                            </Text>
+                            <Text style={[styles.lunarInfoDate, { color: colors.textSecondary }]}>
+                                {event.title}
+                            </Text>
+                        </View>
+                    ))}
                 </View>
-            )}
-
-            {/* 订阅事件显示 - 如节假日等 */}
-            {selectedSubscriptionEvents.length > 0 && (
-                <View style={[styles.subscriptionEventsCard, { backgroundColor: colors.primarySurface }]}>
-                    <Text style={[styles.subscriptionEventsTitle, { color: colors.textSecondary }]}>
-                        {t('subscription.subscribedEvents', '订阅日历')}
-                    </Text>
-                    <View style={styles.subscriptionEventsList}>
-                        {selectedSubscriptionEvents.map((event, index) => (
-                            <View key={event.id || index} style={styles.subscriptionEventItem}>
-                                <Text style={[styles.subscriptionEventDot, { color: colors.primary }]}>•</Text>
-                                <Text style={[styles.subscriptionEventText, { color: colors.textPrimary }]}>
-                                    {event.title}
-                                </Text>
-                                {event.subscriptionName && (
-                                    <Text style={[styles.subscriptionEventSource, { color: colors.textTertiary }]}>
-                                        ({event.subscriptionName})
-                                    </Text>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            )}
+            ) : null}
 
             {selectedDate ? (
                 <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
@@ -1532,7 +1546,7 @@ const styles = StyleSheet.create({
     lunarInfoCard: {
         marginHorizontal: 12,
         marginBottom: 6,
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 16,
         borderRadius: 12,
         // backgroundColor 由内联样式 colors.primarySurface 提供
@@ -1541,6 +1555,10 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 4 },
         elevation: 1,
+        flexDirection: 'column',
+        gap: 6,
+    },
+    infoRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -1548,48 +1566,12 @@ const styles = StyleSheet.create({
     lunarInfoYear: {
         fontSize: 15,
         fontWeight: '600',
+        flexShrink: 0,
     },
     lunarInfoDate: {
         fontSize: 13,
-    },
-
-    // 订阅事件卡片样式
-    subscriptionEventsCard: {
-        marginHorizontal: 12,
-        marginBottom: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        borderRadius: 12,
-        shadowColor: '#000000',
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 1,
-    },
-    subscriptionEventsTitle: {
-        fontSize: 12,
-        fontWeight: '600',
-        marginBottom: 6,
-    },
-    subscriptionEventsList: {
-        gap: 4,
-    },
-    subscriptionEventItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-    },
-    subscriptionEventDot: {
-        fontSize: 14,
-        marginRight: 6,
-    },
-    subscriptionEventText: {
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    subscriptionEventSource: {
-        fontSize: 11,
-        marginLeft: 6,
+        flexShrink: 1,
+        textAlign: 'right',
     },
 
     // 日期导航标题容器 - 绝对定位居中
