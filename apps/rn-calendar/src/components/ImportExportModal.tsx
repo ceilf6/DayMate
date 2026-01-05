@@ -173,11 +173,11 @@ const ImportExportModal = memo(({
 
                         <View style={styles.modalActions}>
                             <TouchableOpacity
-                                style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                                style={[styles.actionButton, styles.closeButton, { borderColor: colors.border }]}
                                 onPress={handleClose}
                                 accessibilityRole="button"
                             >
-                                <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.close', '关闭')}</Text>
+                                <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.close', '关闭')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.actionButton, { backgroundColor: colors.primary }]}
@@ -286,6 +286,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 10,
         borderRadius: 8,
+    },
+    closeButton: {
+        borderWidth: 2,
     },
     cancelButtonText: {
         fontWeight: '600',

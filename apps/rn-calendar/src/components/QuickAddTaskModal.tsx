@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cancelButton: {
-        borderWidth: 1,
+        borderWidth: 2,
     },
     saveButton: {},
     buttonText: {

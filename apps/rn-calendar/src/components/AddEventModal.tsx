@@ -183,11 +183,11 @@ const AddEventModal = memo(({
 
                     <View style={styles.modalActions}>
                         <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                            style={[styles.actionButton, styles.cancelButton, { borderColor: colors.border }]}
                             onPress={handleClose}
                             accessibilityRole="button"
                         >
-                            <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.cancel', '取消')}</Text>
+                            <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel', '取消')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: colors.primary }]}
@@ -295,6 +295,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 10,
         borderRadius: 8,
+    },
+    cancelButton: {
+        borderWidth: 2,
     },
     cancelButtonText: {
         fontWeight: '600',

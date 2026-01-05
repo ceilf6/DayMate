@@ -321,11 +321,11 @@ const EventDetailModal = memo(({
                         {!isEditing ? (
                             <>
                                 <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                                    style={[styles.actionButton, styles.closeButton, { borderColor: colors.border }]}
                                     onPress={handleClose}
                                     accessibilityRole="button"
                                 >
-                                    <Text style={[styles.cancelButtonText, { color: colors.textPrimary }]}>{t('common.close', '关闭')}</Text>
+                                    <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.close', '关闭')}</Text>
                                 </TouchableOpacity>
                                 {onUpdate && (
                                     <TouchableOpacity
@@ -337,7 +337,7 @@ const EventDetailModal = memo(({
                                     </TouchableOpacity>
                                 )}
                                 <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: colors.backgroundTertiary }]}
+                                    style={[styles.actionButton, styles.deleteButton, { borderColor: colors.border }]}
                                     onPress={handleDelete}
                                     accessibilityRole="button"
                                 >
@@ -493,6 +493,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 10,
         borderRadius: 8,
+    },
+    deleteButton: { borderWidth: 2 },
+    closeButton: {
+        borderWidth: 2,
     },
     cancelButtonText: {
         fontWeight: '600',
