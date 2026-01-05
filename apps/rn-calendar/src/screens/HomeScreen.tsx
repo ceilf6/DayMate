@@ -1105,7 +1105,7 @@ const HomeScreen = () => {
             ) : null}
 
             {/* 未完成事项区域 */}
-            <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12, marginTop: 12 }]}>
+            <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12, marginTop: 6 }]}>
                 <View style={styles.eventHeaderRow}>
                     <TouchableOpacity
                         style={styles.sectionTitleRow}
@@ -1243,7 +1243,7 @@ const styles = StyleSheet.create({
         marginTop: -2,
     },
     calendarCard: {
-        marginBottom: 10,
+        marginBottom: 6,
         marginHorizontal: 12,
         borderRadius: 16,
         paddingVertical: 8,
@@ -1506,7 +1506,7 @@ const styles = StyleSheet.create({
     // 农历信息卡片样式
     lunarInfoCard: {
         marginHorizontal: 12,
-        marginBottom: 10,
+        marginBottom: 6,
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
@@ -1595,7 +1595,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginHorizontal: 12,
         // marginTop: 8,
-        marginBottom: 10,
+        marginBottom: 6,
         paddingVertical: 6,
         paddingHorizontal: 6,
         borderRadius: 12,
