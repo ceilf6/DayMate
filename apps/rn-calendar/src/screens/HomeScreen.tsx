@@ -33,6 +33,7 @@ import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
 import { ImportExportService } from '../services/ImportExportService';
 import { SubscriptionService, SubscriptionEvent } from '../services/SubscriptionService';
+import { TrashService } from '../services/TrashService';
 // 导入日历本地化配置（必须在使用 Calendar 组件之前）
 import '../services/CalendarLocale';
 import AddEventModal from '../components/AddEventModal';
@@ -42,6 +43,7 @@ import SubscriptionModal from '../components/SubscriptionModal';
 import SettingsModal from '../components/SettingsModal';
 import SwipeableEventItem from '../components/SwipeableEventItem';
 import QuickAddTaskModal from '../components/QuickAddTaskModal';
+import TrashModal from '../components/TrashModal';
 import { useI18n } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useBackground } from '../contexts/BackgroundContext';
@@ -98,6 +100,7 @@ const HomeScreen = () => {
     const [isSubscriptionModalVisible, setIsSubscriptionModalVisible] = useState(false);
     const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
     const [isQuickAddVisible, setIsQuickAddVisible] = useState(false);
+    const [isTrashModalVisible, setIsTrashModalVisible] = useState(false);
 
     // 展开/收起状态
     const [isScheduleExpanded, setIsScheduleExpanded] = useState(true);
@@ -555,6 +558,9 @@ const HomeScreen = () => {
                 await ReminderService.cancelReminder(event.notificationId);
             }
 
+            // 移动到垃圾桶而不是直接删除
+            await TrashService.moveToTrash(event);
+
             const deleted = await EventStorage.deleteEvent(event.date, event.id);
             if (!deleted) return false;
 
@@ -573,6 +579,39 @@ const HomeScreen = () => {
             return true;
         } catch {
             return false;
+        }
+    }, [refreshIncompleteEvents]);
+
+    // 从垃圾桶恢复事项
+    const handleRestoreFromTrash = useCallback(async (event: CalendarEvent): Promise<void> => {
+        try {
+            // 重新添加事项
+            const restored = await EventStorage.addEvent({
+                date: event.date,
+                title: event.title,
+                description: event.description,
+                location: event.location,
+                startTime: event.startTime,
+                endTime: event.endTime,
+                allDay: event.allDay,
+                reminderMinutes: event.reminderMinutes,
+                category: event.category,
+                priority: event.priority,
+            });
+
+            // 更新状态
+            setEventsByDate(prev => {
+                const next = { ...prev };
+                const list = next[restored.date] ?? [];
+                next[restored.date] = [...list, restored];
+                return next;
+            });
+
+            // 刷新未完成事项列表
+            await refreshIncompleteEvents();
+        } catch (error) {
+            console.error('恢复事项失败:', error);
+            throw error;
         }
     }, [refreshIncompleteEvents]);
 
@@ -895,6 +934,16 @@ const HomeScreen = () => {
                     accessibilityRole="button">
                     <Text style={[styles.topActionButtonText]}>
                         {t('subscription.title', '订阅') as string}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* 垃圾桶 */}
+                <TouchableOpacity
+                    onPress={() => setIsTrashModalVisible(true)}
+                    style={[styles.topActionButton, { backgroundColor: colors.primary }]}
+                    accessibilityRole="button">
+                    <Text style={[styles.topActionButtonText]}>
+                        {t('trash.title', '垃圾桶') as string}
                     </Text>
                 </TouchableOpacity>
 
@@ -1227,6 +1276,12 @@ const HomeScreen = () => {
                 visible={isQuickAddVisible}
                 onClose={() => setIsQuickAddVisible(false)}
                 onSave={handleQuickAddTask}
+            />
+
+            <TrashModal
+                visible={isTrashModalVisible}
+                onClose={() => setIsTrashModalVisible(false)}
+                onRestore={handleRestoreFromTrash}
             />
         </ScrollView>
     );

@@ -212,5 +212,20 @@
         "someSyncFailed": "Some subscriptions failed to sync: ",
         "noEnabledSubscriptions": "No enabled subscriptions",
         "subscribedEvents": "Subscribed Calendar"
+    },
+    "trash": {
+        "title": "Trash",
+        "empty": "Trash is empty",
+        "emptyTrash": "Empty",
+        "emptyTrashTitle": "Empty Trash",
+        "emptyTrashConfirm": "Are you sure you want to permanently delete all items? This action cannot be undone.",
+        "restore": "Restore",
+        "restoreSuccess": "Item restored",
+        "restoreFailed": "Failed to restore",
+        "permanentDeleteTitle": "Permanently Delete",
+        "permanentDeleteConfirm": "This action cannot be undone. Are you sure you want to permanently delete?",
+        "deletedAt": "Deleted at",
+        "daysLeft": "{{days}} days until permanent deletion",
+        "autoDeleteHint": "Items will be permanently deleted 30 days after removal"
     }
 }
