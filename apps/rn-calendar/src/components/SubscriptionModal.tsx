@@ -86,13 +86,13 @@ const SubscriptionModal = memo(({
 
             // 添加订阅
             const newSub = await SubscriptionService.addSubscription(newName, newUrl);
-            
+
             // 自动同步该订阅的事件
             const result = await SubscriptionService.syncSubscription(newSub);
             if (result.success && result.events.length > 0) {
                 await onSubscriptionSync(result.events);
             }
-            
+
             setSuccess(t('subscription.addSuccess', '订阅添加成功！') +
                 (result.events.length ? ` (${result.events.length} ${t('subscription.eventsFound', '个事件')})` : ''));
 
