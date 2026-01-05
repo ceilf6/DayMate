@@ -14,12 +14,12 @@ import {
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useI18n } from '../contexts/I18nContext';
-import { SubscriptionService, CalendarSubscription } from '../services/SubscriptionService';
+import { SubscriptionService, CalendarSubscription, SubscriptionEvent } from '../services/SubscriptionService';
 
 interface SubscriptionModalProps {
     visible: boolean;
     onClose: () => void;
-    onSubscriptionSync: (events: any[]) => Promise<void>;
+    onSubscriptionSync: (events: SubscriptionEvent[]) => Promise<void>;
 }
 
 const SubscriptionModal = memo(({

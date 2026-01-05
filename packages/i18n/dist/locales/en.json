@@ -185,5 +185,32 @@
     "splash": {
         "subtitle": "Your Schedule Assistant",
         "date": "Date"
+    },
+    "subscription": {
+        "title": "Subscribe",
+        "mySubscriptions": "My Subscriptions",
+        "noSubscriptions": "No subscriptions yet, click below to add",
+        "addNew": "Add New Subscription",
+        "addSubscription": "Add Subscription",
+        "add": "Add",
+        "namePlaceholder": "Subscription Name",
+        "urlPlaceholder": "https://example.com/calendar.ics",
+        "nameRequired": "Please enter subscription name",
+        "urlRequired": "Please enter subscription URL",
+        "invalidUrl": "Invalid subscription URL",
+        "addSuccess": "Subscription added successfully!",
+        "addFailed": "Failed to add",
+        "eventsFound": "events found",
+        "deleteConfirmTitle": "Delete Subscription",
+        "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"?",
+        "lastSync": "Last sync",
+        "sync": "Sync",
+        "syncAll": "Sync All Subscriptions",
+        "syncSuccess": "Sync successful! Imported {{count}} events",
+        "syncOneSuccess": "\"{{name}}\" synced! Imported {{count}} events",
+        "syncFailed": "Sync failed",
+        "someSyncFailed": "Some subscriptions failed to sync: ",
+        "noEnabledSubscriptions": "No enabled subscriptions",
+        "subscribedEvents": "Subscribed Calendar"
     }
 }

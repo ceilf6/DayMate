@@ -185,5 +185,32 @@
     "splash": {
         "subtitle": "你的日程小幫手",
         "date": "日期"
+    },
+    "subscription": {
+        "title": "訂閱",
+        "mySubscriptions": "我的訂閱",
+        "noSubscriptions": "暫無訂閱，點擊下方按鈕添加",
+        "addNew": "添加新訂閱",
+        "addSubscription": "添加訂閱",
+        "add": "添加",
+        "namePlaceholder": "訂閱名稱",
+        "urlPlaceholder": "https://example.com/calendar.ics",
+        "nameRequired": "請輸入訂閱名稱",
+        "urlRequired": "請輸入訂閱地址",
+        "invalidUrl": "無效的訂閱地址",
+        "addSuccess": "訂閱添加成功！",
+        "addFailed": "添加失敗",
+        "eventsFound": "個事件",
+        "deleteConfirmTitle": "刪除訂閱",
+        "deleteConfirmMessage": "確定要刪除訂閱 \"{{name}}\" 嗎？",
+        "lastSync": "上次同步",
+        "sync": "同步",
+        "syncAll": "同步所有訂閱",
+        "syncSuccess": "同步成功！共匯入 {{count}} 個事件",
+        "syncOneSuccess": "\"{{name}}\" 同步成功！匯入 {{count}} 個事件",
+        "syncFailed": "同步失敗",
+        "someSyncFailed": "部分訂閱同步失敗：",
+        "noEnabledSubscriptions": "沒有啟用的訂閱",
+        "subscribedEvents": "訂閱日曆"
     }
 }

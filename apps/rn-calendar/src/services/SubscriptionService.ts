@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CalendarEvent, importFromICalendar, generateId } from '@daymate/shared';
 
 const SUBSCRIPTIONS_KEY = 'daymate.subscriptions.v1';
+const SUBSCRIPTION_EVENTS_KEY = 'daymate.subscription_events.v1';
 
 export interface CalendarSubscription {
     id: string;
@@ -13,9 +14,22 @@ export interface CalendarSubscription {
     enabled: boolean;
 }
 
+export interface SubscriptionEvent {
+    id: string;
+    subscriptionId: string;
+    subscriptionName: string;
+    date: string;
+    title: string;
+    startTime?: string;
+    endTime?: string;
+    description?: string;
+    location?: string;
+    allDay?: boolean;
+}
+
 export interface SubscriptionSyncResult {
     subscription: CalendarSubscription;
-    events: CalendarEvent[];
+    events: SubscriptionEvent[];
     success: boolean;
     error?: string;
 }
@@ -150,7 +164,21 @@ export class SubscriptionService {
     static async syncSubscription(subscription: CalendarSubscription): Promise<SubscriptionSyncResult> {
         try {
             const icalContent = await this.fetchICalendarFromUrl(subscription.url);
-            const events = importFromICalendar(icalContent);
+            const rawEvents = importFromICalendar(icalContent);
+
+            // 转换为订阅事件格式
+            const events: SubscriptionEvent[] = rawEvents.map(event => ({
+                id: event.id,
+                subscriptionId: subscription.id,
+                subscriptionName: subscription.name,
+                date: event.date,
+                title: event.title,
+                startTime: event.startTime,
+                endTime: event.endTime,
+                description: event.description,
+                location: event.location,
+                allDay: event.allDay,
+            }));
 
             // 更新最后同步时间
             await this.updateSubscription(subscription.id, {
@@ -220,5 +248,79 @@ export class SubscriptionService {
                 error: error instanceof Error ? error.message : '验证失败'
             };
         }
+    }
+
+    /**
+     * 保存订阅事件到本地存储
+     */
+    static async saveSubscriptionEvents(events: SubscriptionEvent[]): Promise<void> {
+        // 获取现有的订阅事件
+        const existing = await this.getAllSubscriptionEvents();
+        
+        // 获取新事件涉及的订阅ID
+        const newSubscriptionIds = new Set(events.map(e => e.subscriptionId));
+        
+        // 过滤掉这些订阅的旧事件，保留其他订阅的事件
+        const filtered = existing.filter(e => !newSubscriptionIds.has(e.subscriptionId));
+        
+        // 合并新事件
+        const merged = [...filtered, ...events];
+        
+        await AsyncStorage.setItem(SUBSCRIPTION_EVENTS_KEY, JSON.stringify(merged));
+    }
+
+    /**
+     * 获取所有订阅事件
+     */
+    static async getAllSubscriptionEvents(): Promise<SubscriptionEvent[]> {
+        try {
+            const raw = await AsyncStorage.getItem(SUBSCRIPTION_EVENTS_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * 获取指定日期的订阅事件
+     */
+    static async getSubscriptionEventsForDate(date: string): Promise<SubscriptionEvent[]> {
+        const all = await this.getAllSubscriptionEvents();
+        return all.filter(e => e.date === date);
+    }
+
+    /**
+     * 按日期分组获取订阅事件
+     */
+    static async getSubscriptionEventsByDate(): Promise<Record<string, SubscriptionEvent[]>> {
+        const all = await this.getAllSubscriptionEvents();
+        const byDate: Record<string, SubscriptionEvent[]> = {};
+        
+        for (const event of all) {
+            if (!byDate[event.date]) {
+                byDate[event.date] = [];
+            }
+            byDate[event.date].push(event);
+        }
+        
+        return byDate;
+    }
+
+    /**
+     * 删除指定订阅的所有事件
+     */
+    static async deleteSubscriptionEvents(subscriptionId: string): Promise<void> {
+        const all = await this.getAllSubscriptionEvents();
+        const filtered = all.filter(e => e.subscriptionId !== subscriptionId);
+        await AsyncStorage.setItem(SUBSCRIPTION_EVENTS_KEY, JSON.stringify(filtered));
+    }
+
+    /**
+     * 清空所有订阅事件
+     */
+    static async clearAllSubscriptionEvents(): Promise<void> {
+        await AsyncStorage.removeItem(SUBSCRIPTION_EVENTS_KEY);
     }
 }

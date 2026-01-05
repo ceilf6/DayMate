@@ -32,6 +32,7 @@ import {
 import { EventStorage } from '../services/EventStorage';
 import { ReminderService } from '../services/ReminderService';
 import { ImportExportService } from '../services/ImportExportService';
+import { SubscriptionService, SubscriptionEvent } from '../services/SubscriptionService';
 // 导入日历本地化配置（必须在使用 Calendar 组件之前）
 import '../services/CalendarLocale';
 import AddEventModal from '../components/AddEventModal';
@@ -87,6 +88,7 @@ const HomeScreen = () => {
     const canGoBack = viewHistory.length > 0;
     const [eventsByDate, setEventsByDate] = useState<Record<string, CalendarEvent[]>>({});
     const [incompleteEvents, setIncompleteEvents] = useState<CalendarEvent[]>([]);
+    const [subscriptionEventsByDate, setSubscriptionEventsByDate] = useState<Record<string, SubscriptionEvent[]>>({});
 
     // Modal visibility states
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -107,6 +109,12 @@ const HomeScreen = () => {
         setIncompleteEvents(incomplete);
     }, []);
 
+    // 刷新订阅事件
+    const refreshSubscriptionEvents = useCallback(async () => {
+        const subEvents = await SubscriptionService.getSubscriptionEventsByDate();
+        setSubscriptionEventsByDate(subEvents);
+    }, []);
+
     useEffect(() => {
         let isMounted = true;
         (async () => {
@@ -118,6 +126,11 @@ const HomeScreen = () => {
             const incomplete = await EventStorage.getIncompleteEvents();
             if (isMounted) {
                 setIncompleteEvents(incomplete);
+            }
+            // 加载订阅事件
+            const subEvents = await SubscriptionService.getSubscriptionEventsByDate();
+            if (isMounted) {
+                setSubscriptionEventsByDate(subEvents);
             }
         })();
         return () => {
@@ -184,6 +197,11 @@ const HomeScreen = () => {
         });
     }, [eventsByDate, selectedDate]);
 
+    // 当前选中日期的订阅事件
+    const selectedSubscriptionEvents = useMemo(() => {
+        return subscriptionEventsByDate[selectedDate] ?? [];
+    }, [subscriptionEventsByDate, selectedDate]);
+
     const markedDates = useMemo(() => {
         const marks: Record<string, any> = {};
 
@@ -243,30 +261,13 @@ const HomeScreen = () => {
         setIsSubscriptionModalVisible(false);
     }, []);
 
-    // 处理订阅同步的事件
-    const handleSubscriptionSync = useCallback(async (events: CalendarEvent[]) => {
-        // 将订阅的事件添加到本地存储
-        for (const event of events) {
-            try {
-                await EventStorage.addEvent({
-                    date: event.date,
-                    title: event.title,
-                    startTime: event.startTime,
-                    endTime: event.endTime,
-                    description: event.description,
-                    location: event.location,
-                    allDay: event.allDay,
-                });
-            } catch {
-                // 忽略添加失败的事件（可能是重复的）
-            }
-        }
-
-        // 刷新事件列表
-        const all = await EventStorage.getAllEventsByDate();
-        setEventsByDate(all);
-        await refreshIncompleteEvents();
-    }, [refreshIncompleteEvents]);
+    // 处理订阅同步的事件 - 保存到单独的存储，不添加到普通事件中
+    const handleSubscriptionSync = useCallback(async (events: SubscriptionEvent[]) => {
+        // 保存订阅事件到单独的存储
+        await SubscriptionService.saveSubscriptionEvents(events);
+        // 刷新订阅事件显示
+        await refreshSubscriptionEvents();
+    }, [refreshSubscriptionEvents]);
 
     // Event handlers for modals
     const getAllEvents = useCallback((): CalendarEvent[] => {
@@ -1054,6 +1055,30 @@ const HomeScreen = () => {
                 </View>
             )}
 
+            {/* 订阅事件显示 - 如节假日等 */}
+            {selectedSubscriptionEvents.length > 0 && (
+                <View style={[styles.subscriptionEventsCard, { backgroundColor: colors.primarySurface }]}>
+                    <Text style={[styles.subscriptionEventsTitle, { color: colors.textSecondary }]}>
+                        {t('subscription.subscribedEvents', '订阅日历')}
+                    </Text>
+                    <View style={styles.subscriptionEventsList}>
+                        {selectedSubscriptionEvents.map((event, index) => (
+                            <View key={event.id || index} style={styles.subscriptionEventItem}>
+                                <Text style={[styles.subscriptionEventDot, { color: colors.primary }]}>•</Text>
+                                <Text style={[styles.subscriptionEventText, { color: colors.textPrimary }]}>
+                                    {event.title}
+                                </Text>
+                                {event.subscriptionName && (
+                                    <Text style={[styles.subscriptionEventSource, { color: colors.textTertiary }]}>
+                                        ({event.subscriptionName})
+                                    </Text>
+                                )}
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            )}
+
             {selectedDate ? (
                 <View style={[styles.eventSection, { backgroundColor: colors.primarySurface, borderRadius: 16, marginHorizontal: 12 }]}>
                     <View style={styles.eventHeaderRow}>
@@ -1526,6 +1551,45 @@ const styles = StyleSheet.create({
     },
     lunarInfoDate: {
         fontSize: 13,
+    },
+
+    // 订阅事件卡片样式
+    subscriptionEventsCard: {
+        marginHorizontal: 12,
+        marginBottom: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderRadius: 12,
+        shadowColor: '#000000',
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 1,
+    },
+    subscriptionEventsTitle: {
+        fontSize: 12,
+        fontWeight: '600',
+        marginBottom: 6,
+    },
+    subscriptionEventsList: {
+        gap: 4,
+    },
+    subscriptionEventItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+    },
+    subscriptionEventDot: {
+        fontSize: 14,
+        marginRight: 6,
+    },
+    subscriptionEventText: {
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    subscriptionEventSource: {
+        fontSize: 11,
+        marginLeft: 6,
     },
 
     // 日期导航标题容器 - 绝对定位居中
