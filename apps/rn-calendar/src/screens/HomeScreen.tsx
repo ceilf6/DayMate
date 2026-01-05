@@ -751,7 +751,7 @@ const HomeScreen = () => {
                             { color: colors.textPrimary },
                             isSelected && styles.dayTextSelected,
                             isToday && !isSelected && [styles.dayTextToday, { color: colors.primary }],
-                            isDisabled && [styles.dayTextDisabled, { color: colors.textDisabled }],
+                            isDisabled && [styles.dayTextDisabled, { color: colors.textSecondary }],
                         ]}
                     >
                         {date.day}
@@ -761,10 +761,10 @@ const HomeScreen = () => {
                         <Text
                             style={[
                                 styles.lunarText,
-                                { color: colors.textTertiary },
+                                { color: colors.textSecondary },
                                 isSelected && styles.lunarTextSelected,
                                 isToday && !isSelected && [styles.lunarTextToday, { color: colors.primary }],
-                                isDisabled && [styles.lunarTextDisabled, { color: colors.textDisabled }],
+                                isDisabled && [styles.lunarTextDisabled, { color: colors.textSecondary }],
                                 isHoliday && !isSelected && !isToday && styles.lunarTextHoliday,
                                 !!lunar.solarTerm && !isHoliday && !isSelected && !isToday && styles.lunarTextSolarTerm,
                             ]}
