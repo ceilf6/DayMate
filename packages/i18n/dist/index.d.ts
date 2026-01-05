@@ -175,6 +175,21 @@ export declare const resources: {
                 noEnabledSubscriptions: string;
                 subscribedEvents: string;
             };
+            trash: {
+                title: string;
+                empty: string;
+                emptyTrash: string;
+                emptyTrashTitle: string;
+                emptyTrashConfirm: string;
+                restore: string;
+                restoreSuccess: string;
+                restoreFailed: string;
+                permanentDeleteTitle: string;
+                permanentDeleteConfirm: string;
+                deletedAt: string;
+                daysLeft: string;
+                autoDeleteHint: string;
+            };
         };
     };
     'zh-TW': {
@@ -351,6 +366,21 @@ export declare const resources: {
                 noEnabledSubscriptions: string;
                 subscribedEvents: string;
             };
+            trash: {
+                title: string;
+                empty: string;
+                emptyTrash: string;
+                emptyTrashTitle: string;
+                emptyTrashConfirm: string;
+                restore: string;
+                restoreSuccess: string;
+                restoreFailed: string;
+                permanentDeleteTitle: string;
+                permanentDeleteConfirm: string;
+                deletedAt: string;
+                daysLeft: string;
+                autoDeleteHint: string;
+            };
         };
     };
     en: {
@@ -526,6 +556,21 @@ export declare const resources: {
                 someSyncFailed: string;
                 noEnabledSubscriptions: string;
                 subscribedEvents: string;
+            };
+            trash: {
+                title: string;
+                empty: string;
+                emptyTrash: string;
+                emptyTrashTitle: string;
+                emptyTrashConfirm: string;
+                restore: string;
+                restoreSuccess: string;
+                restoreFailed: string;
+                permanentDeleteTitle: string;
+                permanentDeleteConfirm: string;
+                deletedAt: string;
+                daysLeft: string;
+                autoDeleteHint: string;
             };
         };
     };

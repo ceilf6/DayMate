@@ -212,5 +212,20 @@
         "someSyncFailed": "部分订阅同步失败：",
         "noEnabledSubscriptions": "没有启用的订阅",
         "subscribedEvents": "订阅日历"
+    },
+    "trash": {
+        "title": "垃圾桶",
+        "empty": "垃圾桶是空的",
+        "emptyTrash": "清空",
+        "emptyTrashTitle": "清空垃圾桶",
+        "emptyTrashConfirm": "确定要永久删除所有事项吗？此操作不可撤销。",
+        "restore": "恢复",
+        "restoreSuccess": "事项已恢复",
+        "restoreFailed": "恢复失败",
+        "permanentDeleteTitle": "永久删除",
+        "permanentDeleteConfirm": "此操作不可撤销，确定要永久删除吗？",
+        "deletedAt": "删除于",
+        "daysLeft": "{{days}} 天后永久删除",
+        "autoDeleteHint": "事项将在删除后 30 天自动永久删除"
     }
 }
