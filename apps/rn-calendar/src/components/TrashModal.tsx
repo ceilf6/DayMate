@@ -57,7 +57,7 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
                 await onRestore(restored);
                 setTrashItems(prev => prev.filter(i => i.id !== item.id));
                 Alert.alert(
-                    t('common.ok', '好的') as string,
+                    t('common.ok', '成功') as string,
                     t('trash.restoreSuccess', '事项已恢复') as string
                 );
             }
