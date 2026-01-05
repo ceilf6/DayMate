@@ -1232,18 +1232,22 @@ const HomeScreen = () => {
     );
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.primaryBackground }]}>
+        <View style={[styles.container, { backgroundColor: colors.primaryBackground }]}>
             {backgroundImage ? (
                 <ImageBackground
                     source={{ uri: backgroundImage.uri }}
                     style={styles.backgroundImage}
                     imageStyle={{ opacity: backgroundImage.opacity }}>
-                    {renderContent()}
+                    <SafeAreaView style={styles.safeArea}>
+                        {renderContent()}
+                    </SafeAreaView>
                 </ImageBackground>
             ) : (
-                renderContent()
+                <SafeAreaView style={styles.safeArea}>
+                    {renderContent()}
+                </SafeAreaView>
             )}
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -1252,6 +1256,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     backgroundImage: {
+        flex: 1,
+    },
+    safeArea: {
         flex: 1,
     },
     header: {
