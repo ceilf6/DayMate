@@ -185,5 +185,31 @@
     "splash": {
         "subtitle": "你的日程小帮手",
         "date": "日期"
+    },
+    "subscription": {
+        "title": "订阅",
+        "mySubscriptions": "我的订阅",
+        "noSubscriptions": "暂无订阅，点击下方按钮添加",
+        "addNew": "添加新订阅",
+        "addSubscription": "添加订阅",
+        "add": "添加",
+        "namePlaceholder": "订阅名称",
+        "urlPlaceholder": "https://example.com/calendar.ics",
+        "nameRequired": "请输入订阅名称",
+        "urlRequired": "请输入订阅地址",
+        "invalidUrl": "无效的订阅地址",
+        "addSuccess": "订阅添加成功！",
+        "addFailed": "添加失败",
+        "eventsFound": "个事件",
+        "deleteConfirmTitle": "删除订阅",
+        "deleteConfirmMessage": "确定要删除订阅 \"{{name}}\" 吗？",
+        "lastSync": "上次同步",
+        "sync": "同步",
+        "syncAll": "同步所有订阅",
+        "syncSuccess": "同步成功！共导入 {{count}} 个事件",
+        "syncOneSuccess": "\"{{name}}\" 同步成功！导入 {{count}} 个事件",
+        "syncFailed": "同步失败",
+        "someSyncFailed": "部分订阅同步失败：",
+        "noEnabledSubscriptions": "没有启用的订阅"
     }
 }

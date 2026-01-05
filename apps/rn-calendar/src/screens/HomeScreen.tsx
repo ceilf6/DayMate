@@ -37,6 +37,7 @@ import '../services/CalendarLocale';
 import AddEventModal from '../components/AddEventModal';
 import EventDetailModal from '../components/EventDetailModal';
 import ImportExportModal from '../components/ImportExportModal';
+import SubscriptionModal from '../components/SubscriptionModal';
 import SettingsModal from '../components/SettingsModal';
 import SwipeableEventItem from '../components/SwipeableEventItem';
 import QuickAddTaskModal from '../components/QuickAddTaskModal';
@@ -92,6 +93,7 @@ const HomeScreen = () => {
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
     const [detailEvent, setDetailEvent] = useState<CalendarEvent | null>(null);
     const [isImportExportModalVisible, setIsImportExportModalVisible] = useState(false);
+    const [isSubscriptionModalVisible, setIsSubscriptionModalVisible] = useState(false);
     const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
     const [isQuickAddVisible, setIsQuickAddVisible] = useState(false);
 
@@ -232,6 +234,39 @@ const HomeScreen = () => {
     const closeImportExportModal = useCallback(() => {
         setIsImportExportModalVisible(false);
     }, []);
+
+    const openSubscriptionModal = useCallback(() => {
+        setIsSubscriptionModalVisible(true);
+    }, []);
+
+    const closeSubscriptionModal = useCallback(() => {
+        setIsSubscriptionModalVisible(false);
+    }, []);
+
+    // 处理订阅同步的事件
+    const handleSubscriptionSync = useCallback(async (events: CalendarEvent[]) => {
+        // 将订阅的事件添加到本地存储
+        for (const event of events) {
+            try {
+                await EventStorage.addEvent({
+                    date: event.date,
+                    title: event.title,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    description: event.description,
+                    location: event.location,
+                    allDay: event.allDay,
+                });
+            } catch {
+                // 忽略添加失败的事件（可能是重复的）
+            }
+        }
+
+        // 刷新事件列表
+        const all = await EventStorage.getAllEventsByDate();
+        setEventsByDate(all);
+        await refreshIncompleteEvents();
+    }, [refreshIncompleteEvents]);
 
     // Event handlers for modals
     const getAllEvents = useCallback((): CalendarEvent[] => {
@@ -800,7 +835,7 @@ const HomeScreen = () => {
     // 渲染主内容
     const renderContent = () => (
         <ScrollView contentInsetAdjustmentBehavior="automatic">
-            {/* 顶部操作栏 - 三个按钮同行 */}
+            {/* 顶部操作栏 - 四个按钮同行 */}
             <View style={[styles.topActionRowCard, { backgroundColor: backgroundImage ? `${colors.primarySurface}E6` : colors.primarySurface }]}>
                 {/* 左侧：视图切换 */}
                 {canGoBack ? (
@@ -825,7 +860,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 )}
 
-                {/* 中间：设置 */}
+                {/* 设置 */}
                 <TouchableOpacity
                     onPress={() => setIsSettingsModalVisible(true)}
                     style={[styles.topActionButton, { backgroundColor: colors.primary }]}
@@ -835,7 +870,17 @@ const HomeScreen = () => {
                     </Text>
                 </TouchableOpacity>
 
-                {/* 右侧：导入/导出 */}
+                {/* 订阅 */}
+                <TouchableOpacity
+                    onPress={openSubscriptionModal}
+                    style={[styles.topActionButton, { backgroundColor: colors.primary }]}
+                    accessibilityRole="button">
+                    <Text style={[styles.topActionButtonText]}>
+                        {t('subscription.title', '订阅') as string}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* 导入/导出 */}
                 <TouchableOpacity
                     onPress={openImportExportModal}
                     style={[styles.topActionButton, { backgroundColor: colors.primary }]}
@@ -1131,6 +1176,12 @@ const HomeScreen = () => {
                 onExportCopy={handleExportCopy}
                 onImportFromClipboard={handleImportFromClipboard}
                 onImportFromText={handleImportFromText}
+            />
+
+            <SubscriptionModal
+                visible={isSubscriptionModalVisible}
+                onClose={closeSubscriptionModal}
+                onSubscriptionSync={handleSubscriptionSync}
             />
 
             <SettingsModal
@@ -1548,19 +1599,19 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 6,
         borderRadius: 12,
-        gap: 8,
+        gap: 6,
     },
     topActionButton: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 8,
+        paddingHorizontal: 6,
         paddingVertical: 10,
         borderRadius: 8,
     },
     topActionButtonText: {
-        fontSize: 14,
+        fontSize: 13,
         color: '#ffffff',
         fontWeight: '600',
     },
