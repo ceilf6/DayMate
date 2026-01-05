@@ -113,6 +113,9 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+                lightMode: string;
+                darkMode: string;
+                systemMode: string;
                 backgroundImage: string;
                 selectImage: string;
                 changeImage: string;
@@ -259,6 +262,9 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+                lightMode: string;
+                darkMode: string;
+                systemMode: string;
                 backgroundImage: string;
                 selectImage: string;
                 changeImage: string;
@@ -405,6 +411,9 @@ export declare const resources: {
                 selectLanguage: string;
                 language: string;
                 themeColor: string;
+                lightMode: string;
+                darkMode: string;
+                systemMode: string;
                 backgroundImage: string;
                 selectImage: string;
                 changeImage: string;

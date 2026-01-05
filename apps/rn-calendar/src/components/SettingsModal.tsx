@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { useI18n, type Language } from '../contexts/I18nContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme, type ColorMode } from '../contexts/ThemeContext';
 import { useBackground } from '../contexts/BackgroundContext';
 import { themes, type ThemeId } from '../theme/themes';
 
@@ -33,7 +33,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
     const { t, currentLanguage, changeLanguage } = useI18n();
-    const { colors, themeId, setTheme } = useTheme();
+    const { colors, themeId, setTheme, colorMode, setColorMode } = useTheme();
     const { backgroundImage, setBackgroundImage, setBackgroundOpacity, clearBackground } = useBackground();
     const [opacity, setOpacity] = useState(backgroundImage?.opacity ?? 0.3);
 
@@ -157,9 +157,59 @@ const SettingsModal = memo(({ visible, onClose }: SettingsModalProps) => {
 
                         {/* 主题色设置 */}
                         <View style={styles.section}>
-                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                                {t('settings.themeColor', '主题色')}
-                            </Text>
+                            <View style={styles.sectionHeader}>
+                                <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                                    {t('settings.themeColor', '主题色')}
+                                </Text>
+                                {/* 深浅色模式切换按钮 */}
+                                <View style={styles.colorModeSwitch}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.colorModeButton,
+                                            { backgroundColor: colors.primarySurface },
+                                            colorMode === 'light' && { backgroundColor: colors.primary },
+                                        ]}
+                                        onPress={() => setColorMode('light')}
+                                        accessibilityRole="button"
+                                        accessibilityLabel={t('settings.lightMode', '浅色模式') as string}
+                                    >
+                                        <Text style={[
+                                            styles.colorModeIcon,
+                                            colorMode === 'light' && { color: '#FFFFFF' },
+                                        ]}>☀️</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.colorModeButton,
+                                            { backgroundColor: colors.primarySurface },
+                                            colorMode === 'system' && { backgroundColor: colors.primary },
+                                        ]}
+                                        onPress={() => setColorMode('system')}
+                                        accessibilityRole="button"
+                                        accessibilityLabel={t('settings.systemMode', '跟随系统') as string}
+                                    >
+                                        <Text style={[
+                                            styles.colorModeIcon,
+                                            colorMode === 'system' && { color: '#FFFFFF' },
+                                        ]}>📱</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.colorModeButton,
+                                            { backgroundColor: colors.primarySurface },
+                                            colorMode === 'dark' && { backgroundColor: colors.primary },
+                                        ]}
+                                        onPress={() => setColorMode('dark')}
+                                        accessibilityRole="button"
+                                        accessibilityLabel={t('settings.darkMode', '深色模式') as string}
+                                    >
+                                        <Text style={[
+                                            styles.colorModeIcon,
+                                            colorMode === 'dark' && { color: '#FFFFFF' },
+                                        ]}>🌙</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                             <View style={styles.themeGrid}>
                                 {themes.map((theme) => {
                                     const isSelected = themeId === theme.id;
@@ -330,10 +380,29 @@ const styles = StyleSheet.create({
     section: {
         marginBottom: 24,
     },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+    },
     sectionTitle: {
         fontSize: 16,
         fontWeight: '600',
-        marginBottom: 12,
+    },
+    colorModeSwitch: {
+        flexDirection: 'row',
+        gap: 6,
+    },
+    colorModeButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    colorModeIcon: {
+        fontSize: 16,
     },
     optionList: {
         gap: 8,
