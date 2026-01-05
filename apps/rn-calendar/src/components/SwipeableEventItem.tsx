@@ -118,7 +118,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                     accessibilityLabel={isCompleted ? t('event.markIncomplete') as string : t('event.markComplete') as string}>
                     <View style={[
                         styles.completeCircle,
-                        { borderColor: isCompleted ? colors.primary : colors.textDisabled },
+                        { borderColor: isCompleted ? colors.primary : colors.textPrimary },
                         isCompleted && { backgroundColor: colors.primary },
                     ]}>
                         {isCompleted && (
