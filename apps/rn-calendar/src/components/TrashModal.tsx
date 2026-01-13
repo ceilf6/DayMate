@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     Modal,
     View,
@@ -26,6 +26,17 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
     const [trashItems, setTrashItems] = useState<TrashedEvent[]>([]);
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [isCompletedExpanded, setIsCompletedExpanded] = useState(true);
+    const [isDeletedExpanded, setIsDeletedExpanded] = useState(true);
+
+    // 分离已完成和已删除的事项
+    const completedItems = useMemo(() => {
+        return trashItems.filter(item => item.itemType === 'completed');
+    }, [trashItems]);
+
+    const deletedItems = useMemo(() => {
+        return trashItems.filter(item => item.itemType === 'deleted');
+    }, [trashItems]);
 
     // 加载垃圾桶内容
     const loadTrashItems = useCallback(async () => {
@@ -141,6 +152,86 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
         return `${month}/${day} ${hours}:${minutes}`;
     };
 
+    // 渲染事项列表
+    const renderItemList = (items: TrashedEvent[], showUncompleteButton: boolean = false) => {
+        if (items.length === 0) {
+            return (
+                <View style={styles.sectionEmptyContainer}>
+                    <Text style={[styles.sectionEmptyText, { color: colors.textTertiary }]}>
+                        暂无事项
+                    </Text>
+                </View>
+            );
+        }
+
+        return items.map(item => {
+            const daysLeft = TrashService.getDaysUntilPermanentDelete(item);
+            const isLoading = actionLoading === item.id;
+
+            return (
+                <View
+                    key={item.id}
+                    style={[styles.itemCard, { backgroundColor: colors.primarySurface }]}>
+                    <View style={styles.itemContent}>
+                        <Text
+                            style={[styles.itemTitle, { color: colors.textPrimary }]}
+                            numberOfLines={1}>
+                            {item.title}
+                        </Text>
+                        <View style={styles.itemMeta}>
+                            {item.originalDate && item.originalDate !== 'NO_DATE' && (
+                                <>
+                                    <Text style={[styles.itemDate, { color: colors.textSecondary }]}>
+                                        {item.originalDate}
+                                    </Text>
+                                    <Text style={[styles.itemDot, { color: colors.textDisabled }]}>•</Text>
+                                </>
+                            )}
+                            <Text style={[styles.itemDeletedAt, { color: colors.textSecondary }]}>
+                                {item.itemType === 'completed' ? '完成于' : t('trash.deletedAt', '删除于') as string} {formatDeletedAt(item.deletedAt)}
+                            </Text>
+                        </View>
+                        <Text style={[styles.daysLeft, { color: daysLeft <= 7 ? '#EF4444' : colors.textTertiary }]}>
+                            {(t('trash.daysLeft') as string).replace('{{days}}', String(daysLeft))}
+                        </Text>
+                    </View>
+                    <View style={styles.itemActions}>
+                        {isLoading ? (
+                            <ActivityIndicator size="small" color={colors.primary} />
+                        ) : (
+                            <>
+                                {showUncompleteButton ? (
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, styles.restoreButton, { backgroundColor: colors.primary }]}
+                                        onPress={() => handleRestore(item)}>
+                                        <Text style={styles.actionButtonText}>
+                                            取消完成
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, styles.restoreButton, { backgroundColor: colors.primary }]}
+                                        onPress={() => handleRestore(item)}>
+                                        <Text style={styles.actionButtonText}>
+                                            {t('trash.restore', '恢复') as string}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.primaryBackground }]}
+                                    onPress={() => handlePermanentDelete(item)}>
+                                    <Text style={[styles.deleteButtonText]}>
+                                        {t('common.delete', '删除') as string}
+                                    </Text>
+                                </TouchableOpacity>
+                            </>
+                        )}
+                    </View>
+                </View>
+            );
+        });
+    };
+
     return (
         <Modal
             visible={visible}
@@ -192,63 +283,52 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
                             </Text>
                         </View>
                     ) : (
-                        <View style={styles.list}>
-                            {trashItems.map(item => {
-                                const daysLeft = TrashService.getDaysUntilPermanentDelete(item);
-                                const isLoading = actionLoading === item.id;
-
-                                return (
-                                    <View
-                                        key={item.id}
-                                        style={[styles.itemCard, { backgroundColor: colors.primarySurface }]}>
-                                        <View style={styles.itemContent}>
-                                            <Text
-                                                style={[styles.itemTitle, { color: colors.textPrimary }]}
-                                                numberOfLines={1}>
-                                                {item.title}
-                                            </Text>
-                                            <View style={styles.itemMeta}>
-                                                {item.originalDate && item.originalDate !== 'NO_DATE' && (
-                                                    <>
-                                                        <Text style={[styles.itemDate, { color: colors.textSecondary }]}>
-                                                            {item.originalDate}
-                                                        </Text>
-                                                        <Text style={[styles.itemDot, { color: colors.textDisabled }]}>•</Text>
-                                                    </>
-                                                )}
-                                                <Text style={[styles.itemDeletedAt, { color: colors.textSecondary }]}>
-                                                    {t('trash.deletedAt', '删除于') as string} {formatDeletedAt(item.deletedAt)}
-                                                </Text>
-                                            </View>
-                                            <Text style={[styles.daysLeft, { color: daysLeft <= 7 ? '#EF4444' : colors.textTertiary }]}>
-                                                {(t('trash.daysLeft') as string).replace('{{days}}', String(daysLeft))}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.itemActions}>
-                                            {isLoading ? (
-                                                <ActivityIndicator size="small" color={colors.primary} />
-                                            ) : (
-                                                <>
-                                                    <TouchableOpacity
-                                                        style={[styles.actionButton, styles.restoreButton, { backgroundColor: colors.primary }]}
-                                                        onPress={() => handleRestore(item)}>
-                                                        <Text style={styles.actionButtonText}>
-                                                            {t('trash.restore', '恢复') as string}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.primaryBackground }]}
-                                                        onPress={() => handlePermanentDelete(item)}>
-                                                        <Text style={[styles.deleteButtonText]}>
-                                                            {t('common.delete', '删除') as string}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                </>
-                                            )}
-                                        </View>
+                        <View style={styles.sectionsContainer}>
+                            {/* 已完成事项区域 */}
+                            <View style={[styles.section, { backgroundColor: colors.primarySurface }]}>
+                                <TouchableOpacity
+                                    style={styles.sectionHeader}
+                                    onPress={() => setIsCompletedExpanded(!isCompletedExpanded)}
+                                    activeOpacity={0.7}>
+                                    <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
+                                        {isCompletedExpanded ? '▼' : '▶'}
+                                    </Text>
+                                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                                        已完成事项
+                                    </Text>
+                                    <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
+                                        ({completedItems.length})
+                                    </Text>
+                                </TouchableOpacity>
+                                {isCompletedExpanded && (
+                                    <View style={styles.sectionContent}>
+                                        {renderItemList(completedItems, true)}
                                     </View>
-                                );
-                            })}
+                                )}
+                            </View>
+
+                            {/* 删除事项区域 */}
+                            <View style={[styles.section, { backgroundColor: colors.primarySurface }]}>
+                                <TouchableOpacity
+                                    style={styles.sectionHeader}
+                                    onPress={() => setIsDeletedExpanded(!isDeletedExpanded)}
+                                    activeOpacity={0.7}>
+                                    <Text style={[styles.expandIcon, { color: colors.textSecondary }]}>
+                                        {isDeletedExpanded ? '▼' : '▶'}
+                                    </Text>
+                                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                                        删除事项
+                                    </Text>
+                                    <Text style={[styles.countBadge, { color: colors.textSecondary }]}>
+                                        ({deletedItems.length})
+                                    </Text>
+                                </TouchableOpacity>
+                                {isDeletedExpanded && (
+                                    <View style={styles.sectionContent}>
+                                        {renderItemList(deletedItems, false)}
+                                    </View>
+                                )}
+                            </View>
                         </View>
                     )}
                 </ScrollView>
@@ -321,6 +401,49 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 16,
+    },
+    sectionsContainer: {
+        padding: 12,
+        gap: 12,
+    },
+    section: {
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 2,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    expandIcon: {
+        fontSize: 10,
+        marginRight: 8,
+        width: 12,
+    },
+    sectionTitle: {
+        fontSize: 17,
+        fontWeight: '700',
+    },
+    countBadge: {
+        fontSize: 14,
+        marginLeft: 6,
+    },
+    sectionContent: {
+        gap: 10,
+        paddingTop: 4,
+    },
+    sectionEmptyContainer: {
+        paddingVertical: 20,
+        alignItems: 'center',
+    },
+    sectionEmptyText: {
+        fontSize: 14,
     },
     list: {
         padding: 12,

@@ -3,9 +3,12 @@ import { CalendarEvent } from '@daymate/shared';
 
 const TRASH_STORAGE_KEY = 'daymate.trash.v1';
 
+export type TrashItemType = 'deleted' | 'completed';
+
 export interface TrashedEvent extends CalendarEvent {
     deletedAt: string; // ISO 日期字符串
     originalDate: string; // 原始日期
+    itemType: TrashItemType; // 事项类型：已删除或已完成
 }
 
 // 内存缓存
@@ -36,9 +39,14 @@ export class TrashService {
                 return [];
             }
             const parsed = JSON.parse(raw) as TrashedEvent[];
-            trashCache = Array.isArray(parsed) ? parsed : [];
+            // 兼容旧数据：为没有 itemType 的旧数据添加默认值 'deleted'
+            const items = Array.isArray(parsed) ? parsed.map(item => ({
+                ...item,
+                itemType: item.itemType || 'deleted' as TrashItemType,
+            })) : [];
+            trashCache = items;
             cacheInitialized = true;
-            return trashCache;
+            return items;
         } catch (error) {
             console.error('TrashService: 读取垃圾桶失败', error);
             trashCache = [];
@@ -50,17 +58,34 @@ export class TrashService {
     /**
      * 将事项移动到垃圾桶
      */
-    static async moveToTrash(event: CalendarEvent): Promise<void> {
+    static async moveToTrash(event: CalendarEvent, itemType: TrashItemType = 'deleted'): Promise<void> {
         const items = await TrashService.getTrashItems();
 
         const trashedEvent: TrashedEvent = {
             ...event,
             deletedAt: new Date().toISOString(),
             originalDate: event.date,
+            itemType,
         };
 
         items.unshift(trashedEvent); // 新删除的放在最前面
         await TrashService.persistTrash(items);
+    }
+
+    /**
+     * 获取已删除的事项
+     */
+    static async getDeletedItems(): Promise<TrashedEvent[]> {
+        const items = await TrashService.getTrashItems();
+        return items.filter(item => item.itemType === 'deleted');
+    }
+
+    /**
+     * 获取已完成的事项
+     */
+    static async getCompletedItems(): Promise<TrashedEvent[]> {
+        const items = await TrashService.getTrashItems();
+        return items.filter(item => item.itemType === 'completed');
     }
 
     /**

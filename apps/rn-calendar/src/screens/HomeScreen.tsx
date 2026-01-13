@@ -585,7 +585,7 @@ const HomeScreen = () => {
     // 从垃圾桶恢复事项
     const handleRestoreFromTrash = useCallback(async (event: CalendarEvent): Promise<void> => {
         try {
-            // 重新添加事项
+            // 重新添加事项（已完成状态设为 false，相当于取消完成）
             const restored = await EventStorage.addEvent({
                 date: event.date,
                 title: event.title,
@@ -597,6 +597,7 @@ const HomeScreen = () => {
                 reminderMinutes: event.reminderMinutes,
                 category: event.category,
                 priority: event.priority,
+                completed: false, // 恢复时重置为未完成状态
             });
 
             // 更新状态
@@ -627,6 +628,8 @@ const HomeScreen = () => {
                 if (updated.notificationId) {
                     await ReminderService.cancelReminder(updated.notificationId);
                 }
+                // 将已完成的事项保存到垃圾桶
+                await TrashService.moveToTrash(updated, 'completed');
             } else {
                 // 未完成，重新设置提醒
                 if (updated.reminderMinutes && updated.reminderMinutes > 0) {
