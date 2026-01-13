@@ -42,6 +42,8 @@ const TrashModal: React.FC<TrashModalProps> = ({ visible, onClose, onRestore }) 
     const loadTrashItems = useCallback(async () => {
         setLoading(true);
         try {
+            // 清除缓存，强制从存储重新加载
+            TrashService.clearCache();
             // 先清理过期项目
             await TrashService.cleanupExpiredItems();
             const items = await TrashService.getTrashItems();
