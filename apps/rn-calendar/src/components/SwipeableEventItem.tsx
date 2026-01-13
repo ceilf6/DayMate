@@ -154,123 +154,158 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
         })
     ).current;
 
-    return (
-        <View style={styles.container}>
-            {/* 删除背景指示 */}
-            {/* <View style={[styles.deleteBackground, { backgroundColor: '#EF4444' }]} /> */}
+    // 动画插值：删除线宽度
+    const animatedStrikeWidth = strikethroughWidth.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0%', '100%'],
+    });
 
-            {/* 可滑动的事件卡片 */}
-            <Animated.View
-                style={[
-                    styles.eventItem,
-                    { backgroundColor: colors.primaryContent, transform: [{ translateX }] },
-                ]}
-                {...panResponder.panHandlers}>
-                {/* 优先级指示条 */}
-                <View
+    // 动画插值：容器高度（用于消失动画）
+    const animatedMaxHeight = itemHeight.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 200], // 最大高度估计值
+    });
+
+    const animatedMarginBottom = itemHeight.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 0],
+    });
+
+    return (
+        <Animated.View
+            style={[
+                styles.outerContainer,
+                showDate && {
+                    opacity: itemOpacity,
+                    maxHeight: animatedMaxHeight,
+                    marginBottom: animatedMarginBottom,
+                },
+            ]}>
+            <View style={styles.container}>
+                {/* 可滑动的事件卡片 */}
+                <Animated.View
                     style={[
-                        styles.priorityIndicator,
-                        { backgroundColor: priorityColors.background }
+                        styles.eventItem,
+                        { backgroundColor: colors.primaryContent, transform: [{ translateX }] },
                     ]}
-                />
-                {/* 完成状态圆圈按钮 */}
-                <TouchableOpacity
-                    style={styles.completeCircleContainer}
-                    onPress={onToggleComplete}
-                    accessibilityRole="checkbox"
-                    accessibilityState={{ checked: isCompleted }}
-                    accessibilityLabel={isCompleted ? t('event.markIncomplete') as string : t('event.markComplete') as string}>
-                    <View style={[
-                        styles.completeCircle,
-                        { borderColor: isCompleted ? colors.primary : colors.textPrimary },
-                        isCompleted && { backgroundColor: colors.primary },
-                    ]}>
-                        {isCompleted && (
-                            <Text style={styles.checkmark}>✓</Text>
-                        )}
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.eventItemContent}
-                    onPress={onPress}
-                    activeOpacity={0.7}
-                    accessibilityRole="button">
-                    <View style={styles.eventTitleRow}>
-                        <Text
-                            style={[
-                                styles.eventItemTitle,
-                                { color: colors.textPrimary },
-                                isCompleted && styles.completedText,
-                            ]}
-                            numberOfLines={1}>
-                            {event.title}
-                        </Text>
-                        {priorityIndicator ? (
-                            <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
-                                {priorityIndicator}
+                    {...panResponder.panHandlers}>
+                    {/* 优先级指示条 */}
+                    <View
+                        style={[
+                            styles.priorityIndicator,
+                            { backgroundColor: priorityColors.background }
+                        ]}
+                    />
+                    {/* 完成状态圆圈按钮 */}
+                    <TouchableOpacity
+                        style={styles.completeCircleContainer}
+                        onPress={handleToggleComplete}
+                        disabled={isAnimating}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: isCompleted }}
+                        accessibilityLabel={isCompleted ? t('event.markIncomplete') as string : t('event.markComplete') as string}>
+                        <View style={[
+                            styles.completeCircle,
+                            { borderColor: isCompleted ? colors.primary : colors.textPrimary },
+                            isCompleted && { backgroundColor: colors.primary },
+                        ]}>
+                            {isCompleted && (
+                                <Text style={styles.checkmark}>✓</Text>
+                            )}
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.eventItemContent}
+                        onPress={onPress}
+                        activeOpacity={0.7}
+                        accessibilityRole="button"
+                        onLayout={(e) => setContentWidth(e.nativeEvent.layout.width)}>
+                        <View style={styles.eventTitleRow}>
+                            <View style={styles.titleContainer}>
+                                <Text
+                                    style={[
+                                        styles.eventItemTitle,
+                                        { color: colors.textPrimary },
+                                        isCompleted && !isAnimating && styles.completedText,
+                                    ]}
+                                    numberOfLines={1}>
+                                    {event.title}
+                                </Text>
+                                {/* 动画删除线 */}
+                                {isAnimating && (
+                                    <Animated.View
+                                        style={[
+                                            styles.strikethroughLine,
+                                            {
+                                                width: animatedStrikeWidth,
+                                                backgroundColor: colors.textPrimary,
+                                            },
+                                        ]}
+                                    />
+                                )}
+                            </View>
+                            {priorityIndicator ? (
+                                <Text style={[styles.prioritySymbol, { color: priorityColors.background }]}>
+                                    {priorityIndicator}
+                                </Text>
+                            ) : null}
+                        </View>
+                        {/* 只有当有时间或有效日期时才显示元信息 */}
+                        {(event.startTime || event.endTime || (showDate && event.date !== 'NO_DATE')) ? (
+                            <Text
+                                style={[
+                                    styles.eventItemMeta,
+                                    { color: colors.textSecondary },
+                                    isCompleted && !isAnimating && styles.completedText,
+                                ]}
+                                numberOfLines={1}>
+                                {showDate ? (
+                                    <>
+                                        {event.date !== 'NO_DATE' && event.date}
+                                        {event.date !== 'NO_DATE' && (event.startTime || event.endTime) && ' · '}
+                                        {(event.startTime || event.endTime) && `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
+                                    </>
+                                ) : (
+                                    `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
+                                )}
                             </Text>
                         ) : null}
-                    </View>
-                    {/* 只有当有时间或有效日期时才显示元信息 */}
-                    {(event.startTime || event.endTime || (showDate && event.date !== 'NO_DATE')) ? (
-                        <Text
-                            style={[
-                                styles.eventItemMeta,
-                                { color: colors.textSecondary },
-                                isCompleted && styles.completedText,
-                            ]}
-                            numberOfLines={1}>
-                            {showDate ? (
-                                <>
-                                    {event.date !== 'NO_DATE' && event.date}
-                                    {event.date !== 'NO_DATE' && (event.startTime || event.endTime) && ' · '}
-                                    {(event.startTime || event.endTime) && `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`}
-                                </>
-                            ) : (
-                                `${event.startTime ?? ''}${event.endTime ? ` - ${event.endTime}` : ''}`
-                            )}
-                        </Text>
-                    ) : null}
-                    {!showDate && event.reminderMinutes && event.reminderMinutes > 0 ? (
-                        <Text
-                            style={[
-                                styles.eventItemMeta,
-                                { color: colors.textSecondary },
-                            ]}
-                            numberOfLines={1}>
-                            {t('event.reminder', '提醒') as string}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes }) as string}
-                        </Text>
-                    ) : null}
-                    {event.description ? (
-                        <Text
-                            style={[
-                                styles.eventItemNotes,
-                                { color: colors.textSecondary },
-                            ]}
-                            numberOfLines={2}>
-                            {event.description}
-                        </Text>
-                    ) : null}
-                </TouchableOpacity>
-            </Animated.View>
-        </View>
+                        {!showDate && event.reminderMinutes && event.reminderMinutes > 0 ? (
+                            <Text
+                                style={[
+                                    styles.eventItemMeta,
+                                    { color: colors.textSecondary },
+                                ]}
+                                numberOfLines={1}>
+                                {t('event.reminder', '提醒') as string}: {t('reminder.minutesBefore', { minutes: event.reminderMinutes }) as string}
+                            </Text>
+                        ) : null}
+                        {event.description ? (
+                            <Text
+                                style={[
+                                    styles.eventItemNotes,
+                                    { color: colors.textSecondary },
+                                ]}
+                                numberOfLines={2}>
+                                {event.description}
+                            </Text>
+                        ) : null}
+                    </TouchableOpacity>
+                </Animated.View>
+            </View>
+        </Animated.View>
     );
 };
 
 const styles = StyleSheet.create({
+    outerContainer: {
+        overflow: 'hidden',
+    },
     container: {
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 14,
         marginBottom: 0,
-    },
-    deleteBackground: {
-        position: 'absolute',
-        right: 0,
-        left: 0,
-        top: 0,
-        bottom: 0,
-        borderRadius: 14,
     },
     eventItem: {
         flexDirection: 'row',
@@ -320,13 +355,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 6,
     },
+    titleContainer: {
+        flex: 1,
+        position: 'relative',
+        justifyContent: 'center',
+    },
+    strikethroughLine: {
+        position: 'absolute',
+        left: 0,
+        top: '50%',
+        height: 2,
+        borderRadius: 1,
+        marginTop: -1,
+    },
     prioritySymbol: {
         fontSize: 12,
         fontWeight: '700',
         marginLeft: 6,
     },
     eventItemTitle: {
-        flex: 1,
         fontSize: 16,
         lineHeight: 22,
         fontWeight: '600',
