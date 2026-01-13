@@ -42,7 +42,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
     // 完成动画相关状态
     const strikethroughWidth = useRef(new Animated.Value(0)).current;
     const itemOpacity = useRef(new Animated.Value(1)).current;
-    const itemHeight = useRef(new Animated.Value(1)).current; // 用于缩放高度
+    const itemScale = useRef(new Animated.Value(1)).current; // 用于缩放
     const [isAnimating, setIsAnimating] = useState(false);
     const [contentWidth, setContentWidth] = useState(0);
 
@@ -73,10 +73,10 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                             duration: 250,
                             useNativeDriver: true,
                         }),
-                        Animated.timing(itemHeight, {
+                        Animated.timing(itemScale, {
                             toValue: 0,
                             duration: 250,
-                            useNativeDriver: false,
+                            useNativeDriver: true,
                         }),
                     ]).start(() => {
                         // 消失动画完成后调用完成回调
@@ -93,7 +93,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
             // 如果当前是完成状态，取消完成，重置动画状态
             strikethroughWidth.setValue(0);
             itemOpacity.setValue(1);
-            itemHeight.setValue(1);
+            itemScale.setValue(1);
             onToggleComplete();
         }
     };
@@ -103,7 +103,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
         if (!isCompleted) {
             strikethroughWidth.setValue(0);
             itemOpacity.setValue(1);
-            itemHeight.setValue(1);
+            itemScale.setValue(1);
         }
     }, [isCompleted]);
 
@@ -160,25 +160,13 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
         outputRange: ['0%', '100%'],
     });
 
-    // 动画插值：容器高度（用于消失动画）
-    const animatedMaxHeight = itemHeight.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 200], // 最大高度估计值
-    });
-
-    const animatedMarginBottom = itemHeight.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 0],
-    });
-
     return (
         <Animated.View
             style={[
                 styles.outerContainer,
                 showDate && {
                     opacity: itemOpacity,
-                    maxHeight: animatedMaxHeight,
-                    marginBottom: animatedMarginBottom,
+                    transform: [{ scaleY: itemScale }],
                 },
             ]}>
             <View style={styles.container}>
