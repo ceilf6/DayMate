@@ -40,13 +40,29 @@ export class TrashService {
             }
             const parsed = JSON.parse(raw) as TrashedEvent[];
             // 兼容旧数据：为没有 itemType 的旧数据添加默认值 'deleted'
-            const items = Array.isArray(parsed) ? parsed.map(item => ({
+            const itemsWithType = Array.isArray(parsed) ? parsed.map(item => ({
                 ...item,
                 itemType: item.itemType || 'deleted' as TrashItemType,
             })) : [];
-            trashCache = items;
+
+            // 去重：如果有重复 ID，只保留最新的（第一个）
+            const uniqueItems: TrashedEvent[] = [];
+            const seenIds = new Set<string>();
+            for (const item of itemsWithType) {
+                if (!seenIds.has(item.id)) {
+                    seenIds.add(item.id);
+                    uniqueItems.push(item);
+                }
+            }
+
+            // 如果去重后数量变化，更新存储
+            if (uniqueItems.length !== itemsWithType.length) {
+                await TrashService.persistTrash(uniqueItems);
+            }
+
+            trashCache = uniqueItems;
             cacheInitialized = true;
-            return items;
+            return uniqueItems;
         } catch (error) {
             console.error('TrashService: 读取垃圾桶失败', error);
             trashCache = [];
