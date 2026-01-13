@@ -25,6 +25,7 @@ type SwipeableEventItemProps = {
     onToggleComplete: () => Promise<boolean> | void;
     onDelete: () => void;
     showDate?: boolean; // 是否显示日期（用于待完成事项区域）
+    onLocalAnimationComplete?: () => void; // 本地动画完成后的回调（用于立即刷新列表）
 };
 
 const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
@@ -33,6 +34,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
     onToggleComplete,
     onDelete,
     showDate = false,
+    onLocalAnimationComplete,
 }) => {
     const { colors } = useTheme();
     const { t } = useI18n();
@@ -85,6 +87,8 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                         justAnimatedLocallyRef.current = true;
                         // 消失动画完成后调用完成回调
                         onToggleComplete();
+                        // 通知父组件动画完成，可以立即刷新列表
+                        onLocalAnimationComplete?.();
                         setIsAnimating(false);
                     });
                 } else {
@@ -149,6 +153,8 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                         }),
                     ]).start(() => {
                         setIsSyncAnimating(false);
+                        // 同步动画完成后也通知父组件刷新列表
+                        onLocalAnimationComplete?.();
                     });
                 } else {
                     setIsSyncAnimating(false);

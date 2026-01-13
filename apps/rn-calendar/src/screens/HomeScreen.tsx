@@ -661,15 +661,14 @@ const HomeScreen = () => {
                 return prev;
             });
 
-            // 延迟刷新未完成事项列表，等待动画完成（删除线300ms + 消失250ms + 缓冲50ms）
-            if (updated.completed) {
-                setTimeout(() => {
-                    refreshIncompleteEvents();
-                }, 600);
-            } else {
+            // 刷新未完成事项列表
+            // 注意：如果是从待完成区域触发的，会通过 onLocalAnimationComplete 回调来刷新
+            // 如果是从日程区域触发的，需要延迟等待待完成区域的同步动画完成
+            if (!updated.completed) {
                 // 取消完成时立即刷新
                 await refreshIncompleteEvents();
             }
+            // 完成时的刷新由 onLocalAnimationComplete 或延迟处理
 
             return true;
         } catch {
@@ -1245,6 +1244,7 @@ const HomeScreen = () => {
                                     onToggleComplete={() => handleToggleComplete(event)}
                                     onDelete={() => handleDeleteEvent(event)}
                                     showDate={true}
+                                    onLocalAnimationComplete={refreshIncompleteEvents}
                                 />
                             ))}
                         </View>
