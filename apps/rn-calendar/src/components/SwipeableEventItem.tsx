@@ -45,6 +45,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
     const itemScale = useRef(new Animated.Value(1)).current; // 用于缩放
     const [isAnimating, setIsAnimating] = useState(false);
     const [isSyncAnimating, setIsSyncAnimating] = useState(false); // 同步动画状态
+    const justAnimatedLocallyRef = useRef(false); // 标记是否刚刚完成了本地动画
     const [contentWidth, setContentWidth] = useState(0);
 
     const priorityColors = getPriorityColors(event.priority);
@@ -80,11 +81,15 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                             useNativeDriver: true,
                         }),
                     ]).start(() => {
+                        // 标记为本地动画完成，避免 useEffect 再次触发动画
+                        justAnimatedLocallyRef.current = true;
                         // 消失动画完成后调用完成回调
                         onToggleComplete();
                         setIsAnimating(false);
                     });
                 } else {
+                    // 标记为本地动画完成
+                    justAnimatedLocallyRef.current = true;
                     // 日程区域：直接调用完成回调
                     onToggleComplete();
                     setIsAnimating(false);
@@ -113,9 +118,15 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
             itemOpacity.setValue(1);
             itemScale.setValue(1);
             setIsSyncAnimating(false);
-        } else if (!prevCompleted && isCompleted && !isAnimating) {
-            // 从未完成变为完成，且不是由当前组件触发的动画
-            // 播放同步动画
+            justAnimatedLocallyRef.current = false;
+        } else if (!prevCompleted && isCompleted) {
+            // 从未完成变为完成
+            if (justAnimatedLocallyRef.current) {
+                // 是本地触发的动画，跳过同步动画
+                justAnimatedLocallyRef.current = false;
+                return;
+            }
+            // 不是本地触发的，播放同步动画
             setIsSyncAnimating(true);
             strikethroughWidth.setValue(0);
             Animated.timing(strikethroughWidth, {
