@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
     Animated,
     PanResponder,
@@ -22,7 +22,7 @@ const SWIPE_THRESHOLD = -120; // 滑动超过这个值触发删除
 type SwipeableEventItemProps = {
     event: CalendarEvent;
     onPress: () => void;
-    onToggleComplete: () => void;
+    onToggleComplete: () => Promise<boolean> | void;
     onDelete: () => void;
     showDate?: boolean; // 是否显示日期（用于待完成事项区域）
 };
@@ -39,9 +39,73 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
     const translateX = useRef(new Animated.Value(0)).current;
     const isSwipingRef = useRef(false);
 
+    // 完成动画相关状态
+    const strikethroughWidth = useRef(new Animated.Value(0)).current;
+    const itemOpacity = useRef(new Animated.Value(1)).current;
+    const itemHeight = useRef(new Animated.Value(1)).current; // 用于缩放高度
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [contentWidth, setContentWidth] = useState(0);
+
     const priorityColors = getPriorityColors(event.priority);
     const priorityIndicator = getPriorityIndicator(event.priority);
     const isCompleted = event.completed === true;
+
+    // 处理完成动画
+    const handleToggleComplete = async () => {
+        if (isAnimating) return;
+
+        // 如果当前是未完成状态，点击后会变成完成状态，播放动画
+        if (!isCompleted) {
+            setIsAnimating(true);
+
+            // 先播放删除线动画
+            Animated.timing(strikethroughWidth, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: false,
+            }).start(async () => {
+                // 删除线动画完成后
+                if (showDate) {
+                    // 待完成区域：播放消失动画
+                    Animated.parallel([
+                        Animated.timing(itemOpacity, {
+                            toValue: 0,
+                            duration: 250,
+                            useNativeDriver: true,
+                        }),
+                        Animated.timing(itemHeight, {
+                            toValue: 0,
+                            duration: 250,
+                            useNativeDriver: false,
+                        }),
+                    ]).start(() => {
+                        // 消失动画完成后调用完成回调
+                        onToggleComplete();
+                        setIsAnimating(false);
+                    });
+                } else {
+                    // 日程区域：直接调用完成回调
+                    onToggleComplete();
+                    setIsAnimating(false);
+                }
+            });
+        } else {
+            // 如果当前是完成状态，取消完成，重置动画状态
+            strikethroughWidth.setValue(0);
+            itemOpacity.setValue(1);
+            itemHeight.setValue(1);
+            onToggleComplete();
+        }
+    };
+
+    // 当事件完成状态改变时，重置动画状态
+    useEffect(() => {
+        if (!isCompleted) {
+            strikethroughWidth.setValue(0);
+            itemOpacity.setValue(1);
+            itemHeight.setValue(1);
+        }
+    }, [isCompleted]);
 
     const panResponder = useRef(
         PanResponder.create({
