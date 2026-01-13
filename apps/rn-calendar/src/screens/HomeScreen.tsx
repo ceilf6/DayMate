@@ -637,7 +637,7 @@ const HomeScreen = () => {
                 }
             }
 
-            // 更新本地状态
+            // 更新本地状态（日程区域）
             setEventsByDate(prev => {
                 const next = { ...prev };
                 const list = next[updated.date] ?? [];
@@ -650,8 +650,26 @@ const HomeScreen = () => {
                 return next;
             });
 
-            // 刷新未完成事项列表
-            await refreshIncompleteEvents();
+            // 同时更新待完成事项列表中对应事项的状态（让动画可以播放）
+            setIncompleteEvents(prev => {
+                const index = prev.findIndex(e => e.id === updated.id);
+                if (index !== -1) {
+                    const newList = [...prev];
+                    newList[index] = updated;
+                    return newList;
+                }
+                return prev;
+            });
+
+            // 延迟刷新未完成事项列表，等待动画完成（删除线300ms + 消失250ms + 缓冲50ms）
+            if (updated.completed) {
+                setTimeout(() => {
+                    refreshIncompleteEvents();
+                }, 600);
+            } else {
+                // 取消完成时立即刷新
+                await refreshIncompleteEvents();
+            }
 
             return true;
         } catch {
