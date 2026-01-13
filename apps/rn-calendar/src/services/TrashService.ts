@@ -61,6 +61,9 @@ export class TrashService {
     static async moveToTrash(event: CalendarEvent, itemType: TrashItemType = 'deleted'): Promise<void> {
         const items = await TrashService.getTrashItems();
 
+        // 先移除已存在的同 ID 事项（避免重复）
+        const filteredItems = items.filter(item => item.id !== event.id);
+
         const trashedEvent: TrashedEvent = {
             ...event,
             deletedAt: new Date().toISOString(),
@@ -68,8 +71,8 @@ export class TrashService {
             itemType,
         };
 
-        items.unshift(trashedEvent); // 新删除的放在最前面
-        await TrashService.persistTrash(items);
+        filteredItems.unshift(trashedEvent); // 新删除的放在最前面
+        await TrashService.persistTrash(filteredItems);
     }
 
     /**
