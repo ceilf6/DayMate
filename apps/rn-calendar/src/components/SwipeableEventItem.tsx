@@ -44,6 +44,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
     const itemOpacity = useRef(new Animated.Value(1)).current;
     const itemScale = useRef(new Animated.Value(1)).current; // 用于缩放
     const [isAnimating, setIsAnimating] = useState(false);
+    const [isSyncAnimating, setIsSyncAnimating] = useState(false); // 同步动画状态
     const [contentWidth, setContentWidth] = useState(0);
 
     const priorityColors = getPriorityColors(event.priority);
@@ -98,12 +99,50 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
         }
     };
 
-    // 当事件完成状态改变时，重置动画状态
+    // 记录上一次的完成状态，用于检测外部变化
+    const prevCompletedRef = useRef(isCompleted);
+
+    // 当事件完成状态改变时
     useEffect(() => {
+        const prevCompleted = prevCompletedRef.current;
+        prevCompletedRef.current = isCompleted;
+
         if (!isCompleted) {
+            // 从完成变为未完成，重置动画状态
             strikethroughWidth.setValue(0);
             itemOpacity.setValue(1);
             itemScale.setValue(1);
+            setIsSyncAnimating(false);
+        } else if (!prevCompleted && isCompleted && !isAnimating) {
+            // 从未完成变为完成，且不是由当前组件触发的动画
+            // 播放同步动画
+            setIsSyncAnimating(true);
+            strikethroughWidth.setValue(0);
+            Animated.timing(strikethroughWidth, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: false,
+            }).start(() => {
+                // 待完成区域播放消失动画
+                if (showDate) {
+                    Animated.parallel([
+                        Animated.timing(itemOpacity, {
+                            toValue: 0,
+                            duration: 250,
+                            useNativeDriver: true,
+                        }),
+                        Animated.timing(itemScale, {
+                            toValue: 0,
+                            duration: 250,
+                            useNativeDriver: true,
+                        }),
+                    ]).start(() => {
+                        setIsSyncAnimating(false);
+                    });
+                } else {
+                    setIsSyncAnimating(false);
+                }
+            });
         }
     }, [isCompleted]);
 
@@ -214,13 +253,13 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                                     style={[
                                         styles.eventItemTitle,
                                         { color: colors.textPrimary },
-                                        isCompleted && !isAnimating && styles.completedText,
+                                        isCompleted && !isAnimating && !isSyncAnimating && styles.completedText,
                                     ]}
                                     numberOfLines={1}>
                                     {event.title}
                                 </Text>
                                 {/* 动画删除线 */}
-                                {isAnimating && (
+                                {(isAnimating || isSyncAnimating) && (
                                     <Animated.View
                                         style={[
                                             styles.strikethroughLine,
@@ -244,7 +283,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                                 style={[
                                     styles.eventItemMeta,
                                     { color: colors.textSecondary },
-                                    isCompleted && !isAnimating && styles.completedText,
+                                    isCompleted && !isAnimating && !isSyncAnimating && styles.completedText,
                                 ]}
                                 numberOfLines={1}>
                                 {showDate ? (
