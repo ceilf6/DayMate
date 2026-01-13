@@ -82,11 +82,11 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                             duration: 250,
                             useNativeDriver: true,
                         }),
-                    ]).start(() => {
+                    ]).start(async () => {
                         // 标记为本地动画完成，避免 useEffect 再次触发动画
                         justAnimatedLocallyRef.current = true;
-                        // 消失动画完成后调用完成回调
-                        onToggleComplete();
+                        // 消失动画完成后调用完成回调，等待完成
+                        await onToggleComplete();
                         // 通知父组件动画完成，可以立即刷新列表
                         onLocalAnimationComplete?.();
                         setIsAnimating(false);
@@ -94,8 +94,10 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                 } else {
                     // 标记为本地动画完成
                     justAnimatedLocallyRef.current = true;
-                    // 日程区域：直接调用完成回调
-                    onToggleComplete();
+                    // 日程区域：调用完成回调，等待完成
+                    await onToggleComplete();
+                    // 通知父组件动画完成，刷新待完成列表
+                    onLocalAnimationComplete?.();
                     setIsAnimating(false);
                 }
             });

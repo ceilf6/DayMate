@@ -650,25 +650,12 @@ const HomeScreen = () => {
                 return next;
             });
 
-            // 同时更新待完成事项列表中对应事项的状态（让动画可以播放）
-            setIncompleteEvents(prev => {
-                const index = prev.findIndex(e => e.id === updated.id);
-                if (index !== -1) {
-                    const newList = [...prev];
-                    newList[index] = updated;
-                    return newList;
-                }
-                return prev;
-            });
-
             // 刷新未完成事项列表
-            // 注意：如果是从待完成区域触发的，会通过 onLocalAnimationComplete 回调来刷新
-            // 如果是从日程区域触发的，需要延迟等待待完成区域的同步动画完成
             if (!updated.completed) {
                 // 取消完成时立即刷新
                 await refreshIncompleteEvents();
             }
-            // 完成时的刷新由 onLocalAnimationComplete 或延迟处理
+            // 完成时的刷新由 onLocalAnimationComplete 回调处理
 
             return true;
         } catch {
@@ -1186,6 +1173,7 @@ const HomeScreen = () => {
                                         onToggleComplete={() => handleToggleComplete(event)}
                                         onDelete={() => handleDeleteEvent(event)}
                                         showDate={false}
+                                        onLocalAnimationComplete={refreshIncompleteEvents}
                                     />
                                 ))}
                             </View>
