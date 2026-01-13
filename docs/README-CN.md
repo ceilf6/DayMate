@@ -4,6 +4,8 @@
 
 一个面向日常与专业场景的跨平台日历应用。DayMate 采用 Monorepo 架构，同时支持 Android 原生和 React Native 跨平台应用，以清晰直观的日历视图和灵活的事件管理为核心。
 
+> **说明**：目前开发以 React Native 侧为主。Android 原生应用共享核心模块（事件模型、农历等），但 UI 功能暂未完全同步。
+
 ## 架构概览
 
 DayMate 采用 Monorepo 架构，包含以下模块：

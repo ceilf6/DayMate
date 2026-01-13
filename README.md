@@ -6,6 +6,8 @@
 
 A cross-platform calendar application for everyday and professional use. DayMate uses a Monorepo architecture, supporting both Android native and React Native cross-platform apps, with intuitive calendar views and flexible event management at its core.
 
+> **Note**: Current development focus is on the React Native side. The Android native app shares core modules (event models, lunar calendar, etc.) but has limited UI feature parity for now.
+
 ## Architecture Overview
 
 DayMate adopts a Monorepo architecture with the following modules:
