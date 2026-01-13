@@ -47,6 +47,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
     const itemScale = useRef(new Animated.Value(1)).current; // 用于缩放
     const [isAnimating, setIsAnimating] = useState(false);
     const [isSyncAnimating, setIsSyncAnimating] = useState(false); // 同步动画状态
+    const [showAsCompleted, setShowAsCompleted] = useState(false); // 是否显示为完成状态（用于动画期间的颜色）
     const justAnimatedLocallyRef = useRef(false); // 标记是否刚刚完成了本地动画
     const [contentWidth, setContentWidth] = useState(0);
 
@@ -61,6 +62,8 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
         // 如果当前是未完成状态，点击后会变成完成状态，播放动画
         if (!isCompleted) {
             setIsAnimating(true);
+            // 立即显示为完成状态（改变颜色）
+            setShowAsCompleted(true);
 
             // 先播放删除线动画
             Animated.timing(strikethroughWidth, {
@@ -106,6 +109,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
             strikethroughWidth.setValue(0);
             itemOpacity.setValue(1);
             itemScale.setValue(1);
+            setShowAsCompleted(false);
             onToggleComplete();
         }
     };
@@ -124,6 +128,7 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
             itemOpacity.setValue(1);
             itemScale.setValue(1);
             setIsSyncAnimating(false);
+            setShowAsCompleted(false);
             justAnimatedLocallyRef.current = false;
         } else if (!prevCompleted && isCompleted) {
             // 从未完成变为完成
@@ -134,6 +139,8 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
             }
             // 不是本地触发的，播放同步动画
             setIsSyncAnimating(true);
+            // 立即显示为完成状态（改变颜色）
+            setShowAsCompleted(true);
             strikethroughWidth.setValue(0);
             Animated.timing(strikethroughWidth, {
                 toValue: 1,
@@ -271,7 +278,8 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                                 <Text
                                     style={[
                                         styles.eventItemTitle,
-                                        { color: colors.textPrimary },
+                                        // 动画期间或已完成时使用完成颜色
+                                        { color: (showAsCompleted || isCompleted) ? colors.textSecondary : colors.textPrimary },
                                         isCompleted && !isAnimating && !isSyncAnimating && styles.completedText,
                                     ]}
                                     numberOfLines={1}>
@@ -284,7 +292,8 @@ const SwipeableEventItem: React.FC<SwipeableEventItemProps> = ({
                                             styles.strikethroughLine,
                                             {
                                                 width: animatedStrikeWidth,
-                                                backgroundColor: colors.textPrimary,
+                                                // 使用完成状态颜色
+                                                backgroundColor: colors.textSecondary,
                                             },
                                         ]}
                                     />
