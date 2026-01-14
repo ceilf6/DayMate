@@ -2,13 +2,20 @@ apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 apply plugin: "org.jetbrains.kotlin.android"
 
+// 加载签名配置
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 react {
     // ...
 }
 
 android {
     namespace "com.daymate.rn"
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.daymate.rn"
@@ -22,8 +29,20 @@ android {
         buildConfig true
     }
 
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['MYAPP_RELEASE_STORE_FILE'])
+                storePassword keystoreProperties['MYAPP_RELEASE_STORE_PASSWORD']
+                keyAlias keystoreProperties['MYAPP_RELEASE_KEY_ALIAS']
+                keyPassword keystoreProperties['MYAPP_RELEASE_KEY_PASSWORD']
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
@@ -42,14 +61,24 @@ android {
 dependencies {
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:hermes-android")
-    
+
     // React Native 依赖
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    
+
+    // 强制使用兼容的 androidx.core 版本
+    constraints {
+        implementation("androidx.core:core:1.13.1") {
+            because("androidx.core:1.16.0 requires compileSdk 35")
+        }
+        implementation("androidx.core:core-ktx:1.13.1") {
+            because("androidx.core:core-ktx:1.16.0 requires compileSdk 35")
+        }
+    }
+
     // SoLoader
     implementation("com.facebook.soloader:soloader:0.10.5+")
-    
+
     // 可选：依赖共享的 Android 核心模块
     // implementation(project(":shared:core"))
 }

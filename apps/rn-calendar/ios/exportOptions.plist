@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+    导出方法选择:
+    - app-store: 用于提交到 App Store
+    - ad-hoc: 用于内部测试分发
+    - enterprise: 企业分发
+    - development: 开发测试
+    -->
+    <key>method</key>
+    <string>app-store</string>
+
+    <!-- 团队 ID，需要替换为您的 Apple Developer Team ID -->
+    <key>teamID</key>
+    <string>DPC95H58J8</string>
+
+    <!-- 自动管理签名 (推荐设置为 false，使用手动签名更可控) -->
+    <key>uploadBitcode</key>
+    <false/>
+
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- 编译选项 -->
+    <key>compileBitcode</key>
+    <false/>
+
+    <!-- App 瘦身，针对特定设备优化 -->
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+</dict>
+</plist>

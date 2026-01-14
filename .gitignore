@@ -5,6 +5,10 @@
 /.idea/
 .DS_Store
 
+# Android 签名文件（敏感信息，不应提交）
+*.keystore
+keystore.properties
+
 # All build outputs
 /build/
 **/build/
