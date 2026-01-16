@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CalendarEvent, CreateCalendarEventInput, generateId } from '@daymate/shared';
+import { CalendarEvent, CreateCalendarEventInput } from '@daymate/shared';
+import { EventFactory, EventValidator } from '../models';
 
 const STORAGE_KEY = 'daymate.events.v1';
 
@@ -19,26 +20,6 @@ const safeJsonParse = <T>(raw: string | null): T | null => {
     } catch {
         return null;
     }
-};
-
-const normalizeTime = (value?: string): string | undefined => {
-    if (!value) return undefined;
-    const trimmed = value.trim();
-    return trimmed.length ? trimmed : undefined;
-};
-
-const normalizeReminderMinutes = (value?: number): number | undefined => {
-    if (value === undefined || value === null) return undefined;
-    if (!Number.isFinite(value)) return undefined;
-    if (value <= 0) return undefined;
-    return Math.floor(value);
-};
-
-const normalizePriority = (value?: number): number | undefined => {
-    if (value === undefined || value === null) return undefined;
-    if (!Number.isFinite(value)) return undefined;
-    if (value < 1 || value > 9) return undefined;
-    return Math.floor(value);
 };
 
 export class EventStorage {
@@ -82,37 +63,28 @@ export class EventStorage {
     }
 
     static async addEvent(input: CreateCalendarEventInput): Promise<CalendarEvent> {
-        const now = new Date().toISOString();
-        let eventId = generateId();
+        // 使用 EventValidator 验证输入
+        const validator = new EventValidator();
+        const validationResult = validator.validateInput(input);
+        if (!validationResult.isValid) {
+            throw new Error(validator.getFirstError() || '事件验证失败');
+        }
 
         const all = await EventStorage.getAllEventsByDate();
 
+        // 使用 EventFactory 创建事件
+        let event = EventFactory.createEvent(input);
+
         // 确保生成唯一的 ID（理论上 generateId 应该已经唯一，但做双重保险）
         let attempts = 0;
-        while (EventStorage.eventIdExists(all, eventId) && attempts < 10) {
-            eventId = generateId();
+        while (EventStorage.eventIdExists(all, event.id) && attempts < 10) {
+            event = EventFactory.createEvent(input);
             attempts++;
         }
 
         if (attempts >= 10) {
             console.warn('EventStorage: 多次尝试生成唯一 ID 失败');
         }
-
-        const event: CalendarEvent = {
-            id: eventId,
-            date: input.date,
-            title: input.title.trim(),
-            description: input.description?.trim(),
-            location: input.location?.trim(),
-            startTime: normalizeTime(input.startTime),
-            endTime: normalizeTime(input.endTime),
-            allDay: input.allDay,
-            reminderMinutes: normalizeReminderMinutes(input.reminderMinutes),
-            category: input.category?.trim(),
-            priority: normalizePriority(input.priority),
-            createdAt: now,
-            updatedAt: now,
-        };
 
         // 检查同一日期下是否已存在相同 ID（防御性编程）
         const dateList = all[input.date] ?? [];

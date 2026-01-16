@@ -461,10 +461,17 @@ const HomeScreen = () => {
                     description: data.notes.trim(),
                     reminderMinutes,
                     priority: data.priority > 0 ? data.priority : undefined,
-                    completed: event.completed, // 保持完成状态
                 });
 
-                finalEvent = created;
+                // 如果原事件已完成，更新新事件的完成状态
+                if (event.completed) {
+                    const updated = await EventStorage.updateEvent(created.date, created.id, {
+                        completed: true,
+                    });
+                    finalEvent = updated || created;
+                } else {
+                    finalEvent = created;
+                }
 
                 // 如果设置了新的提醒，创建新的提醒
                 if (finalEvent.reminderMinutes && finalEvent.reminderMinutes > 0) {
@@ -585,7 +592,7 @@ const HomeScreen = () => {
     // 从垃圾桶恢复事项
     const handleRestoreFromTrash = useCallback(async (event: CalendarEvent): Promise<void> => {
         try {
-            // 重新添加事项（已完成状态设为 false，相当于取消完成）
+            // 重新添加事项（新创建的事件默认为未完成状态）
             const restored = await EventStorage.addEvent({
                 date: event.date,
                 title: event.title,
@@ -597,7 +604,6 @@ const HomeScreen = () => {
                 reminderMinutes: event.reminderMinutes,
                 category: event.category,
                 priority: event.priority,
-                completed: false, // 恢复时重置为未完成状态
             });
 
             // 更新状态
