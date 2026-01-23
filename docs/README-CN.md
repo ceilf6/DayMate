@@ -1,5 +1,9 @@
 # DayMate — 你的日程小帮手
 
+<div align="center">
+  <img src="../assets/DayMate.png" alt="DayMate Logo" width="200"/>
+</div>
+
 [English](../README.md)
 
 一个面向日常与专业场景的跨平台日历应用。DayMate 采用 Monorepo 架构，同时支持 Android 原生和 React Native 跨平台应用，以清晰直观的日历视图和灵活的事件管理为核心。
@@ -22,6 +26,16 @@ DayMate/
 └── docs/                    # 项目文档
 ```
 
+## 产品截图
+
+<div align="center">
+  <img src="./assets/紫色-背景图片.PNG" alt="Theme Background" width="250"/>
+  <img src="./assets/灰色-设置页面.PNG" alt="Settings" width="250"/>
+  <img src="./assets/橙色-主页面.PNG" alt="Home Screen" width="250"/>
+  <img src="./assets/粉色-日程区域和待完成事项双区域.PNG" alt="Schedule and Todo" width="250"/>
+  <img src="./assets/蓝色-订阅功能.PNG" alt="Subscription Feature" width="250"/>
+  <img src="./assets/绿色-导入导出功能.PNG" alt="Import Export" width="250"/>
+</div>
 ## 核心特性
 
 ### 多平台支持

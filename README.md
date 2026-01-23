@@ -1,5 +1,9 @@
 # DayMate
 
+<div align="center">
+  <img src="./assets/DayMate.png" alt="DayMate Logo" width="200"/>
+</div>
+
 **Your Personal Calendar Companion**
 
 [中文文档](./docs/README-CN.md)
@@ -23,6 +27,17 @@ DayMate/
 ├── packages/                # Shared packages (lunar calendar, etc.)
 └── docs/                    # Documentation
 ```
+
+## Screenshots
+
+<div align="center">
+  <img src="./assets/紫色-背景图片.PNG" alt="Theme Background" width="250"/>
+  <img src="./assets/灰色-设置页面.PNG" alt="Settings" width="250"/>
+  <img src="./assets/橙色-主页面.PNG" alt="Home Screen" width="250"/>
+  <img src="./assets/粉色-日程区域和待完成事项双区域.PNG" alt="Schedule and Todo" width="250"/>
+  <img src="./assets/蓝色-订阅功能.PNG" alt="Subscription Feature" width="250"/>
+  <img src="./assets/绿色-导入导出功能.PNG" alt="Import Export" width="250"/>
+</div>
 
 ## Core Features
 
