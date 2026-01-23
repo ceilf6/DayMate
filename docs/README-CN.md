@@ -36,6 +36,7 @@ DayMate/
   <img src="../assets/蓝色-订阅功能.PNG" alt="Subscription Feature" width="250"/>
   <img src="../assets/绿色-导入导出功能.PNG" alt="Import Export" width="250"/>
 </div>
+
 ## 核心特性
 
 ### 多平台支持
