@@ -698,7 +698,8 @@ const HomeScreen = () => {
             await refreshIncompleteEvents();
 
             return null; // 成功
-        } catch {
+        } catch (error) {
+            console.error('快速添加失败:', error);
             return '保存失败，请重试';
         }
     }, [refreshIncompleteEvents]);

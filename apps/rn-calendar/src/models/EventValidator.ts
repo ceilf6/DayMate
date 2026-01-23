@@ -84,6 +84,11 @@ export class EventValidator {
             return;
         }
 
+        // 允许特殊日期键 'NO_DATE' 用于无日期的事项
+        if (date === 'NO_DATE') {
+            return;
+        }
+
         // 验证日期格式 yyyy-MM-dd
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(date)) {
