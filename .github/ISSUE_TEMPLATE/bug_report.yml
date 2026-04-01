@@ -1,0 +1,175 @@
+name: Bug Report / 缺陷反馈
+description: Report crashes or incorrect behavior with full environment details.
+title: "[Bug]: "
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this issue.
+        为了更快定位问题，请尽量完整填写下方信息，尤其是机型、系统版本、复现步骤和日志。
+
+  - type: checkboxes
+    id: precheck
+    attributes:
+      label: Pre-check / 提交前检查
+      options:
+        - label: I searched existing issues and did not find a duplicate. / 我已搜索过现有 issue，未发现重复问题。
+          required: true
+        - label: I can still reproduce this on the latest app version. / 在最新版本中仍可复现。
+          required: true
+
+  - type: dropdown
+    id: app_module
+    attributes:
+      label: App Module / 问题模块
+      description: Which app did the issue happen in?
+      options:
+        - React Native app (apps/rn-calendar)
+        - Android native app (apps/android-calendar)
+        - Shared module / Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform / 平台
+      options:
+        - Android
+        - iOS
+        - Both
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: device_model
+    attributes:
+      label: Device Model / 设备型号
+      placeholder: e.g. Google Pixel 8, iPhone 15 Pro, Xiaomi 14
+    validations:
+      required: true
+
+  - type: input
+    id: os_version
+    attributes:
+      label: OS Version / 系统版本
+      placeholder: e.g. Android 14, iOS 18.2
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: App Version / 应用版本
+      description: Release version, commit hash, or debug build info.
+      placeholder: e.g. v1.1.2, debug@7a145e0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_source
+    attributes:
+      label: Install Source / 安装来源
+      options:
+        - GitHub Release APK
+        - Self-built Debug
+        - Self-built Release
+        - Play Store / TestFlight
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: locale_timezone
+    attributes:
+      label: Language & Timezone / 语言与时区
+      placeholder: e.g. zh-CN, Asia/Shanghai
+    validations:
+      required: false
+
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network / 网络环境
+      options:
+        - Wi-Fi
+        - Cellular
+        - Offline
+        - Not relevant
+    validations:
+      required: false
+
+  - type: dropdown
+    id: reproducibility
+    attributes:
+      label: Reproducibility / 复现概率
+      options:
+        - Always (100%)
+        - Often (>50%)
+        - Sometimes (<50%)
+        - Only once
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce / 复现步骤
+      description: Please provide clear, ordered steps.
+      placeholder: |
+        1. Open app
+        2. Tap "Add Event"
+        3. Tap start time
+        4. App crashes
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior / 期望结果
+      placeholder: Time picker opens and selected time is saved.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior / 实际结果
+      placeholder: App force closes immediately after selecting time.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / 崩溃日志
+      description: Paste stack trace, logcat, Xcode logs, etc. If unavailable, write N/A.
+      placeholder: |
+        ```text
+        Paste logs here
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots or Videos / 截图或录屏
+      description: Drag files into this box if available.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context / 补充信息
+      placeholder: Any workaround, related settings, or recent changes.
+    validations:
+      required: false
+

@@ -1,0 +1,57 @@
+name: Feature Request / 功能建议
+description: Suggest a new feature or improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your idea! Clear context helps us evaluate faster.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement / 问题描述
+      description: What problem are you trying to solve?
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution / 建议方案
+      placeholder: I would like DayMate to support...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered / 备选方案
+      placeholder: I also considered...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: app_module
+    attributes:
+      label: Target Module / 目标模块
+      options:
+        - React Native app (apps/rn-calendar)
+        - Android native app (apps/android-calendar)
+        - Shared module
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context / 补充信息
+      description: Mockups, references, user scenarios, etc.
+    validations:
+      required: false
+
