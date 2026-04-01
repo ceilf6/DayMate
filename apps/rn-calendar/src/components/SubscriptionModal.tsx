@@ -146,8 +146,11 @@ const SubscriptionModal = memo(({
             const successResults = results.filter(r => r.success);
             const failedResults = results.filter(r => !r.success);
 
-            // 收集所有同步的事件
-            const allEvents = successResults.flatMap(r => r.events);
+            // 收集所有同步的事件（避免依赖 flatMap 的 lib 版本）
+            const allEvents = successResults.reduce<SubscriptionEvent[]>((acc, result) => {
+                acc.push(...result.events);
+                return acc;
+            }, []);
 
             if (allEvents.length > 0) {
                 await onSubscriptionSync(allEvents);
