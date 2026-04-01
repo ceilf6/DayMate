@@ -6,9 +6,9 @@ import {
     StyleSheet,
     Platform,
     Modal,
+    TextInput,
 } from 'react-native';
 import DateTimePickerRN, {
-    DateTimePickerAndroid,
     DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { useTheme } from '../contexts/ThemeContext';
@@ -79,33 +79,28 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
     const { t } = useI18n();
     const [show, setShow] = useState(false);
     const [tempDate, setTempDate] = useState<Date | null>(null);
+    const [showAndroidEditor, setShowAndroidEditor] = useState(false);
+    const [androidYear, setAndroidYear] = useState('');
+    const [androidMonth, setAndroidMonth] = useState('');
+    const [androidDay, setAndroidDay] = useState('');
+    const [androidDateError, setAndroidDateError] = useState('');
 
     const currentDate = parseDateValue(value);
 
-    const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-        if (Platform.OS === 'android') {
-            if (event.type === 'set' && selectedDate) {
-                const year = selectedDate.getFullYear();
-                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                const day = String(selectedDate.getDate()).padStart(2, '0');
-                onChange(`${year}-${month}-${day}`);
-            }
-        } else {
-            // iOS: 暂存选择的日期
-            if (selectedDate) {
-                setTempDate(selectedDate);
-            }
+    const handleChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
+        // iOS: 暂存选择的日期
+        if (selectedDate) {
+            setTempDate(selectedDate);
         }
     };
 
     const openPicker = () => {
         if (Platform.OS === 'android') {
-            DateTimePickerAndroid.open({
-                value: currentDate,
-                mode: 'date',
-                display: 'default',
-                onChange: handleChange,
-            });
+            setAndroidYear(String(currentDate.getFullYear()));
+            setAndroidMonth(String(currentDate.getMonth() + 1).padStart(2, '0'));
+            setAndroidDay(String(currentDate.getDate()).padStart(2, '0'));
+            setAndroidDateError('');
+            setShowAndroidEditor(true);
             return;
         }
 
@@ -126,6 +121,49 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
     const handleCancel = () => {
         setTempDate(null);
         setShow(false);
+    };
+
+    const handleClearAndroidDate = () => {
+        onChange('');
+        setAndroidDateError('');
+        setShowAndroidEditor(false);
+    };
+
+    const parseAndroidDatePart = (raw: string, min: number, max: number, exactDigits?: number): number | null => {
+        const trimmed = raw.trim();
+        const digitPattern = exactDigits ? new RegExp(`^\\d{${exactDigits}}$`) : /^\d{1,2}$/;
+        if (!digitPattern.test(trimmed)) return null;
+        const parsed = Number(trimmed);
+        if (!Number.isInteger(parsed) || parsed < min || parsed > max) return null;
+        return parsed;
+    };
+
+    const handleConfirmAndroidDateEditor = () => {
+        const year = parseAndroidDatePart(androidYear, 1, 9999, 4);
+        const month = parseAndroidDatePart(androidMonth, 1, 12);
+        const day = parseAndroidDatePart(androidDay, 1, 31);
+        if (year === null || month === null || day === null) {
+            setAndroidDateError(t('event.invalidDate', '请输入有效日期（YYYY-MM-DD）') as string);
+            return;
+        }
+
+        const picked = new Date(year, month - 1, day, 0, 0, 0, 0);
+        const isSameDate = picked.getFullYear() === year
+            && picked.getMonth() === month - 1
+            && picked.getDate() === day;
+        if (!isSameDate) {
+            setAndroidDateError(t('event.invalidDate', '请输入有效日期（YYYY-MM-DD）') as string);
+            return;
+        }
+
+        onChange(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+        setAndroidDateError('');
+        setShowAndroidEditor(false);
+    };
+
+    const handleCancelAndroidDateEditor = () => {
+        setAndroidDateError('');
+        setShowAndroidEditor(false);
     };
 
     return (
@@ -179,6 +217,117 @@ export const DatePicker = memo(({ label, value, onChange, placeholder }: DatePic
                     </View>
                 </Modal>
             )}
+
+            {showAndroidEditor && Platform.OS === 'android' && (
+                <Modal
+                    transparent
+                    animationType="fade"
+                    visible={showAndroidEditor}
+                    onRequestClose={handleCancelAndroidDateEditor}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.androidEditorContent, { backgroundColor: colors.surface }]}>
+                            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
+                                {t('event.selectDate', '选择日期')}
+                            </Text>
+
+                            <View style={styles.androidDateEditorRow}>
+                                <TextInput
+                                    value={androidYear}
+                                    onChangeText={(text) => {
+                                        setAndroidYear(text.replace(/\D/g, '').slice(0, 4));
+                                        if (androidDateError) setAndroidDateError('');
+                                    }}
+                                    keyboardType="number-pad"
+                                    maxLength={4}
+                                    placeholder="YYYY"
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[
+                                        styles.androidDateInput,
+                                        {
+                                            width: 100,
+                                            backgroundColor: colors.primarySurface,
+                                            color: colors.textPrimary,
+                                            borderColor: colors.border,
+                                        },
+                                    ]}
+                                />
+                                <Text style={[styles.androidDateSeparator, { color: colors.textPrimary }]}>-</Text>
+                                <TextInput
+                                    value={androidMonth}
+                                    onChangeText={(text) => {
+                                        setAndroidMonth(text.replace(/\D/g, '').slice(0, 2));
+                                        if (androidDateError) setAndroidDateError('');
+                                    }}
+                                    keyboardType="number-pad"
+                                    maxLength={2}
+                                    placeholder="MM"
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[
+                                        styles.androidDateInput,
+                                        {
+                                            backgroundColor: colors.primarySurface,
+                                            color: colors.textPrimary,
+                                            borderColor: colors.border,
+                                        },
+                                    ]}
+                                />
+                                <Text style={[styles.androidDateSeparator, { color: colors.textPrimary }]}>-</Text>
+                                <TextInput
+                                    value={androidDay}
+                                    onChangeText={(text) => {
+                                        setAndroidDay(text.replace(/\D/g, '').slice(0, 2));
+                                        if (androidDateError) setAndroidDateError('');
+                                    }}
+                                    keyboardType="number-pad"
+                                    maxLength={2}
+                                    placeholder="DD"
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[
+                                        styles.androidDateInput,
+                                        {
+                                            backgroundColor: colors.primarySurface,
+                                            color: colors.textPrimary,
+                                            borderColor: colors.border,
+                                        },
+                                    ]}
+                                />
+                            </View>
+
+                            {androidDateError ? (
+                                <Text style={styles.androidDateErrorText}>{androidDateError}</Text>
+                            ) : null}
+
+                            <View style={styles.androidActionsRow}>
+                                <TouchableOpacity
+                                    style={[styles.androidActionButton, { borderColor: colors.border }]}
+                                    onPress={handleClearAndroidDate}
+                                >
+                                    <Text style={[styles.androidActionText, { color: colors.textSecondary }]}>
+                                        {t('event.clearDate', '清除日期')}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.androidActionButton, { borderColor: colors.border }]}
+                                    onPress={handleCancelAndroidDateEditor}
+                                >
+                                    <Text style={[styles.androidActionText, { color: colors.textSecondary }]}>
+                                        {t('common.cancel', '取消')}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.androidActionButton, styles.androidConfirmButton, { backgroundColor: colors.primary }]}
+                                    onPress={handleConfirmAndroidDateEditor}
+                                >
+                                    <Text style={styles.androidConfirmText}>
+                                        {t('common.confirm', '确定')}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+            )}
         </View>
     );
 });
@@ -189,6 +338,10 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
     const { t } = useI18n();
     const [show, setShow] = useState(false);
     const [tempTime, setTempTime] = useState<Date | null>(null);
+    const [showAndroidEditor, setShowAndroidEditor] = useState(false);
+    const [androidHour, setAndroidHour] = useState('');
+    const [androidMinute, setAndroidMinute] = useState('');
+    const [androidTimeError, setAndroidTimeError] = useState('');
 
     const currentTime = parseTimeValue(value);
 
@@ -209,13 +362,10 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
 
     const openPicker = () => {
         if (Platform.OS === 'android') {
-            DateTimePickerAndroid.open({
-                value: currentTime,
-                mode: 'time',
-                display: 'default',
-                is24Hour: true,
-                onChange: handleChange,
-            });
+            setAndroidHour(String(currentTime.getHours()).padStart(2, '0'));
+            setAndroidMinute(String(currentTime.getMinutes()).padStart(2, '0'));
+            setAndroidTimeError('');
+            setShowAndroidEditor(true);
             return;
         }
 
@@ -241,6 +391,34 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
         onChange('');
         setTempTime(null);
         setShow(false);
+        setShowAndroidEditor(false);
+        setAndroidTimeError('');
+    };
+
+    const parseAndroidTimePart = (raw: string, max: number): number | null => {
+        const trimmed = raw.trim();
+        if (!/^\d{1,2}$/.test(trimmed)) return null;
+        const parsed = Number(trimmed);
+        if (!Number.isInteger(parsed) || parsed < 0 || parsed > max) return null;
+        return parsed;
+    };
+
+    const handleConfirmAndroidEditor = () => {
+        const hour = parseAndroidTimePart(androidHour, 23);
+        const minute = parseAndroidTimePart(androidMinute, 59);
+        if (hour === null || minute === null) {
+            setAndroidTimeError(t('event.invalidTime', '请输入有效时间（00:00 - 23:59）') as string);
+            return;
+        }
+
+        onChange(`${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
+        setAndroidTimeError('');
+        setShowAndroidEditor(false);
+    };
+
+    const handleCancelAndroidEditor = () => {
+        setAndroidTimeError('');
+        setShowAndroidEditor(false);
     };
 
     return (
@@ -298,6 +476,96 @@ export const TimePicker = memo(({ label, value, onChange, placeholder }: TimePic
                                     {t('event.clearTime', '清除时间')}
                                 </Text>
                             </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+            )}
+
+            {showAndroidEditor && Platform.OS === 'android' && (
+                <Modal
+                    transparent
+                    animationType="fade"
+                    visible={showAndroidEditor}
+                    onRequestClose={handleCancelAndroidEditor}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.androidEditorContent, { backgroundColor: colors.surface }]}>
+                            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
+                                {t('event.selectTime', '选择时间')}
+                            </Text>
+
+                            <View style={styles.androidTimeEditorRow}>
+                                <TextInput
+                                    value={androidHour}
+                                    onChangeText={(text) => {
+                                        setAndroidHour(text.replace(/\D/g, '').slice(0, 2));
+                                        if (androidTimeError) setAndroidTimeError('');
+                                    }}
+                                    keyboardType="number-pad"
+                                    maxLength={2}
+                                    placeholder="HH"
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[
+                                        styles.androidTimeInput,
+                                        {
+                                            backgroundColor: colors.primarySurface,
+                                            color: colors.textPrimary,
+                                            borderColor: colors.border,
+                                        },
+                                    ]}
+                                />
+                                <Text style={[styles.androidTimeSeparator, { color: colors.textPrimary }]}>:</Text>
+                                <TextInput
+                                    value={androidMinute}
+                                    onChangeText={(text) => {
+                                        setAndroidMinute(text.replace(/\D/g, '').slice(0, 2));
+                                        if (androidTimeError) setAndroidTimeError('');
+                                    }}
+                                    keyboardType="number-pad"
+                                    maxLength={2}
+                                    placeholder="mm"
+                                    placeholderTextColor={colors.textTertiary}
+                                    style={[
+                                        styles.androidTimeInput,
+                                        {
+                                            backgroundColor: colors.primarySurface,
+                                            color: colors.textPrimary,
+                                            borderColor: colors.border,
+                                        },
+                                    ]}
+                                />
+                            </View>
+
+                            {androidTimeError ? (
+                                <Text style={styles.androidTimeErrorText}>{androidTimeError}</Text>
+                            ) : null}
+
+                            <View style={styles.androidActionsRow}>
+                                <TouchableOpacity
+                                    style={[styles.androidActionButton, { borderColor: colors.border }]}
+                                    onPress={handleClear}
+                                >
+                                    <Text style={[styles.androidActionText, { color: colors.textSecondary }]}>
+                                        {t('event.clearTime', '清除时间')}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.androidActionButton, { borderColor: colors.border }]}
+                                    onPress={handleCancelAndroidEditor}
+                                >
+                                    <Text style={[styles.androidActionText, { color: colors.textSecondary }]}>
+                                        {t('common.cancel', '取消')}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.androidActionButton, styles.androidConfirmButton, { backgroundColor: colors.primary }]}
+                                    onPress={handleConfirmAndroidEditor}
+                                >
+                                    <Text style={styles.androidConfirmText}>
+                                        {t('common.confirm', '确定')}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </Modal>
@@ -366,5 +634,89 @@ const styles = StyleSheet.create({
     },
     clearButtonText: {
         fontSize: 15,
+    },
+    androidEditorContent: {
+        marginHorizontal: 20,
+        borderRadius: 16,
+        padding: 16,
+    },
+    androidTimeEditorRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 14,
+        marginBottom: 8,
+    },
+    androidTimeInput: {
+        width: 80,
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingVertical: 10,
+        fontSize: 20,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    androidTimeSeparator: {
+        fontSize: 26,
+        fontWeight: '600',
+        marginHorizontal: 10,
+    },
+    androidTimeErrorText: {
+        marginTop: 8,
+        fontSize: 13,
+        color: '#D32F2F',
+        textAlign: 'center',
+    },
+    androidDateEditorRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 14,
+        marginBottom: 8,
+    },
+    androidDateInput: {
+        width: 80,
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingVertical: 10,
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    androidDateSeparator: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginHorizontal: 8,
+    },
+    androidDateErrorText: {
+        marginTop: 8,
+        fontSize: 13,
+        color: '#D32F2F',
+        textAlign: 'center',
+    },
+    androidActionsRow: {
+        marginTop: 14,
+        flexDirection: 'row',
+        gap: 8,
+    },
+    androidActionButton: {
+        flex: 1,
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingVertical: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    androidActionText: {
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    androidConfirmButton: {
+        borderWidth: 0,
+    },
+    androidConfirmText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#FFFFFF',
     },
 });
