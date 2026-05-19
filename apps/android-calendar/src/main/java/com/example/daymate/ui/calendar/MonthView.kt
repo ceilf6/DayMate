@@ -267,26 +267,34 @@ class MonthView @JvmOverloads constructor(
                 for (i in 0 until maxIndicators) {
                     val event = sortedEvents[i]
                     val (backgroundColor, borderColor, _) = PriorityColorUtils.getPriorityColors(context, event.priority)
-                    
+
                     val indicatorX = x + cellWidth - 25f - (i * 15f)
                     val indicatorY = y + 15f + (i * 8f)
-                    
-                    // 绘制事件指示器背景
-                    paint.color = backgroundColor
-                    paint.style = Paint.Style.FILL
-                    canvas.drawCircle(indicatorX, indicatorY, 8f, paint)
-                    
-                    // 绘制边框
-                    paint.color = borderColor
-                    paint.style = Paint.Style.STROKE
-                    paint.strokeWidth = if (event.priority in 1..3) 2f else 1f
-                    canvas.drawCircle(indicatorX, indicatorY, 8f, paint)
-                    paint.style = Paint.Style.FILL
-                    
-                    // 高优先级添加内部标记
-                    if (event.priority in 1..3) {
-                        paint.color = ContextCompat.getColor(context, android.R.color.white)
-                        canvas.drawCircle(indicatorX, indicatorY, 3f, paint)
+
+                    // NONE优先级(0)只绘制简单的灰色圆点，不绘制彩色边框
+                    if (event.priority > 0) {
+                        // 绘制事件指示器背景
+                        paint.color = backgroundColor
+                        paint.style = Paint.Style.FILL
+                        canvas.drawCircle(indicatorX, indicatorY, 8f, paint)
+
+                        // 绘制边框
+                        paint.color = borderColor
+                        paint.style = Paint.Style.STROKE
+                        paint.strokeWidth = if (event.priority in 1..3) 2f else 1f
+                        canvas.drawCircle(indicatorX, indicatorY, 8f, paint)
+                        paint.style = Paint.Style.FILL
+
+                        // 高优先级添加内部标记
+                        if (event.priority in 1..3) {
+                            paint.color = ContextCompat.getColor(context, android.R.color.white)
+                            canvas.drawCircle(indicatorX, indicatorY, 3f, paint)
+                        }
+                    } else {
+                        // 无优先级：简单灰色圆点
+                        paint.color = ContextCompat.getColor(context, R.color.secondary_text)
+                        paint.style = Paint.Style.FILL
+                        canvas.drawCircle(indicatorX, indicatorY, 4f, paint)
                     }
                 }
                 

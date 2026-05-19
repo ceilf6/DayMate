@@ -68,11 +68,16 @@ class DailyEventsAdapter(
                 binding.tvEventLocation.visibility = View.GONE
             }
 
-            // 设置优先级指示器
-            val priorityColorRes = PriorityColorUtils.getPriorityColorRes(event.priority)
-            binding.viewPriorityIndicator.setBackgroundColor(
-                ContextCompat.getColor(binding.root.context, priorityColorRes)
-            )
+            // 设置优先级指示器（NONE优先级隐藏）
+            if (event.priority > 0) {
+                val priorityColorRes = PriorityColorUtils.getPriorityColorRes(event.priority)
+                binding.viewPriorityIndicator.setBackgroundColor(
+                    ContextCompat.getColor(binding.root.context, priorityColorRes)
+                )
+                binding.viewPriorityIndicator.visibility = View.VISIBLE
+            } else {
+                binding.viewPriorityIndicator.visibility = View.GONE
+            }
 
             // 设置优先级符号
             val prioritySymbol = PriorityColorUtils.getPriorityIndicator(event.priority)

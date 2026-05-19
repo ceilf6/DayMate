@@ -150,42 +150,45 @@ class DayView @JvmOverloads constructor(
         
         // 根据优先级获取颜色
         val (backgroundColor, borderColor, isDarkTheme) = PriorityColorUtils.getPriorityColors(context, event.priority)
-        
-        // 绘制事件背景
-        paint.color = backgroundColor
-        paint.style = Paint.Style.FILL
-        canvas.drawRect(cellRect, paint)
-        
-        // 绘制优先级条纹 (左侧彩色条)
-        val stripeWidth = 8f
-        paint.color = borderColor
-        canvas.drawRect(
-            cellRect.left.toFloat(),
-            cellRect.top.toFloat(),
-            cellRect.left + stripeWidth,
-            cellRect.bottom.toFloat(),
-            paint
-        )
-        
-        // 绘制事件边框
-        paint.color = borderColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = if (event.priority in 1..3) 3f else 2f // 高优先级边框更粗
-        canvas.drawRect(cellRect, paint)
-        paint.style = Paint.Style.FILL
-        
-        // 添加阴影效果 (高优先级)
-        if (event.priority in 1..3) {
-            paint.color = ContextCompat.getColor(context, android.R.color.black)
-            paint.alpha = 30
+
+        // NONE优先级(0)不绘制背景、边框、条纹和阴影
+        if (event.priority > 0) {
+            // 绘制事件背景
+            paint.color = backgroundColor
+            paint.style = Paint.Style.FILL
+            canvas.drawRect(cellRect, paint)
+
+            // 绘制优先级条纹 (左侧彩色条)
+            val stripeWidth = 8f
+            paint.color = borderColor
             canvas.drawRect(
-                cellRect.left + 4f,
-                cellRect.top + 4f,
-                cellRect.right + 4f,
-                cellRect.bottom + 4f,
+                cellRect.left.toFloat(),
+                cellRect.top.toFloat(),
+                cellRect.left + stripeWidth,
+                cellRect.bottom.toFloat(),
                 paint
             )
-            paint.alpha = 255
+
+            // 绘制事件边框
+            paint.color = borderColor
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = if (event.priority in 1..3) 3f else 2f
+            canvas.drawRect(cellRect, paint)
+            paint.style = Paint.Style.FILL
+
+            // 添加阴影效果 (高优先级)
+            if (event.priority in 1..3) {
+                paint.color = ContextCompat.getColor(context, android.R.color.black)
+                paint.alpha = 30
+                canvas.drawRect(
+                    cellRect.left + 4f,
+                    cellRect.top + 4f,
+                    cellRect.right + 4f,
+                    cellRect.bottom + 4f,
+                    paint
+                )
+                paint.alpha = 255
+            }
         }
         
         // 绘制事件文字

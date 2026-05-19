@@ -35,8 +35,8 @@ object PriorityColorUtils {
                 false
             )
             PriorityUtils.PriorityLevel.NONE -> Triple(
-                ContextCompat.getColor(context, R.color.priority_default_light),
-                ContextCompat.getColor(context, R.color.priority_default_dark),
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT,
                 false
             )
         }
