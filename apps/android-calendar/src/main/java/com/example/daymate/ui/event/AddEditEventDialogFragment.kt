@@ -19,6 +19,7 @@ import com.example.daymate.repository.EventRepository
 import com.example.daymate.utils.PriorityColorUtils
 import com.example.daymate.viewmodel.CalendarViewModel
 import com.example.daymate.viewmodel.CalendarViewModelFactory
+import com.example.daymate.shared.core.utils.LunarUtils
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -115,6 +116,18 @@ class AddEditEventDialogFragment : DialogFragment() {
         val reminderAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, reminderOptions)
         reminderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerReminder.adapter = reminderAdapter
+
+        // 设置农历月下拉菜单
+        val lunarMonths = arrayOf("正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "冬", "腊")
+        val lunarMonthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, lunarMonths)
+        lunarMonthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerLunarMonth.adapter = lunarMonthAdapter
+
+        // 设置农历日下拉菜单
+        val lunarDays = (1..30).map { it.toString() }.toTypedArray()
+        val lunarDayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, lunarDays)
+        lunarDayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerLunarDay.adapter = lunarDayAdapter
         
         // 设置对话框标题
         binding.tvDialogTitle.text = if (event != null) "编辑事件" else "添加事件"
@@ -171,6 +184,11 @@ class AddEditEventDialogFragment : DialogFragment() {
                 selectedEndDateTime = selectedStartDateTime.withHour(23).withMinute(59)
             }
             updateDateTimeDisplay()
+        }
+
+        // 农历事件切换
+        binding.switchLunarEvent.setOnCheckedChangeListener { _, isChecked ->
+            binding.layoutLunarDate.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
         
         // 保存按钮
@@ -229,6 +247,21 @@ class AddEditEventDialogFragment : DialogFragment() {
                 1440 -> 5
                 else -> 0
             })
+
+            // 设置农历事件
+            binding.switchLunarEvent.isChecked = event.isLunarEvent
+            binding.layoutLunarDate.visibility = if (event.isLunarEvent) View.VISIBLE else View.GONE
+            if (event.isLunarEvent && event.lunarDate != null) {
+                val parts = event.lunarDate!!.split("-")
+                if (parts.size >= 2) {
+                    val lunarMonth = parts[0].toIntOrNull() ?: 1
+                    val lunarDay = parts[1].toIntOrNull() ?: 1
+                    val isLeap = parts.size >= 3 && parts[2] == "L"
+                    binding.spinnerLunarMonth.setSelection(lunarMonth - 1)
+                    binding.spinnerLunarDay.setSelection(lunarDay - 1)
+                    binding.cbLeapMonth.isChecked = isLeap
+                }
+            }
         }
         
         updateDateTimeDisplay()
@@ -313,6 +346,17 @@ class AddEditEventDialogFragment : DialogFragment() {
             5 -> 1440
             else -> null
         }
+
+        // 农历事件信息
+        val isLunarEvent = binding.switchLunarEvent.isChecked
+        val lunarDate = if (isLunarEvent) {
+            val lunarMonth = binding.spinnerLunarMonth.selectedItemPosition + 1
+            val lunarDay = binding.spinnerLunarDay.selectedItemPosition + 1
+            val leapSuffix = if (binding.cbLeapMonth.isChecked) "-L" else ""
+            "$lunarMonth-$lunarDay$leapSuffix"
+        } else {
+            null
+        }
         
         val eventToSave = if (event != null) {
             event!!.copy(
@@ -327,6 +371,8 @@ class AddEditEventDialogFragment : DialogFragment() {
                 status = status,
                 transparency = transparency,
                 reminderMinutes = reminderMinutes,
+                lunarDate = lunarDate,
+                isLunarEvent = isLunarEvent,
                 updatedAt = LocalDateTime.now()
             )
         } else {
@@ -341,7 +387,9 @@ class AddEditEventDialogFragment : DialogFragment() {
                 priority = priority,
                 status = status,
                 transparency = transparency,
-                reminderMinutes = reminderMinutes
+                reminderMinutes = reminderMinutes,
+                lunarDate = lunarDate,
+                isLunarEvent = isLunarEvent
             )
         }
         
