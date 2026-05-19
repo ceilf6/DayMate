@@ -209,13 +209,13 @@ class EventDetailsDialogFragment : DialogFragment() {
     
     private fun showDeleteConfirmation() {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("删除事件")
-            .setMessage("确定要删除这个事件吗？")
-            .setPositiveButton("删除") { _, _ ->
+            .setTitle(R.string.delete_confirm_title)
+            .setMessage(R.string.delete_confirm_message)
+            .setPositiveButton(R.string.delete) { _, _ ->
                 viewModel.deleteEvent(event)
                 dismiss()
             }
-            .setNegativeButton("取消", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
     

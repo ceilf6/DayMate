@@ -141,7 +141,10 @@
     },
     "reminder": {
         "minutesBefore": "提前 {{minutes}} 分钟",
-        "none": "无"
+        "none": "无",
+        "channelName": "日程提醒",
+        "notificationTitle": "日程提醒",
+        "notificationBody": "{{title}} 将于 {{time}} 开始"
     },
     "lunar": {
         "leapMonth": "闰"

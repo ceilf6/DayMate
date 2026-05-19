@@ -110,21 +110,25 @@ const EventDetailModal = memo(({
     const handleDelete = () => {
         if (!event) return;
 
-        Alert.alert('删除日程', '确定要删除这条日程吗？', [
-            { text: '取消', style: 'cancel' },
-            {
-                text: '删除',
-                style: 'destructive',
-                onPress: async () => {
-                    const success = await onDelete(event);
-                    if (success) {
-                        onClose();
-                    } else {
-                        setError('删除失败，请重试');
-                    }
+        Alert.alert(
+            t('event.deleteEvent', '删除日程'),
+            t('event.deleteConfirm', '确定要删除这条日程吗？'),
+            [
+                { text: t('common.cancel', '取消'), style: 'cancel' },
+                {
+                    text: t('common.delete', '删除'),
+                    style: 'destructive',
+                    onPress: async () => {
+                        const success = await onDelete(event);
+                        if (success) {
+                            onClose();
+                        } else {
+                            setError(t('error.deleteFailed', '删除失败，请重试'));
+                        }
+                    },
                 },
-            },
-        ]);
+            ]
+        );
     };
 
     const handleClose = () => {

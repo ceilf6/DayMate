@@ -18,9 +18,6 @@ class ReminderNotificationService(private val context: Context) {
     
     companion object {
         private const val CHANNEL_ID = "calendar_reminders"
-        private const val CHANNEL_NAME = "日历提醒"
-        private const val CHANNEL_DESCRIPTION = "日历事件提醒通知"
-        
         private const val NOTIFICATION_ID_PREFIX = 1000
     }
     
@@ -34,14 +31,14 @@ class ReminderNotificationService(private val context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                CHANNEL_NAME,
+                context.getString(R.string.notification_channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = CHANNEL_DESCRIPTION
+                description = context.getString(R.string.notification_channel_description)
                 enableVibration(true)
                 enableLights(true)
             }
-            
+
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -65,21 +62,18 @@ class ReminderNotificationService(private val context: Context) {
         )
         
         val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        val dateFormatter = DateTimeFormatter.ofPattern("MM月dd日")
-        
+        val dateFormatter = DateTimeFormatter.ofPattern("MM/dd")
+
         val timeText = if (event.allDay) {
-            "${event.startTime.format(dateFormatter)} 全天"
+            "${event.startTime.format(dateFormatter)} ${context.getString(R.string.notification_all_day)}"
         } else {
             "${event.startTime.format(dateFormatter)} ${event.startTime.format(timeFormatter)}"
         }
-        
+
         val reminderText = when (reminderMinutes) {
-            5 -> "5分钟后开始"
-            15 -> "15分钟后开始"
-            30 -> "30分钟后开始"
-            60 -> "1小时后开始"
-            1440 -> "明天开始"
-            else -> "${reminderMinutes}分钟后开始"
+            60 -> context.getString(R.string.notification_reminder_1hour)
+            1440 -> context.getString(R.string.notification_reminder_tomorrow)
+            else -> context.getString(R.string.notification_reminder_minutes, reminderMinutes)
         }
         
         try {
@@ -88,7 +82,7 @@ class ReminderNotificationService(private val context: Context) {
                 .setContentTitle(event.title)
                 .setContentText("$timeText - $reminderText")
                 .setStyle(NotificationCompat.BigTextStyle()
-                    .bigText("${event.description ?: ""}\n\n时间：$timeText\n${if (!event.location.isNullOrEmpty()) "地点：${event.location}\n" else ""}提醒：$reminderText"))
+                    .bigText("${event.description ?: ""}\n\n${context.getString(R.string.notification_time_label)}：$timeText\n${if (!event.location.isNullOrEmpty()) "${context.getString(R.string.notification_location_label)}：${event.location}\n" else ""}${context.getString(R.string.notification_reminder_label)}：$reminderText"))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentIntent(pendingIntent)

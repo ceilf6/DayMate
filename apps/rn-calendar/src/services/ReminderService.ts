@@ -7,6 +7,7 @@ import notifee, {
 } from '@notifee/react-native';
 
 import type { CalendarEvent } from '@daymate/shared';
+import { t } from '@daymate/i18n';
 
 const ANDROID_CHANNEL_ID = 'daymate-reminders';
 
@@ -19,7 +20,7 @@ const ensureAndroidChannel = async () => {
 
     await notifee.createChannel({
         id: ANDROID_CHANNEL_ID,
-        name: '日程提醒',
+        name: t('reminder.channelName', '日程提醒'),
         importance: AndroidImportance.DEFAULT,
     });
 
@@ -78,8 +79,8 @@ export class ReminderService {
 
         const id = await notifee.createTriggerNotification(
             {
-                title: '日程提醒',
-                body: `${event.title} 将于 ${event.startTime} 开始`,
+                title: t('reminder.notificationTitle', '日程提醒'),
+                body: t('reminder.notificationBody', '{{title}} 将于 {{time}} 开始', { title: event.title, time: event.startTime }),
                 android: {
                     channelId: ANDROID_CHANNEL_ID,
                     pressAction: { id: 'default' },

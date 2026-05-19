@@ -141,7 +141,10 @@
     },
     "reminder": {
         "minutesBefore": "{{minutes}} minutes before",
-        "none": "None"
+        "none": "None",
+        "channelName": "Event Reminders",
+        "notificationTitle": "Event Reminder",
+        "notificationBody": "{{title}} starts at {{time}}"
     },
     "lunar": {
         "leapMonth": "Leap"

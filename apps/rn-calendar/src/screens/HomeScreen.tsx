@@ -312,19 +312,19 @@ const HomeScreen = () => {
         reminderMinutes: string;
         priority: number;
     }): Promise<string | null> => {
-        if (!selectedDate) return '未选择日期';
+        if (!selectedDate) return t('validation.noDateSelected', '未选择日期');
 
         const title = data.title.trim();
-        if (!title) return '请输入标题';
+        if (!title) return t('validation.titleRequired', '请输入标题');
 
         if (!isValidTime(data.startTime) || !isValidTime(data.endTime)) {
-            return '时间格式应为 HH:mm';
+            return t('validation.invalidTimeFormat', '时间格式应为 HH:mm');
         }
 
         const start = data.startTime.trim();
         const end = data.endTime.trim();
         if (start && end && end < start) {
-            return '结束时间不能早于开始时间';
+            return t('validation.endTimeBeforeStart', '结束时间不能早于开始时间');
         }
 
         const reminderRaw = data.reminderMinutes.trim();
@@ -332,10 +332,10 @@ const HomeScreen = () => {
         if (reminderRaw) {
             const parsed = Number(reminderRaw);
             if (!Number.isFinite(parsed) || parsed < 0 || !Number.isInteger(parsed)) {
-                return '提醒分钟应为非负整数';
+                return t('validation.invalidReminderMinutes', '提醒分钟应为非负整数');
             }
             if (parsed > 0 && !start) {
-                return '设置提醒需要填写开始时间';
+                return t('validation.reminderNeedsStartTime', '设置提醒需要填写开始时间');
             }
             reminderMinutes = parsed;
         }
@@ -355,7 +355,7 @@ const HomeScreen = () => {
             if (created.reminderMinutes && created.reminderMinutes > 0) {
                 const notificationId = await ReminderService.scheduleReminder(created);
                 if (!notificationId) {
-                    return '提醒创建失败（可能未授权或提醒时间已过）';
+                    return t('error.reminderFailed', '提醒创建失败（可能未授权或提醒时间已过）');
                 }
 
                 const updated = await EventStorage.updateEvent(created.date, created.id, {
@@ -368,7 +368,6 @@ const HomeScreen = () => {
             setEventsByDate(prev => {
                 const next = { ...prev };
                 const existingEvents = next[selectedDate] ?? [];
-                // 检查 ID 是否已存在，避免重复添加
                 const isDuplicate = existingEvents.some(e => e.id === finalEvent.id);
                 if (!isDuplicate) {
                     next[selectedDate] = [...existingEvents, finalEvent];
@@ -376,14 +375,13 @@ const HomeScreen = () => {
                 return next;
             });
 
-            // 刷新未完成事项列表
             await refreshIncompleteEvents();
 
-            return null; // Success
+            return null;
         } catch {
-            return '保存失败，请重试';
+            return t('error.saveFailed', '保存失败，请重试');
         }
-    }, [selectedDate, refreshIncompleteEvents]);
+    }, [selectedDate, refreshIncompleteEvents, t]);
 
     // 验证日期格式 YYYY-MM-DD
     const isValidDate = (dateStr: string): boolean => {
