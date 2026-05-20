@@ -23,5 +23,4 @@ jobs:
           model: ${{ vars.LLM_MODEL || 'gpt-4o' }}
           api-key: ${{ secrets.LLM_API_KEY }}
           base-url: ${{ vars.LLM_BASE_URL }}
-          github-token: ${{ secrets.GH_PAT }}
           language: zh
