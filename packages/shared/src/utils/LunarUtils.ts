@@ -4,7 +4,7 @@
  */
 
 // LRU 缓存实现，避免重复计算
-const LUNAR_CACHE_SIZE = 100;
+const LUNAR_CACHE_SIZE = 500;
 const lunarCache = new Map<string, LunarDate>();
 
 function getCachedLunar(dateString: string): LunarDate | undefined {
@@ -13,11 +13,14 @@ function getCachedLunar(dateString: string): LunarDate | undefined {
 
 function setCachedLunar(dateString: string, lunar: LunarDate): void {
     if (lunarCache.size >= LUNAR_CACHE_SIZE) {
-        // 删除最早的条目
         const firstKey = lunarCache.keys().next().value;
         if (firstKey) lunarCache.delete(firstKey);
     }
     lunarCache.set(dateString, lunar);
+}
+
+export function clearLunarCache(): void {
+    lunarCache.clear();
 }
 
 /**
