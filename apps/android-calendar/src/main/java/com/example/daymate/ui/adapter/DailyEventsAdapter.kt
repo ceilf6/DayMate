@@ -69,8 +69,8 @@ class DailyEventsAdapter(
             }
 
             // 设置优先级指示器（NONE优先级隐藏）
+            val priorityColorRes = PriorityColorUtils.getPriorityColorRes(event.priority)
             if (event.priority > 0) {
-                val priorityColorRes = PriorityColorUtils.getPriorityColorRes(event.priority)
                 binding.viewPriorityIndicator.setBackgroundColor(
                     ContextCompat.getColor(binding.root.context, priorityColorRes)
                 )
